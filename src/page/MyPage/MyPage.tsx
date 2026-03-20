@@ -93,7 +93,7 @@ export default function MyPage() {
             leftIconSrc="/images/createTripBtn.png"
           />
           <TextButton
-            onClick={(e: MouseEvent) => {
+            onClick={() => {
               router.push("/contact");
             }}
             text="1:1 문의하기"

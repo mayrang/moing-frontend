@@ -1,68 +1,23 @@
-'use client'
-import Warning from '@/components/icons/Warning'
-import { errorStore } from '@/store/client/errorStore'
-import { errorToastUI } from '@/store/client/toastUI'
-import { palette } from '@/styles/palette'
-import styled from '@emotion/styled'
-import React, { useEffect } from 'react'
+'use client';
+// 스토어 연결 어댑터: shared/ui/toast/ErrorToast (순수 컴포넌트)를 감싸
+// FSD 원칙상 shared는 store를 알 수 없으므로, store 연결은 이 레이어에서 담당.
+// ErrorCatcher 등 기존 사용처는 변경 없이 유지됨.
+import ErrorToast from '@/shared/ui/toast/ErrorToast';
+import { errorStore } from '@/store/client/errorStore';
+import { errorToastUI } from '@/store/client/toastUI';
 
-export default function ErrorToast() {
-  const { errorToastShow, setErrorToastShow } = errorToastUI()
-  const { error, setIsMutationError } = errorStore()
-  // 1초 후 다시 메시지가 아래로 내려감.
-  useEffect(() => {
-    if (errorToastShow) {
-      setTimeout(() => {
-        setErrorToastShow(false)
-        setIsMutationError(false)
-      }, 1500)
-    }
-  }, [errorToastShow])
-  const noPageError = error?.message.includes('404')!
+export default function ErrorToastAdapter() {
+  const { errorToastShow, setErrorToastShow } = errorToastUI();
+  const { error, setIsMutationError } = errorStore();
+
   return (
-    <Container isShow={errorToastShow && !noPageError}>
-      <ToastMsg height={50}>
-        <Warning />
-        <Text>{error?.message}</Text>
-        {/* <Text>문제가 발생했습니다.</Text> */}
-      </ToastMsg>
-    </Container>
-  )
+    <ErrorToast
+      isShow={errorToastShow}
+      message={error?.message}
+      onHide={() => {
+        setErrorToastShow(false);
+        setIsMutationError(false);
+      }}
+    />
+  );
 }
-const Container = styled.div<{ isShow: boolean }>`
-  position: fixed;
-  width: 100%;
-  bottom: ${({ isShow }) =>
-    isShow
-      ? '250px'
-      : '-100px'}; /* Toast 위치: 나타날 때는 40px, 사라질 때는 아래로 사라짐 */
-  transition:
-    bottom 0.4s ease-in-out,
-    opacity 0.4s ease-in-out;
-  opacity: ${({ isShow }) =>
-    isShow ? 1 : 0}; /* 나타날 때는 투명도 1, 사라질 때는 0 */
-  pointer-events: none; /* Toast는 클릭할 수 없도록함 */
-  display: flex;
-  justify-content: center;
-  left: 0;
-  z-index: 1000;
-`
-const ToastMsg = styled.div<{ height: number }>`
-  position: absolute;
-  bottom: ${(props: { height: number }) => props.height}px;
-  height: 42px;
-  border-radius: 20px;
-  background-color: ${palette.기본};
-  padding: 10px 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-const Text = styled.div`
-  color: white;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 22.4px;
-  text-align: left;
-  margin-left: 8px;
-`

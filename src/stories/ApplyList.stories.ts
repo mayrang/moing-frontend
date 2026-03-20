@@ -89,7 +89,7 @@ export const Default: Story = {
       backgroundColor: 'rgba(62, 141, 0, 1)',
       color: 'white',
       boxShadow: '-2px 4px 5px 0px rgba(170, 170, 170, 0.14)',
-      weight: 'semiBold'
+      fontWeight: 'semibold'
     },
     hostUserCheck: true,
     disabled: false,

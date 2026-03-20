@@ -1,3 +1,35 @@
+@import "tailwindcss";
+
+/* Tailwind v4 테마 - palette.ts 기반 */
+@theme {
+  --font-pretendard: "Pretendard", sans-serif;
+  --font-mitr: "Mitr", sans-serif;
+
+  /* 브랜드 색상 */
+  --color-keycolor: rgba(62, 141, 0, 1);
+  --color-keycolor-bg: #E3EFD9;
+  --color-button-active: #F1F7EC;
+  --color-button-hover: rgba(241, 247, 236, 1);
+  --color-green-variant: rgba(252, 255, 250, 1);
+
+  /* 텍스트 색상 */
+  --color-text-base: rgba(26, 26, 26, 1);
+  --color-text-muted: rgba(132, 132, 132, 1);
+  --color-text-muted2: rgba(171, 171, 171, 1);
+
+  /* 배경 / 경계 색상 */
+  --color-muted3: rgba(205, 205, 205, 1);
+  --color-muted4: rgba(240, 240, 240, 1);
+  --color-muted5: rgba(237, 237, 237, 1);
+  --color-search-bg: rgba(245, 245, 245, 1);
+  --color-bg: rgba(253, 253, 253, 1);
+
+  /* 상태 색상 */
+  --color-like: #EA2A2A;
+  --color-error-variant: #FFF7F7;
+  --color-error-border: #ED1E1E;
+}
+
 @import url("https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap");
 @font-face {
@@ -52,163 +84,207 @@ body {
   backface-visibility: hidden;
 }
 
-:root {
-  --dimmed-zindex: 10;
-  --alert-zindex: 11;
+@layer base {
+  :root {
+    --dimmed-zindex: 10;
+    --alert-zindex: 11;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  html,
+  body,
+  div,
+  span,
+  applet,
+  object,
+  iframe,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  blockquote,
+  pre,
+  a,
+  abbr,
+  acronym,
+  address,
+  big,
+  cite,
+  code,
+  del,
+  dfn,
+  em,
+  img,
+  ins,
+  kbd,
+  q,
+  s,
+  samp,
+  small,
+  strike,
+  strong,
+  sub,
+  sup,
+  tt,
+  var,
+  b,
+  u,
+  i,
+  center,
+  dl,
+  dt,
+  dd,
+  ol,
+  ul,
+  li,
+  fieldset,
+  form,
+  label,
+  legend,
+  table,
+  caption,
+  tbody,
+  tfoot,
+  thead,
+  tr,
+  th,
+  td,
+  article,
+  aside,
+  canvas,
+  details,
+  embed,
+  figure,
+  figcaption,
+  footer,
+  header,
+  hgroup,
+  menu,
+  nav,
+  output,
+  ruby,
+  section,
+  summary,
+  time,
+  mark,
+  audio,
+  video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+  }
+  /* HTML5 display-role reset for older browsers */
+  article,
+  aside,
+  details,
+  figcaption,
+  figure,
+  footer,
+  header,
+  hgroup,
+  menu,
+  nav,
+  section {
+    display: block;
+  }
+  body {
+    line-height: 1;
+    font-family: "Pretendard", sans-serif;
+    letter-spacing: -0.4px !important;
+    overflow-x: hidden;
+  }
+  ol,
+  ul {
+    list-style: none;
+  }
+  blockquote,
+  q {
+    quotes: none;
+  }
+  blockquote:before,
+  blockquote:after,
+  q:before,
+  q:after {
+    content: "";
+    content: none;
+  }
+  table {
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+  input {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    box-shadow: none;
+    font-family: "Pretendard", sans-serif;
+  }
+  button {
+    border: none;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    overflow: visible;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    line-height: normal;
+  }
+  * {
+    box-sizing: border-box;
+    font-family: "Noto Color Emoji", sans-serif;
+  }
 }
-a {
-  color: inherit;
-  text-decoration: none;
-}
-html,
-body,
-div,
-span,
-applet,
-object,
-iframe,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-blockquote,
-pre,
-a,
-abbr,
-acronym,
-address,
-big,
-cite,
-code,
-del,
-dfn,
-em,
-img,
-ins,
-kbd,
-q,
-s,
-samp,
-small,
-strike,
-strong,
-sub,
-sup,
-tt,
-var,
-b,
-u,
-i,
-center,
-dl,
-dt,
-dd,
-ol,
-ul,
-li,
-fieldset,
-form,
-label,
-legend,
-table,
-caption,
-tbody,
-tfoot,
-thead,
-tr,
-th,
-td,
-article,
-aside,
-canvas,
-details,
-embed,
-figure,
-figcaption,
-footer,
-header,
-hgroup,
-menu,
-nav,
-output,
-ruby,
-section,
-summary,
-time,
-mark,
-audio,
-video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 100%;
-  font: inherit;
-  vertical-align: baseline;
-}
-/* HTML5 display-role reset for older browsers */
-article,
-aside,
-details,
-figcaption,
-figure,
-footer,
-header,
-hgroup,
-menu,
-nav,
-section {
-  display: block;
-}
-body {
-  line-height: 1;
-  font-family: "Pretendard", sans-serif;
-  letter-spacing: -0.4px !important;
-  overflow-x: hidden;
-}
-ol,
-ul {
-  list-style: none;
-}
-blockquote,
-q {
-  quotes: none;
-}
-blockquote:before,
-blockquote:after,
-q:before,
-q:after {
-  content: "";
-  content: none;
-}
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-input {
-  appearance: none;
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  box-shadow: none;
-  font-family: "Pretendard", sans-serif;
-}
-button {
-  border: none;
-  margin: 0;
-  padding: 0;
-  width: auto;
-  overflow: visible;
-  background: transparent;
 
-  color: inherit;
-  font: inherit;
-  line-height: normal;
+/* Select 컴포넌트 커스텀 스크롤바 */
+.select-scrollbar::-webkit-scrollbar { width: 1px; }
+.select-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.select-scrollbar::-webkit-scrollbar-thumb { border-radius: 1rem; background: rgba(217, 217, 217, 1); }
+.select-scrollbar::-webkit-scrollbar-button { width: 0; height: 0; display: flex; }
+
+/* Textarea 컴포넌트 커스텀 스크롤바 */
+.textarea-scrollbar::-webkit-scrollbar { width: 3px; }
+.textarea-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.textarea-scrollbar::-webkit-scrollbar-thumb { border-radius: 1rem; background: rgba(217, 217, 217, 1); }
+.textarea-scrollbar::-webkit-scrollbar-button { width: 0; height: 0; }
+.textarea-scrollbar::-webkit-scrollbar-button:vertical:start:decrement,
+.textarea-scrollbar::-webkit-scrollbar-button:vertical:start:increment { display: block; height: 10px; }
+.textarea-scrollbar::-webkit-scrollbar-button:vertical:end:decrement,
+.textarea-scrollbar::-webkit-scrollbar-button:vertical:end:increment { display: block; height: 10px; }
+
+/* StateInputField shake 애니메이션 유틸리티 */
+.animate-shake {
+  animation: shake 0.3s;
 }
-* {
-  box-sizing: border-box;
-  font-family: "Noto Color Emoji", sans-serif;
+
+/* CodeInput: 값이 있거나 포커스되면 placeholder bar 숨김 */
+.code-input-cell input:not(:placeholder-shown) ~ .input-bar,
+.code-input-cell input:focus ~ .input-bar {
+  display: none;
+}
+
+/* CodeInput: 숫자 스피너 제거 */
+.code-number-input::-webkit-outer-spin-button,
+.code-number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.code-number-input[type=number] {
+  -moz-appearance: textfield;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
 }
 
 @keyframes slide-from-right {

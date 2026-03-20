@@ -1,38 +1,13 @@
-"use client";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
-import React from "react";
+// 이 파일은 하위 호환성을 위해 유지됩니다.
+// 실제 구현은 @/shared/ui/button/CloseButton 에 있습니다.
+// API 변경: setIsOpen → onClick으로 리팩토링됨
+import CloseButton from '@/shared/ui/button/CloseButton';
+import React from 'react';
 
-interface CloseButtonProps {
+interface LegacyCloseButtonProps {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
-export default function CloseButton({ setIsOpen }: CloseButtonProps) {
-  return <CloseBtn onClick={() => setIsOpen(false)}>닫기</CloseBtn>;
-}
 
-const CloseBtn = styled.button`
-  display: flex;
-  cursor: pointer;
-  justify-content: center;
-  align-items: center;
-  @media (max-width: 390px) {
-    width: 100%;
-  }
-  @media (min-width: 390px) {
-    width: 342px;
-  }
-  border: none;
-  height: 48px;
-  background-color: ${palette.BG};
-  border-radius: 40px;
-  padding: 10px 20px;
-  margin-top: 16px;
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 16px;
-  text-align: center;
-  color: ${palette.기본};
-  &:active {
-    background-color: ${palette.비강조3};
-  }
-`;
+export default function LegacyCloseButton({ setIsOpen }: LegacyCloseButtonProps) {
+  return <CloseButton onClick={() => setIsOpen(false)} />;
+}

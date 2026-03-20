@@ -2,7 +2,9 @@ import { getJWTHeader } from "@/utils/user";
 import axios, { AxiosResponse } from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL,
+  baseURL: typeof window === 'undefined'
+    ? (process.env.API_BASE_URL ?? '')   // 서버 사이드: 백엔드 직접 호출
+    : '',                                 // 클라이언트 사이드: Next.js 프록시(/api/*)로 중계
   timeout: 5000,
   headers: {
     "Content-Type": "application/json",
@@ -22,7 +24,7 @@ interface ApiResponse<T> {
 }
 
 let retryCount = 0;
-const MAX_RETRY_COUNT = 50;
+const MAX_RETRY_COUNT = 5;
 
 axiosInstance.interceptors.response.use(
   (response) => response,

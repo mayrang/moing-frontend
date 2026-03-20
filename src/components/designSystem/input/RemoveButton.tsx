@@ -1,27 +1,3 @@
-'use client'
-import XIcon from '@/components/icons/XIcon'
-import styled from '@emotion/styled'
-
-const RemoveButton = ({ onClick }: { onClick: () => void }) => {
-  return (
-    <XIconButton
-      type="button"
-      onClick={onClick}>
-      <XIcon />
-    </XIconButton>
-  )
-}
-
-const XIconButton = styled.button`
-  cursor: pointer;
-  display: inline-block;
-  border: none;
-  outline: none;
-  background-color: transparent;
-  width: 18px;
-  height: 18px;
-  justify-items: center;
-  align-items: center;
-`
-
-export default RemoveButton
+// 이 파일은 하위 호환성을 위해 유지됩니다.
+// 실제 구현은 @/shared/ui/input/RemoveButton 에 있습니다.
+export { default } from '@/shared/ui/input/RemoveButton';
