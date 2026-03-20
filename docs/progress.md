@@ -1,0 +1,104 @@
+# MOING Frontend 리팩토링 진행 현황
+
+## 전체 진행률
+
+| Phase | 이름 | 상태 | 시작일 | 완료일 |
+|-------|------|------|--------|--------|
+| Phase 0 | 기반 구축 | ✅ 완료 | 2026-03-20 | 2026-03-20 |
+| Phase 1 | shared 레이어 | ✅ 완료 | 2026-03-20 | 2026-03-20 |
+| Phase 1.5 | 웹 접근성 보강 | ✅ 완료 | 2026-03-20 | 2026-03-20 |
+| Phase 2 | entities 레이어 | 🔜 대기 | - | - |
+| Phase 3 | features 레이어 | 🔜 대기 | - | - |
+| Phase 4 | pages / widgets 레이어 | 🔜 대기 | - | - |
+
+---
+
+## Phase 0: 기반 구축
+
+### 체크리스트
+- [x] Vitest 설정
+- [x] Playwright 설정
+- [x] Tailwind CSS 설치 및 설정 (Emotion 공존)
+- [x] FSD 디렉토리 스캐폴딩
+- [x] docs 문서 구조 생성
+
+### 변경 파일 목록
+_작업 완료 후 기록_
+
+---
+
+## Phase 1: shared 레이어
+
+### 체크리스트
+- [x] 1-1: Button 그룹 (6개 컴포넌트, 18개 테스트)
+- [x] 1-2: Badge, Select, Tag, Text 그룹 (9개 컴포넌트, 20개 테스트)
+- [x] 1-3: Input 그룹 (7개 컴포넌트, 36개 테스트)
+- [x] 1-4: Toast 그룹 (5개 컴포넌트, 12개 테스트) — FSD 위반 제거, BaseToast 추출
+- [x] 1-5: Modal 그룹 (9개 컴포넌트, 23개 테스트) — ModalDimmed/BaseModal/BottomSheetModal 추출
+- [x] 1-6: Profile (1개 컴포넌트, 4개 테스트) — RoundedImage
+
+### 누계 테스트
+- 최종: **113개** 통과 (26개 테스트 파일)
+
+---
+
+## Phase 1.5: 웹 접근성 보강
+
+> **결정 배경**: 접근성은 shared/ui 레벨에서 보장해야 하나, Phase 1 흐름을 끊지 않기 위해 분리.
+
+### 전략
+- **컴포넌트 고정값** (design system에서 처리): `aria-expanded`, `role`, `aria-modal`, focus trap 등
+- **컨텍스트 의존값** (prop으로 받기): `aria-label`, `aria-describedby` 등
+
+### 체크리스트
+- [x] `jest-axe` 기반 접근성 자동 검사 도입 (setup.ts 전역 등록)
+- [x] Select: `role="combobox"`, `aria-expanded`, `aria-haspopup="listbox"`, `role="listbox"`, `role="option"`, `aria-selected`
+- [x] CloseButton: `aria-label` prop (기본값: text prop과 동일)
+- [x] RemoveButton: `aria-label="삭제"` (아이콘 전용 버튼)
+- [x] StateInputField: `aria-describedby` 연결 (`errorMessageId` prop)
+- [x] CodeInput: 각 셀에 `aria-label="{n}번째 숫자"` (1~6)
+- [x] BaseModal: `role="dialog"`, `aria-modal="true"`, `aria-labelledby`, focus trap, Escape 닫기
+- [x] BottomSheetModal: 동일 접근성 속성 적용
+- [x] 키보드 네비게이션 (Escape, Tab focus trap 구현 완료)
+
+### 누계 테스트
+- 최종: **134개** 통과 (27개 테스트 파일)
+
+---
+
+## Phase 2: entities 레이어
+
+### 체크리스트
+- [ ] `model/` → `entities/{domain}/model`
+- [ ] `api/` → `entities/{domain}/api`
+- [ ] 도메인별 타입 정리
+- [ ] 각 entity 테스트 작성
+
+### 변경 파일 목록
+_작업 완료 후 기록_
+
+---
+
+## Phase 3: features 레이어
+
+### 체크리스트
+- [ ] `hooks/` + `components/` → `features/{feature}/`
+- [ ] 각 feature TDD 적용
+- [ ] 통합 테스트 작성
+
+### 변경 파일 목록
+_작업 완료 후 기록_
+
+---
+
+## Phase 4: pages / widgets 레이어
+
+### 체크리스트
+- [ ] `page/` → `pages/` + `widgets/`
+- [ ] Server Component 전환 (하이브리드)
+- [ ] 성능 테스트 측정
+- [ ] 성능 최적화
+- [ ] E2E 테스트 작성
+
+### 변경 파일 목록
+_작업 완료 후 기록_
