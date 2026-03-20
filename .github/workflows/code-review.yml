@@ -18,7 +18,7 @@ jobs:
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          direct_prompt: |
+          prompt: |
             이 PR을 리뷰해줘. 아래 항목을 중심으로 분석하고 PR에 리뷰 코멘트를 남겨줘.
 
             ## 체크 항목
