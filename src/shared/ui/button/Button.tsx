@@ -6,6 +6,8 @@ interface ButtonProps {
   children?: React.ReactNode;
   disabled?: boolean;
   style?: React.CSSProperties;
+  /** @deprecated style 사용 권장 */
+  addStyle?: React.CSSProperties;
   className?: string;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
@@ -20,6 +22,7 @@ const Button = ({
   disabled = false,
   children,
   style,
+  addStyle,
   className = '',
   onClick,
 }: ButtonProps) => {
@@ -28,7 +31,7 @@ const Button = ({
       type={type}
       disabled={disabled}
       onClick={onClick}
-      style={style}
+      style={style ?? addStyle}
       className={[
         'flex w-full items-center justify-center',
         'min-[390px]:w-[342px]',

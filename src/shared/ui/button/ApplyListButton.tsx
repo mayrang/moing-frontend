@@ -13,6 +13,8 @@ interface ApplyListButtonProps {
   bookmarked: boolean;
   hostUserCheck: boolean;
   style?: React.CSSProperties;
+  /** @deprecated style 사용 권장 */
+  addStyle?: React.CSSProperties;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   bookmarkOnClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
@@ -27,6 +29,7 @@ const ApplyListButton = ({
   disabled = false,
   children,
   style,
+  addStyle,
   onClick,
   bookmarkOnClick,
   nowEnrollmentCount,
@@ -53,7 +56,7 @@ const ApplyListButton = ({
         type={type}
         disabled={disabled}
         onClick={onClick}
-        style={style}
+        style={style ?? addStyle}
       >
         {!disabled && nowEnrollmentCount > 0 && hostUserCheck && (
           <span

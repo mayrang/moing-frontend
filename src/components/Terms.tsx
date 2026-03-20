@@ -84,15 +84,7 @@ const Terms = ({ closeShowTerms }: TermsProps) => {
         {check.privacy && check.service ? (
           <Button text="동의합니다" onClick={closeShowTerms} />
         ) : (
-          <Button
-            text="동의합니다"
-            disabled
-            addStyle={{
-              backgroundColor: "rgba(220, 220, 220, 1)",
-              color: "rgba(132, 132, 132, 1)",
-              boxShadow: "-2px 4px 5px 0px rgba(170, 170, 170, 0.1)",
-            }}
-          />
+          <Button text="동의합니다" disabled />
         )}
         <Spacing size={40} />
       </TermsContainer>
