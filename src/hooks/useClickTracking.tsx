@@ -1,15 +1,2 @@
-import { useCallback } from "react";
-import { useAnalytics } from "@/context/AnalyticsProvider";
-
-export const useClickTracking = () => {
-  const { trackClick } = useAnalytics();
-
-  const track = useCallback(
-    (elementName: string, additionalData?: Record<string, any>) => {
-      trackClick(elementName, additionalData);
-    },
-    [trackClick]
-  );
-
-  return { track };
-};
+// shared/hooks로 이전됨 — 하위 호환을 위해 re-export 유지
+export { useClickTracking } from '@/shared/hooks/useClickTracking';

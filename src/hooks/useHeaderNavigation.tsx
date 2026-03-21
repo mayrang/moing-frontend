@@ -102,7 +102,6 @@ export const useHeaderNavigation = () => {
         // 동적 파라미터가 있을 때
 
         const regex = pathToRegex(route);
-        console.log("regex", regex);
         return regex.test(pathname);
       }
       // 일반 라우트는 기존대로
@@ -411,7 +410,6 @@ export const useHeaderNavigation = () => {
           }
           localStorage.removeItem("profilePath");
 
-          console.log(userProfileUserId);
           if (userProfileUserId !== userId) {
             setTimeout(() => setProfileShow(true), 100);
           }

@@ -1,24 +1,2 @@
-'use client'
-import { useEffect, useState } from 'react'
-
-const useInfiniteScroll = (
-  callback: () => void,
-  dependecy: any[],
-  thresholdTime = 2000
-) => {
-  const [canFetchNextPage, setCanFetchNextPage] = useState(true)
-
-  useEffect(() => {
-    if (canFetchNextPage) {
-      setCanFetchNextPage(false)
-      callback()
-      setTimeout(() => {
-        setCanFetchNextPage(true)
-      }, thresholdTime)
-    }
-  }, [callback, canFetchNextPage, thresholdTime, ...dependecy])
-
-  return canFetchNextPage
-}
-
-export default useInfiniteScroll
+// shared/hooks로 이전됨 — 하위 호환을 위해 re-export 유지
+export { default } from '@/shared/hooks/useInfiniteScroll';

@@ -1,14 +1,2 @@
-"use client";
-
-import { useEffect } from "react";
-import { useAnalytics } from "@/context/AnalyticsProvider";
-
-export const usePageTracking = (pageName?: string) => {
-  const { trackPageView } = useAnalytics();
-
-  useEffect(() => {
-    if (pageName) {
-      trackPageView(pageName);
-    }
-  }, [pageName, trackPageView]);
-};
+// shared/hooks로 이전됨 — 하위 호환을 위해 re-export 유지
+export { usePageTracking } from '@/shared/hooks/usePageTracking';
