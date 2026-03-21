@@ -12,18 +12,14 @@ import {
   updateCommunity,
   updateImage,
 } from "@/api/community";
-import { ICommunityList, PostCommunity } from "@/model/community";
+import { ICommunityList, IListParams, PostCommunity } from "@/model/community";
 import { authStore } from "@/store/client/authStore";
 import { EditFinalImages, EditImage, FinalImages, UploadImage } from "@/store/client/imageStore";
 import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import useAuth from "./user/useAuth";
 
-export interface IListParams {
-  sortingTypeName?: string;
-  categoryName?: string;
-  keyword?: string;
-}
+export type { IListParams };
 
 const useCommunity = (
   communityNumber: number | undefined = undefined,

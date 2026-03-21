@@ -95,6 +95,7 @@ const TextareaField = ({
         ref={cloneRef}
         readOnly
         rows={1}
+        tabIndex={-1}
         aria-hidden="true"
         className="textarea-scrollbar absolute top-[-9999px] left-[-9999px] -z-10 invisible overflow-y-scroll w-full resize-none rounded-[20px] border-0 outline-none"
         style={{ ...sharedTextareaStyle, backgroundColor: bgColor }}

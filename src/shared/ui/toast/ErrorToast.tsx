@@ -1,6 +1,6 @@
 'use client';
 
-import Warning from '@/components/icons/Warning';
+import Warning from '@/shared/ui/icons/Warning';
 import React, { useEffect } from 'react';
 
 interface ErrorToastProps {

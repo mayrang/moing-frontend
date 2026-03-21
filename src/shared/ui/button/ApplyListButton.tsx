@@ -1,7 +1,7 @@
 'use client';
 
-import EmptyHeartIcon from '@/components/icons/EmptyHeartIcon';
-import FullHeartIcon from '@/components/icons/FullHeartIcon';
+import EmptyHeartIcon from '@/shared/ui/icons/EmptyHeartIcon';
+import FullHeartIcon from '@/shared/ui/icons/FullHeartIcon';
 import Button from './Button';
 
 interface ApplyListButtonProps {

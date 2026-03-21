@@ -1,6 +1,6 @@
 'use client';
 
-import ResetIcon from '@/components/icons/ResetIcon';
+import ResetIcon from '@/shared/ui/icons/ResetIcon';
 import Button from './Button';
 
 interface FilterButtonProps {
@@ -31,6 +31,7 @@ const FilterButton = ({
     <div className="flex w-full items-center justify-center gap-4">
       <button
         type="button"
+        aria-label="초기화"
         onClick={initializeOnClick}
         className="cursor-pointer border-none bg-transparent"
       >

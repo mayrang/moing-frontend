@@ -32,7 +32,7 @@ export default function EditAndDeleteModal({
   };
 
   return (
-    <BottomSheetModal isOpen={isOpen} onClose={() => setIsOpen(false)} portalId="end-modal">
+    <BottomSheetModal isOpen={isOpen} onClose={() => setIsOpen(false)} portalId="end-modal" aria-label="수정/삭제 메뉴">
       <EditAndDeleteButton
         isOpen={isOpen}
         isMyApplyTrip={isMyApplyTrip}

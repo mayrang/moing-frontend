@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { axe } from 'jest-axe';
 import EditAndDeleteModal from './EditAndDeleteModal';
 
 vi.mock('react-dom', async () => {
@@ -50,5 +51,11 @@ describe('EditAndDeleteModal', () => {
     fireEvent.click(screen.getByText('삭제하기'));
     expect(setIsDeleteBtnClicked).toHaveBeenCalledWith(true);
     expect(setIsOpen).toHaveBeenCalledWith(false);
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    const { container } = render(<EditAndDeleteModal {...baseProps} />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

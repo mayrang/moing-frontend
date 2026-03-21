@@ -1,6 +1,6 @@
 'use client';
 
-import UpArrowIcon from '@/components/icons/UpArrowIcon';
+import UpArrowIcon from '@/shared/ui/icons/UpArrowIcon';
 import { forwardRef, useEffect, useState } from 'react';
 
 interface CommentInputProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -19,7 +19,7 @@ interface CommentInputProps extends React.TextareaHTMLAttributes<HTMLTextAreaEle
  * - Bug fix: 원본 Input styled.textarea에 height: 32px 두 번 중복 선언 → 한 번만
  */
 const CommentInput = forwardRef<HTMLTextAreaElement, CommentInputProps>(
-  ({ setReset, placeholder, value, onChange }, ref) => {
+  ({ setReset, placeholder, value, onChange, 'aria-label': ariaLabel }, ref) => {
     const [focused, setFocused] = useState(false);
 
     useEffect(() => {
@@ -40,6 +40,7 @@ const CommentInput = forwardRef<HTMLTextAreaElement, CommentInputProps>(
       >
         <textarea
           ref={ref}
+          aria-label={ariaLabel}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           placeholder={placeholder}
@@ -49,6 +50,7 @@ const CommentInput = forwardRef<HTMLTextAreaElement, CommentInputProps>(
         />
         <button
           type="submit"
+          aria-label="댓글 등록"
           className="w-8 h-8 flex items-center justify-center rounded-full cursor-pointer"
           style={{
             backgroundColor: canSubmit ? 'rgba(62, 141, 0, 1)' : 'rgba(205, 205, 205, 1)',

@@ -1,6 +1,6 @@
 'use client';
 
-import InfoIcon from '@/components/icons/InfoIcon';
+import InfoIcon from '@/shared/ui/icons/InfoIcon';
 
 interface InfoTextProps {
   hasError?: boolean;

@@ -1,6 +1,6 @@
 'use client';
 
-import CheckIcon from '@/components/icons/CheckIcon';
+import CheckIcon from '@/shared/ui/icons/CheckIcon';
 import React, { FocusEventHandler, forwardRef, useState } from 'react';
 import RemoveButton from './RemoveButton';
 

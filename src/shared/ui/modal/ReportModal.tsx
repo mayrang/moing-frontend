@@ -24,7 +24,7 @@ export default function ReportModal({
   };
 
   return (
-    <BottomSheetModal isOpen={isOpen} onClose={() => setIsOpen(false)} portalId="checking-modal">
+    <BottomSheetModal isOpen={isOpen} onClose={() => setIsOpen(false)} portalId="checking-modal" aria-label="신고 메뉴">
       <ReportButton isOpen={isOpen} reportClickHandler={reportHandler} reportText={reportText} />
       <CloseButton onClick={() => setIsOpen(false)} />
     </BottomSheetModal>

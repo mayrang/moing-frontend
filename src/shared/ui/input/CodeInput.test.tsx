@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import React from 'react';
+import { axe } from 'jest-axe';
 import CodeInput from './CodeInput';
 
 describe('CodeInput', () => {
@@ -54,5 +55,12 @@ describe('CodeInput', () => {
     for (let i = 1; i <= 6; i++) {
       expect(screen.getByLabelText(`${i}번째 숫자`)).toBeInTheDocument();
     }
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    const refs = createRefs();
+    const { container } = render(<CodeInput refs={refs} onValueChange={() => {}} />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

@@ -1,6 +1,6 @@
 "use client";
 import { getSearch } from "@/api/search";
-import { ISearchData } from "@/model/search";
+import { ISearchData, Filters } from "@/entities/search";
 import { authStore } from "@/store/client/authStore";
 import { searchStore } from "@/store/client/searchStore";
 import { InfiniteData, QueryClient, useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
@@ -12,14 +12,7 @@ interface UseSearchProps {
   size?: number;
 }
 
-export interface Filters {
-  tags: string[];
-  location: string[];
-  gender: string[];
-  sorting: string;
-  person: string[];
-  period: string[];
-}
+export type { Filters };
 
 const useSearch = ({ keyword, page = 0, size = 5 }: UseSearchProps) => {
   const { style, place, gender, people, period, sort } = searchStore();

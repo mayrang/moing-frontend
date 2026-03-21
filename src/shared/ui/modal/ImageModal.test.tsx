@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+import { axe } from 'jest-axe';
 import ImageModal from './ImageModal';
 
 describe('ImageModal', () => {
@@ -25,5 +26,11 @@ describe('ImageModal', () => {
     const { container } = render(<ImageModal {...baseProps} setModalOpen={setModalOpen} />);
     fireEvent.click(container.firstChild as Element);
     expect(setModalOpen).toHaveBeenCalledWith(false);
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    const { container } = render(<ImageModal {...baseProps} />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

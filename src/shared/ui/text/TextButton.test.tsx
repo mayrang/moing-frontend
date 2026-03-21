@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 import TextButton from './TextButton';
 
 describe('TextButton', () => {
@@ -32,5 +33,13 @@ describe('TextButton', () => {
     );
     await userEvent.click(screen.getByText('클릭'));
     expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    const { container } = render(
+      <TextButton text="프로필 편집" isRightVector={false} isLeftVector={false} />
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

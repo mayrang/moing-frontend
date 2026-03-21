@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 import Button from './Button';
 
 describe('Button', () => {
@@ -38,5 +39,11 @@ describe('Button', () => {
   it('children을 렌더링한다', () => {
     render(<Button text="버튼"><span data-testid="child">자식</span></Button>);
     expect(screen.getByTestId('child')).toBeInTheDocument();
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    const { container } = render(<Button text="다음" type="button" />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

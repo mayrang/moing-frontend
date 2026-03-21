@@ -1,20 +1,2 @@
-type VisitLog = {
-  countryName: string;
-  visitDates: string[];
-};
-
-type InternationalLogs = {
-  [region: string]: VisitLog[] | undefined;
-};
-
-type DomesticLog = {
-  locationName: string;
-  visitDates: string[];
-};
-
-export type TravelLog = {
-  userNumber: number;
-  visitedCountriesCount: number;
-  internationalLogs: InternationalLogs;
-  domesticLogs: DomesticLog[];
-};
+// entities/user로 이전됨 — 하위 호환을 위해 re-export 유지
+export type { TravelLog } from '@/entities/user';

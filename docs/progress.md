@@ -7,7 +7,7 @@
 | Phase 0 | 기반 구축 | ✅ 완료 | 2026-03-20 | 2026-03-20 |
 | Phase 1 | shared 레이어 | ✅ 완료 | 2026-03-20 | 2026-03-20 |
 | Phase 1.5 | 웹 접근성 보강 | ✅ 완료 | 2026-03-20 | 2026-03-20 |
-| Phase 2 | entities 레이어 | 🔜 대기 | - | - |
+| Phase 2 | entities 레이어 | ✅ 완료 | 2026-03-21 | 2026-03-21 |
 | Phase 3 | features 레이어 | 🔜 대기 | - | - |
 | Phase 4 | pages / widgets 레이어 | 🔜 대기 | - | - |
 
@@ -69,13 +69,17 @@ _작업 완료 후 기록_
 ## Phase 2: entities 레이어
 
 ### 체크리스트
-- [ ] `model/` → `entities/{domain}/model`
-- [ ] `api/` → `entities/{domain}/api`
-- [ ] 도메인별 타입 정리
-- [ ] 각 entity 테스트 작성
+- [x] Phase 1 잔여물 정리 (icons 크로스 레이어 의존성, barrel export, jest-axe 전체 적용)
+- [x] `shared/api/` 구성 (axiosInstance, handleApiResponse 이전, console.log 제거)
+- [x] `shared/types/` 구성 (RequestErrorType 이전)
+- [x] `model/` + `api/` → `entities/{domain}/` (16개 도메인)
+- [x] cross-layer 의존성 해소 (Filters, IListParams)
 
-### 변경 파일 목록
-_작업 완료 후 기록_
+### 결과
+- 생성: 65개 파일 (entities 48 + shared/api 3 + shared/types 2 + icons 11 + barrel 1)
+- 테스트: 134개 → **159개** (전부 통과)
+- console.log 위반: 9개 → 0개
+- 참조: [Phase 2 상세 문서](refactoring/phase-2.md)
 
 ---
 

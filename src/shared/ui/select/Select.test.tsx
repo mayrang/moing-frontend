@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
+import { axe } from 'jest-axe';
 import Select from './Select';
 
 describe('Select', () => {
@@ -64,5 +65,11 @@ describe('Select', () => {
     render(<Select {...baseProps} value="부산" />);
     const seoul = screen.getByRole('option', { name: '서울' });
     expect(seoul).toHaveAttribute('aria-selected', 'false');
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    const { container } = render(<Select {...baseProps} aria-label="여행 지역 선택" />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

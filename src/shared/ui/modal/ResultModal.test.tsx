@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { axe } from 'jest-axe';
 import ResultModal from './ResultModal';
 
 vi.mock('react-dom', async () => {
@@ -49,5 +50,11 @@ describe('ResultModal', () => {
   it('isModalOpen=false 이면 null을 반환한다', () => {
     const { container } = render(<ResultModal {...baseProps} isModalOpen={false} />);
     expect(container.firstChild).toBeNull();
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    const { container } = render(<ResultModal {...baseProps} />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

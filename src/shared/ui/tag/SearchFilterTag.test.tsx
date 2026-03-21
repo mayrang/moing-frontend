@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 import SearchFilterTag from './SearchFilterTag';
 
 vi.mock('next/navigation', () => ({
@@ -31,5 +32,11 @@ describe('SearchFilterTag', () => {
     render(<SearchFilterTag text="서울" idx={0} disabled onClick={handleClick} />);
     await userEvent.click(screen.getByRole('button'));
     expect(handleClick).not.toHaveBeenCalled();
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    const { container } = render(<SearchFilterTag text="서울" idx={0} />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

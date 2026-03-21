@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 import EditAndDeleteButton from './EditAndDeleteButton';
 
 describe('EditAndDeleteButton', () => {
@@ -42,5 +43,11 @@ describe('EditAndDeleteButton', () => {
     render(<EditAndDeleteButton {...defaultProps} deleteClickHandler={deleteClickHandler} />);
     await userEvent.click(screen.getByText('삭제하기'));
     expect(deleteClickHandler).toHaveBeenCalledTimes(1);
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    const { container } = render(<EditAndDeleteButton {...defaultProps} />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });
