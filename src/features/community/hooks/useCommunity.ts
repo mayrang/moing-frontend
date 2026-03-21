@@ -16,7 +16,7 @@ import {
   PostCommunity,
 } from "@/entities/community";
 import { authStore } from "@/store/client/authStore";
-import { EditFinalImages, EditImage, FinalImages, UploadImage } from "@/store/client/imageStore";
+import { EditFinalImages, FinalImages } from "@/store/client/imageStore";
 import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export type { IListParams };
