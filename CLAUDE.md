@@ -106,6 +106,25 @@ src/
 6. **트러블슈팅** - 겪은 문제와 해결 과정 (블로그 소재로 가장 중요)
 7. **회고 / 배운 점** - 다음에 다르게 할 것, 인사이트
 
+### PR 코드 리뷰 프로세스
+
+> `claude-code-action` GitHub Actions 워크플로우는 **Anthropic API 크레딧이 필요**하므로 현재 비활성화 상태 (`.github/workflows/code-review.yml` → `workflow_dispatch` only).
+
+PR 리뷰는 **Claude Code CLI (Pro 모드)** 로 수동 진행한다.
+
+**절차:**
+1. Claude Code 세션에서 PR diff 분석 요청
+2. 아래 체크 항목 기준으로 리뷰 작성:
+   - 코드 품질 및 가독성
+   - FSD 레이어 규칙 준수 (shared → entities → features → widgets → pages → app)
+   - Tailwind 사용 (Emotion 신규 작성 금지)
+   - 버그 가능성 (타입 오류, 엣지 케이스 등)
+   - 웹 접근성 (aria 속성, 키보드 네비게이션)
+   - 보안 취약점 (XSS, 민감 정보 노출 등)
+3. `gh pr comment {PR번호} --body "..."` 로 리뷰 코멘트 게시
+
+---
+
 ### 코딩 규칙
 - 새로 작성하는 코드는 반드시 Tailwind 사용 (Emotion 신규 작성 금지)
 - 새로 작성하는 컴포넌트는 FSD 구조에 맞게 위치

@@ -1,8 +1,7 @@
 name: Claude Code Review
 
 on:
-  pull_request:
-    types: [opened, synchronize]
+  workflow_dispatch:  # 수동 실행만 허용 (API 크레딧 필요 — 현재 비활성화)
 
 permissions:
   contents: read
