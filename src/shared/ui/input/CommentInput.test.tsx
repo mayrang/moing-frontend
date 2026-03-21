@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import React from 'react';
+import { axe } from 'jest-axe';
 import CommentInput from './CommentInput';
 
 describe('CommentInput', () => {
@@ -32,5 +33,11 @@ describe('CommentInput', () => {
     const ref = React.createRef<HTMLTextAreaElement>();
     render(<CommentInput setReset={() => {}} value="" onChange={() => {}} ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLTextAreaElement);
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    const { container } = render(<CommentInput setReset={() => {}} value="" onChange={() => {}} aria-label="댓글 입력" />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

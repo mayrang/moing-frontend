@@ -1,7 +1,7 @@
 'use client';
 
 // Bug fix: 원본에 `import { styleText } from 'util'` 불필요 import 존재 → 제거
-import CheckIcon from '@/components/icons/CheckIcon';
+import CheckIcon from '@/shared/ui/icons/CheckIcon';
 import React from 'react';
 import BaseModal from './BaseModal';
 
@@ -19,10 +19,10 @@ export default function ResultModal({
   setModalOpen,
 }: ResultModalProps) {
   return (
-    <BaseModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} height={196}>
+    <BaseModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} height={196} labelId="result-modal-title">
       <div className="flex h-[108px] flex-col items-center justify-center">
         <CheckIcon size={24} status="done" />
-        <p className="my-2 text-xl font-semibold leading-[23.87px] text-text-base">
+        <p id="result-modal-title" className="my-2 text-xl font-semibold leading-[23.87px] text-text-base">
           {modalTitle}
         </p>
         <p className="text-base font-normal leading-[22.4px] text-center text-text-muted whitespace-pre-line">

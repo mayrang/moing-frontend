@@ -32,9 +32,9 @@ export default function CheckingModal({
   };
 
   return (
-    <BaseModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} height={164}>
+    <BaseModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} height={164} labelId="checking-modal-title">
       <div className="flex h-[76px] flex-col items-center justify-center">
-        <p className="mb-2 text-xl font-semibold leading-[23.87px] text-text-base">
+        <p id="checking-modal-title" className="mb-2 text-xl font-semibold leading-[23.87px] text-text-base">
           {modalTitle}
         </p>
         <p className="mx-8 text-base font-normal leading-[22.4px] text-center text-text-muted whitespace-pre-line word-break-keep-all">

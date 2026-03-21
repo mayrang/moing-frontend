@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import React from 'react';
+import { axe } from 'jest-axe';
 import StateInputField from './StateInputField';
 
 describe('StateInputField', () => {
@@ -81,5 +82,11 @@ describe('StateInputField', () => {
       />
     );
     expect(screen.getByRole('textbox')).not.toHaveAttribute('aria-describedby');
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    const { container } = render(<StateInputField {...baseProps} aria-label="입력 필드" />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

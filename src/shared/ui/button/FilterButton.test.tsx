@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 import FilterButton from './FilterButton';
 
 describe('FilterButton', () => {
@@ -31,5 +32,11 @@ describe('FilterButton', () => {
     // 첫 번째 버튼이 리셋 버튼
     await userEvent.click(buttons[0]);
     expect(handleInitialize).toHaveBeenCalledTimes(1);
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    const { container } = render(<FilterButton text="필터 적용" />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

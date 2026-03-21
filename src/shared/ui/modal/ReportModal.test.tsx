@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { axe } from 'jest-axe';
 import ReportModal from './ReportModal';
 
 vi.mock('react-dom', async () => {
@@ -35,5 +36,11 @@ describe('ReportModal', () => {
     fireEvent.click(screen.getByText('신고하기'));
     expect(setIsReportBtnClicked).toHaveBeenCalledWith(true);
     expect(setIsOpen).toHaveBeenCalledWith(false);
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    const { container } = render(<ReportModal {...baseProps} />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

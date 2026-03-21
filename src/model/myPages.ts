@@ -1,26 +1,2 @@
-export interface ImyPage {
-  email: string;
-  name: string;
-  gender: string;
-  ageGroup: string;
-  proIntroduce: string;
-  userSocialTF: boolean;
-  preferredTags: string[];
-  userRegDate: string;
-  travelDistance: number;
-  visitedCountryCount: number;
-  travelBadgeCount: number;
-}
-
-export interface IProfileImg {
-  imageNumber: number;
-  relatedType: string;
-  relatedNumber: number;
-  key: string;
-  uploadDate: string;
-  url: string;
-}
-export interface NewPasswordProps {
-  newPassword: string;
-  newPasswordConfirm: string;
-}
+// entities/myPage로 이전됨 — 하위 호환을 위해 re-export 유지
+export type { ImyPage, IProfileImg, NewPasswordProps } from '@/entities/myPage';

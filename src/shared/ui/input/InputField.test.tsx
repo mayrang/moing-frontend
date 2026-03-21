@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import React from 'react';
+import { axe } from 'jest-axe';
 import InputField from './InputField';
 
 describe('InputField', () => {
@@ -82,5 +83,11 @@ describe('InputField', () => {
     const ref = React.createRef<HTMLInputElement>();
     render(<InputField value="" onChange={() => {}} ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    const { container } = render(<InputField value="" onChange={() => {}} aria-label="검색어 입력" />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

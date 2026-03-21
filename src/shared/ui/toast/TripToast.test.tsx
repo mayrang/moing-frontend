@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { axe } from 'jest-axe';
 import TripToast from './TripToast';
 
 vi.mock('react-dom', async () => {
@@ -44,5 +45,11 @@ describe('TripToast', () => {
     render(<TripToast {...baseProps} setModalHeight={setModalHeight} />);
     fireEvent.click(screen.getByRole('button'));
     expect(setModalHeight).toHaveBeenCalledWith(0);
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    const { container } = render(<TripToast {...baseProps} />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

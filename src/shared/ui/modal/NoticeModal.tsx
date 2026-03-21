@@ -35,10 +35,10 @@ export default function NoticeModal({
   setModalOpen,
 }: NoticeModalProps) {
   return (
-    <BaseModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} height={196} zIndex={1005}>
+    <BaseModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} height={196} zIndex={1005} labelId="notice-modal-title">
       <div className="flex h-[108px] flex-col items-center justify-center">
         <InfoIcon />
-        <p className="my-2 text-xl font-semibold leading-[23.87px] text-text-base">
+        <p id="notice-modal-title" className="my-2 text-xl font-semibold leading-[23.87px] text-text-base">
           {modalTitle}
         </p>
         <p className="text-base font-normal leading-[22.4px] text-center text-text-muted whitespace-pre-line">

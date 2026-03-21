@@ -11,6 +11,8 @@ interface BottomSheetModalProps {
   portalId?: string;
   /** 모달 제목 요소 ID (aria-labelledby 연결용). */
   labelId?: string;
+  /** 모달 접근성 이름 (제목 요소가 없을 때 aria-label 직접 지정). */
+  'aria-label'?: string;
 }
 
 /**
@@ -31,6 +33,7 @@ export default function BottomSheetModal({
   children,
   portalId = 'end-modal',
   labelId,
+  'aria-label': ariaLabel,
 }: BottomSheetModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -92,6 +95,7 @@ export default function BottomSheetModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={labelId}
+        aria-label={!labelId ? ariaLabel : undefined}
         className={[
           'pointer-events-auto absolute bottom-10 z-1003 rounded-[20px] pt-6',
           'w-[calc(100%-48px)] max-w-[342px]',

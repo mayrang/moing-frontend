@@ -1,5 +1,6 @@
 import { render, screen, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { axe } from 'jest-axe';
 import BaseToast from './BaseToast';
 
 // createPortal 모킹: portal 없이 직접 렌더링
@@ -56,5 +57,12 @@ describe('BaseToast', () => {
     render(<BaseToast {...baseProps} isShow={false} setIsShow={setIsShow} />);
     act(() => { vi.advanceTimersByTime(1500); });
     expect(setIsShow).not.toHaveBeenCalled();
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    vi.useRealTimers(); // axe 내부 setTimeout과 fake timer 충돌 방지
+    const { container } = render(<BaseToast {...baseProps} />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { axe } from 'jest-axe';
 import TextareaField from './TextareaField';
 
 // useTextAreaScroll 은 touchmove 이벤트에 의존하므로 테스트 환경에서 모킹
@@ -31,5 +32,11 @@ describe('TextareaField', () => {
     const visibleTextarea = textareas[textareas.length - 1];
     fireEvent.change(visibleTextarea, { target: { value: '새 내용' } });
     expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    const { container } = render(<TextareaField aria-label="내용 입력" />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

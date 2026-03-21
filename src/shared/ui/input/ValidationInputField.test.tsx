@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
+import { axe } from 'jest-axe';
 import ValidationInputField from './ValidationInputField';
 
 describe('ValidationInputField', () => {
@@ -37,5 +38,11 @@ describe('ValidationInputField', () => {
   it('shows nothing when neither hasError nor success', () => {
     render(<ValidationInputField {...baseProps} message="조건부 메시지" />);
     expect(screen.queryByText('조건부 메시지')).not.toBeInTheDocument();
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    const { container } = render(<ValidationInputField {...baseProps} placeholder="입력해주세요" />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

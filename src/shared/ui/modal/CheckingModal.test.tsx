@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { axe } from 'jest-axe';
 import CheckingModal from './CheckingModal';
 
 vi.mock('react-dom', async () => {
@@ -72,5 +73,11 @@ describe('CheckingModal', () => {
     render(<CheckingModal {...baseProps} setModalOpen={setModalOpen} />);
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(setModalOpen).toHaveBeenCalledWith(false);
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    const { container } = render(<CheckingModal {...baseProps} />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

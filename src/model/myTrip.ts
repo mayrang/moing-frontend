@@ -1,25 +1,2 @@
-interface Travel {
-  travelNumber: number
-  title: string
-  userNumber: number
-  userName: string
-  tags: string[]
-  nowPerson: number
-  maxPerson: number
-  createdAt: string
-  registerDue: string
-  location: string
-  bookmarked: boolean
-}
-
-interface Page {
-  size: number
-  number: number
-  totalElements: number
-  totalPages: number
-}
-
-export interface IMyTripList {
-  content: Travel[]
-  page: Page
-}
+// entities/myTrip으로 이전됨 — 하위 호환을 위해 re-export 유지
+export type { IMyTripList } from '@/entities/myTrip';

@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import SelectArrow from '@/components/icons/SelectArrow';
-import Spacing from '@/components/Spacing';
+import SelectArrow from '@/shared/ui/icons/SelectArrow';
 
 interface SelectProps {
   id?: string;
@@ -12,6 +11,8 @@ interface SelectProps {
   initOpen?: boolean;
   noneValue?: string;
   width?: 'fit-content' | '100%';
+  /** 트리거 버튼 접근성 이름 (스크린리더용). 예: "여행 지역 선택" */
+  'aria-label'?: string;
 }
 
 /**
@@ -27,6 +28,7 @@ const Select = ({
   initOpen = false,
   setValue,
   noneValue,
+  'aria-label': ariaLabel,
 }: SelectProps) => {
   const [active, setActive] = useState(initOpen);
   const [animatedItems, setAnimatedItems] = useState<boolean[]>([]);
@@ -84,6 +86,7 @@ const Select = ({
             role="combobox"
             aria-expanded={active}
             aria-haspopup="listbox"
+            aria-label={ariaLabel}
             className="box-border flex min-h-11 min-w-23.75 w-full cursor-pointer items-center justify-between gap-2.5 border-none px-4 py-3 text-sm font-normal text-text-muted outline-none"
             onClick={() => setActive(!active)}
           >
@@ -92,6 +95,7 @@ const Select = ({
               : <span className="text-text-muted">{noneValue}</span>
             }
             <span
+              aria-hidden="true"
               className="transition-transform duration-200"
               style={{ transform: active ? 'rotate(180deg)' : 'rotate(0deg)' }}
             >
@@ -112,20 +116,22 @@ const Select = ({
             ].join(' ')}
           >
             {list.map((element, index) => (
-              <li key={element} role="option" aria-selected={value === element} className="flex gap-1.75 px-4 hover:bg-keycolor-bg">
-                <button
-                  onClick={() => changeValue(element)}
-                  className={[
-                    'w-full py-2.5 text-sm font-medium',
-                    'border-none bg-transparent cursor-pointer text-left',
-                    'transition-[opacity,transform] duration-150',
-                    animatedItems[index] ? 'opacity-100 scale-100' : 'opacity-0 scale-0',
-                  ].join(' ')}
-                  style={{ transitionTimingFunction: 'cubic-bezier(0.25, 1.5, 0.5, 1)' }}
-                >
-                  {element}
-                </button>
-                <Spacing direction="horizontal" size={12} />
+              <li
+                key={element}
+                role="option"
+                aria-selected={value === element}
+                onClick={() => changeValue(element)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); changeValue(element); } }}
+                tabIndex={0}
+                className={[
+                  'px-4 py-2.5 text-sm font-medium cursor-pointer',
+                  'hover:bg-keycolor-bg',
+                  'transition-[opacity,transform] duration-150',
+                  animatedItems[index] ? 'opacity-100 scale-100' : 'opacity-0 scale-0',
+                ].join(' ')}
+                style={{ transitionTimingFunction: 'cubic-bezier(0.25, 1.5, 0.5, 1)' }}
+              >
+                {element}
               </li>
             ))}
           </ul>

@@ -1,6 +1,6 @@
 'use client';
 
-import XIcon from '@/components/icons/XIcon';
+import XIcon from '@/shared/ui/icons/XIcon';
 
 const RemoveButton = ({ onClick }: { onClick: () => void }) => {
   return (

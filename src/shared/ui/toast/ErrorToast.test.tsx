@@ -1,5 +1,6 @@
 import { render, screen, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { axe } from 'jest-axe';
 import ErrorToast from './ErrorToast';
 
 describe('ErrorToast', () => {
@@ -41,5 +42,12 @@ describe('ErrorToast', () => {
     // 404 포함 메시지는 isShow를 무효화 → opacity/bottom 으로 숨김
     // DOM 에는 있지만 숨김 상태 (style 검증)
     expect(container.firstChild).toHaveStyle({ opacity: '0' });
+  });
+
+  it('접근성 위반이 없어야 한다', async () => {
+    vi.useRealTimers(); // axe 내부 setTimeout과 fake timer 충돌 방지
+    const { container } = render(<ErrorToast isShow message="서버 오류입니다" onHide={() => {}} />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

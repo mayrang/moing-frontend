@@ -1,6 +1,6 @@
 'use client';
 
-import RightVector from '@/components/icons/RightVector';
+import RightVector from '@/shared/ui/icons/RightVector';
 
 interface TextButtonProps {
   onClick?: React.MouseEventHandler<HTMLDivElement>;
