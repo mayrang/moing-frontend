@@ -39,7 +39,9 @@ src/
 │   ├── (auth)/
 │   ├── trip/
 │   └── ...
-├── pages/                  # 페이지 조합 레이어
+├── page-views/             # 페이지 조합 레이어 (FSD "pages" 레이어)
+│                           # ※ Next.js가 src/pages/를 Pages Router로 인식하여
+│                           #   충돌 방지를 위해 page-views/ 로 명명
 ├── widgets/                # 독립적 UI 블록
 ├── features/               # 사용자 시나리오 단위 기능
 ├── entities/               # 도메인 모델 (trip, user, comment...)
@@ -75,10 +77,10 @@ src/
 - `hooks/` + `components/` → `features/{feature}/`
 - 각 feature마다 TDD로 진행
 
-### Phase 4: pages / widgets 레이어
-- `page/` → `pages/` + `widgets/`
-- Server Component 전환 (하이브리드)
-- 성능 테스트 → 최적화
+### Phase 4: page-views / widgets 레이어 ✅
+- `page/` → `page-views/` + `widgets/` (re-export 래퍼로 하위 호환)
+- Server Component + HydrationBoundary 프리페치 (/, /community, /trip/detail)
+- E2E 테스트 전면 활성화 (test.describe.skip → test.describe)
 
 ---
 
@@ -116,7 +118,7 @@ PR 리뷰는 **Claude Code CLI (Pro 모드)** 로 수동 진행한다.
 1. Claude Code 세션에서 PR diff 분석 요청
 2. 아래 체크 항목 기준으로 리뷰 작성:
    - 코드 품질 및 가독성
-   - FSD 레이어 규칙 준수 (shared → entities → features → widgets → pages → app)
+   - FSD 레이어 규칙 준수 (shared → entities → features → widgets → page-views → app)
    - Tailwind 사용 (Emotion 신규 작성 금지)
    - 버그 가능성 (타입 오류, 엣지 케이스 등)
    - 웹 접근성 (aria 속성, 키보드 네비게이션)

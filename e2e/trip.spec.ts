@@ -31,7 +31,7 @@ const mockTripList = {
 };
 
 test.describe('여행 목록 (Trip List)', () => {
-  test.describe.skip('홈 여행 목록', () => {
+  test.describe('홈 여행 목록', () => {
     test('최근 여행 목록이 표시된다', async ({ page }) => {
       await page.route('**/api/travels/recent*', (route) =>
         route.fulfill({
@@ -73,7 +73,7 @@ test.describe('여행 목록 (Trip List)', () => {
     });
   });
 
-  test.describe.skip('인기 여행 장소', () => {
+  test.describe('인기 여행 장소', () => {
     test('5개의 인기 장소가 표시된다', async ({ page }) => {
       await page.goto('/');
       await expect(page.getByText('뉴욕')).toBeVisible();

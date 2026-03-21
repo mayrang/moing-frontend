@@ -5,7 +5,7 @@
  */
 import { test, expect } from '@playwright/test';
 
-test.describe.skip('검색 (Search)', () => {
+test.describe('검색 (Search)', () => {
   test('키워드 입력 시 자동완성 목록이 표시된다', async ({ page }) => {
     await page.route('**/api/autocomplete**', (route) =>
       route.fulfill({
