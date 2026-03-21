@@ -120,7 +120,6 @@ export default function TripDetail() {
   const {
     commentList: { data: commentData },
   } = useComment("travel", Number(travelNumber));
-  console.log("commentData", commentData);
   useEffect(() => {
     if (commentData && commentData?.pages[0]?.page?.totalElements > 0) {
       setIsCommentUpdated(true);

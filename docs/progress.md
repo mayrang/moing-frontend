@@ -8,7 +8,7 @@
 | Phase 1 | shared 레이어 | ✅ 완료 | 2026-03-20 | 2026-03-20 |
 | Phase 1.5 | 웹 접근성 보강 | ✅ 완료 | 2026-03-20 | 2026-03-20 |
 | Phase 2 | entities 레이어 | ✅ 완료 | 2026-03-21 | 2026-03-21 |
-| Phase 3 | features 레이어 | 🔜 대기 | - | - |
+| Phase 3 | features 레이어 | ✅ 완료 | 2026-03-21 | 2026-03-21 |
 | Phase 4 | pages / widgets 레이어 | 🔜 대기 | - | - |
 
 ---
@@ -85,13 +85,34 @@ _작업 완료 후 기록_
 
 ## Phase 3: features 레이어
 
-### 체크리스트
-- [ ] `hooks/` + `components/` → `features/{feature}/`
-- [ ] 각 feature TDD 적용
-- [ ] 통합 테스트 작성
+### 전략
+- **Option B** (feature별 완성): 이전 → Vitest 통합 테스트 → E2E 드래프트 순으로 feature 단위 완성
+- E2E 테스트는 Phase 4 완료 후 실제 실행 (`test.describe.skip` 드래프트로 관리)
+- 기존 경로는 re-export 래퍼로 하위 호환 유지
 
-### 변경 파일 목록
-_작업 완료 후 기록_
+### 체크리스트
+- [x] Step 0: `shared/hooks` 분리 (범용 훅 7개 이전, `useHeaderNavigation` console.log 제거)
+- [x] Step 1: `features/auth` (useAuth, useVerifyEmail, EmailLoginForm — console.log 5개 제거, 테스트 12개)
+- [x] Step 2: `features/search` (useSearch, useRelationKeyword, 4개 UI — console.log 1개 제거, 테스트 10개)
+- [x] Step 3: `features/trip` (useTripList, useCreateTrip, useUserInfo, 4개 UI — console.log 1개 제거, 테스트 14개)
+- [x] Step 4: `features/tripDetail` (useTripDetail — console.log 1개 제거, 테스트 6개)
+- [x] Step 5: `features/enrollment` (useEnrollment — 테스트 4개)
+- [x] Step 6: `features/bookmark` (useBookmark, useUpdateBookmark — console.log 2개 제거, 테스트 6개)
+- [x] Step 7: `features/myTrip` (useMyTrip, useMyApplyTrip, useMyRequestedTrip — 테스트 6개)
+- [x] Step 8: `features/comment` (useComment — dead import 제거, 테스트 3개)
+- [x] Step 9: `features/community` (useCommunity — dead import 2개 제거, 테스트 3개, MSW 경로 수정)
+- [x] Step 10: `features/notification` (useNotification — dead import 제거, 테스트 2개)
+- [x] Step 11: `features/myPage` (useMyPage — 테스트 3개)
+- [x] Step 12: `features/userProfile` (useUserProfile — 테스트 3개)
+
+### 누계 테스트
+- Step 1 완료: 159개 → 171개
+- Step 2 완료: 171개 → 181개
+- Step 3 완료: 181개 → 195개
+- Steps 4~12 완료: 195개 → **231개** (전부 통과, 49개 테스트 파일)
+
+### 참조
+- [Phase 3 상세 문서](refactoring/phase-3.md)
 
 ---
 
