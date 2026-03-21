@@ -6,7 +6,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('내 여행 (My Trip)', () => {
-  test.describe.skip('만든 여행 목록', () => {
+  test.describe('만든 여행 목록', () => {
     test('내가 만든 여행 목록이 표시된다', async ({ page }) => {
       await page.route('**/api/my-travels*', (route) =>
         route.fulfill({
@@ -28,7 +28,7 @@ test.describe('내 여행 (My Trip)', () => {
     });
   });
 
-  test.describe.skip('참가한 여행 목록', () => {
+  test.describe('참가한 여행 목록', () => {
     test('참가한 여행 목록이 표시된다', async ({ page }) => {
       await page.route('**/api/my-applied-travels*', (route) =>
         route.fulfill({

@@ -9,7 +9,7 @@
 | Phase 1.5 | 웹 접근성 보강 | ✅ 완료 | 2026-03-20 | 2026-03-20 |
 | Phase 2 | entities 레이어 | ✅ 완료 | 2026-03-21 | 2026-03-21 |
 | Phase 3 | features 레이어 | ✅ 완료 | 2026-03-21 | 2026-03-21 |
-| Phase 4 | pages / widgets 레이어 | 🔜 대기 | - | - |
+| Phase 4 | page-views / widgets 레이어 | ✅ 완료 | 2026-03-21 | 2026-03-21 |
 
 ---
 
@@ -116,14 +116,32 @@ _작업 완료 후 기록_
 
 ---
 
-## Phase 4: pages / widgets 레이어
+## Phase 4: page-views / widgets 레이어
+
+> **주의**: FSD "pages" 레이어의 실제 디렉토리명은 `page-views/`.
+> Next.js가 `src/pages/`를 Pages Router로 인식하여 `app/` 라우트와 충돌하므로 `page-views/`로 명명.
 
 ### 체크리스트
-- [ ] `page/` → `pages/` + `widgets/`
-- [ ] Server Component 전환 (하이브리드)
-- [ ] 성능 테스트 측정
-- [ ] 성능 최적화
-- [ ] E2E 테스트 작성
+- [x] `page/` → `page-views/` + `widgets/` (92개 파일, re-export 래퍼로 하위 호환 유지)
+- [x] Server Component + HydrationBoundary 프리페치 (3개 라우트: /, /community, /trip/detail/[id])
+- [x] E2E 테스트 전면 활성화 (`test.describe.skip` → `test.describe`, 12개 spec 파일)
+- [x] Vitest 237개 통과 (신규 6개 widgets/home 테스트 포함)
+- [x] `docs/refactoring/phase-4.md` 문서 작성
 
-### 변경 파일 목록
-_작업 완료 후 기록_
+### 신규 FSD 레이어
+- `src/widgets/home/` — TripAvailable, BookmarkContainer, TripRecommendation, ContentTitleContainer
+- `src/page-views/home/` — HomePage, Navbar, Footer, CreateTripButton
+- `src/page-views/community/` — CommunityPage, CreateCommunityPage, DetailCommunityPage, EditCommunityPage, MyCommunityPage
+- `src/page-views/trip/` — TripDetailPage, TripListPage, TripEdit, CreateTrip 서브폴더 (30개)
+- `src/page-views/myTrip/` — 8개
+- `src/page-views/myPage/` — 9개
+- `src/page-views/auth/` — 13개 (Login, Register)
+- `src/page-views/search/` — 2개
+- `src/page-views/contact/` — 6개
+- `src/page-views/{notification,report,travelLog,onBoarding,userProfile,comment}/` — 나머지
+
+### 누계 테스트
+- Phase 3 완료: **231개** → Phase 4 완료: **237개** (전부 통과, 52개 테스트 파일)
+
+### 참조
+- [Phase 4 상세 문서](refactoring/phase-4.md)

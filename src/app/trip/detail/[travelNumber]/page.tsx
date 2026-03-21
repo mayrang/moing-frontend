@@ -1,5 +1,5 @@
-import { getTripDetail } from "@/api/tripDetail";
-import TripDetail from "@/page/TripDetail/TripDetail";
+import { getTripDetail, getTripEnrollmentCount } from "@/entities/tripDetail";
+import { TripDetailPage } from "@/page-views/trip";
 import {
   dehydrate,
   HydrationBoundary,
@@ -19,7 +19,6 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const travelNumber = (await params).travelNumber;
 
-  // fetch data
   const tripDetail: any = await getTripDetail(parseInt(travelNumber), null);
 
   return {
@@ -37,12 +36,30 @@ export async function generateMetadata(
   };
 }
 
-const TripDetailPage = async ({
+const Page = async ({
   params,
 }: {
   params: { travelNumber: string };
 }) => {
-  return <TripDetail />;
+  const travelNumber = parseInt(params.travelNumber);
+  const queryClient = new QueryClient();
+
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: ["tripDetail", travelNumber],
+      queryFn: () => getTripDetail(travelNumber, null),
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ["tripEnrollment", travelNumber],
+      queryFn: () => getTripEnrollmentCount(travelNumber, null),
+    }),
+  ]);
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <TripDetailPage />
+    </HydrationBoundary>
+  );
 };
 
-export default TripDetailPage;
+export default Page;

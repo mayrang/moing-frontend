@@ -8,7 +8,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('인증 (Auth)', () => {
-  test.describe.skip('이메일 로그인', () => {
+  test.describe('이메일 로그인', () => {
     test('유효한 정보로 로그인하면 홈으로 이동한다', async ({ page }) => {
       await page.route('**/api/login', (route) =>
         route.fulfill({
@@ -60,7 +60,7 @@ test.describe('인증 (Auth)', () => {
     });
   });
 
-  test.describe.skip('로그아웃', () => {
+  test.describe('로그아웃', () => {
     test('로그아웃 후 홈으로 이동한다', async ({ page }) => {
       await page.route('**/api/login', (route) =>
         route.fulfill({

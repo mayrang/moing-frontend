@@ -7,7 +7,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('북마크 (Bookmark)', () => {
-  test.describe.skip('북마크 목록', () => {
+  test.describe('북마크 목록', () => {
     test('북마크한 여행 목록이 표시된다', async ({ page }) => {
       await page.route('**/api/bookmarks*', (route) =>
         route.fulfill({
@@ -40,7 +40,7 @@ test.describe('북마크 (Bookmark)', () => {
     });
   });
 
-  test.describe.skip('북마크 토글', () => {
+  test.describe('북마크 토글', () => {
     test('북마크 버튼 클릭 시 북마크가 추가된다', async ({ page }) => {
       await page.route('**/api/bookmarks', (route) =>
         route.fulfill({

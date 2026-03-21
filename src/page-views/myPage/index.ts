@@ -1,0 +1,9 @@
+export { default as MyPagePage } from './MyPage';
+export { default as AnnouncementPage } from './Announcement';
+export { default as EditMyInfoPage } from './EditMyInfo';
+export { default as EditMyNamePage } from './EditMyName';
+export { default as EditMyPasswordPage } from './EditMyPassword';
+export { default as EditMyTagPage } from './EditMyTag';
+export { default as NewPasswordPage } from './NewPassword';
+export { default as ProfileEditModal } from './ProfileEditModal';
+export { default as WithdrawalPage } from './Withdrawal';

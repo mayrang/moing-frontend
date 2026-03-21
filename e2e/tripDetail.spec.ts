@@ -28,7 +28,7 @@ const mockTripDetail = {
 };
 
 test.describe('여행 상세 (Trip Detail)', () => {
-  test.describe.skip('상세 조회', () => {
+  test.describe('상세 조회', () => {
     test('여행 제목이 표시된다', async ({ page }) => {
       await page.route('**/api/travel/detail/1', (route) =>
         route.fulfill({
@@ -70,7 +70,7 @@ test.describe('여행 상세 (Trip Detail)', () => {
     });
   });
 
-  test.describe.skip('여행 삭제', () => {
+  test.describe('여행 삭제', () => {
     test('호스트는 여행을 삭제할 수 있다', async ({ page }) => {
       const hostMockDetail = {
         ...mockTripDetail,

@@ -7,7 +7,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('참가 신청 (Enrollment)', () => {
-  test.describe.skip('참가 신청', () => {
+  test.describe('참가 신청', () => {
     test('로그인한 사용자는 여행에 참가 신청할 수 있다', async ({ page }) => {
       await page.route('**/api/enrollment', (route) =>
         route.fulfill({
@@ -39,7 +39,7 @@ test.describe('참가 신청 (Enrollment)', () => {
     });
   });
 
-  test.describe.skip('신청 목록 (호스트)', () => {
+  test.describe('신청 목록 (호스트)', () => {
     test('호스트는 신청 목록을 볼 수 있다', async ({ page }) => {
       await page.route('**/api/travel/1/enrollments', (route) =>
         route.fulfill({

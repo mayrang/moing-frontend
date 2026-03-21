@@ -1,8 +1,2 @@
-'use client'
-import Communityform from '@/components/community/CommunityForm'
-
-const EditCommunity = () => {
-  return <Communityform isEdit={true} />
-}
-
-export default EditCommunity
+// pages/community으로 이전됨 — 하위 호환을 위해 re-export 유지
+export { EditCommunityPage as default } from '@/page-views/community';

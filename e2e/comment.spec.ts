@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe.skip('Comment E2E (Phase 4에서 활성화)', () => {
+test.describe('Comment E2E (Phase 4에서 활성화)', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/trip/1');
   });

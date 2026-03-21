@@ -1,20 +1,2 @@
-"use client";
-import CommunityComment from "@/components/community/CommunityComment";
-import CommunityPost from "@/components/community/CommunityPost";
-import styled from "@emotion/styled";
-
-const DetailCommunity = () => {
-  return (
-    <Container>
-      <CommunityPost />
-      <CommunityComment />
-    </Container>
-  );
-};
-
-const Container = styled.div`
-  padding: 0 24px;
-  background-color: #f5f5f5;
-`;
-
-export default DetailCommunity;
+// pages/community으로 이전됨 — 하위 호환을 위해 re-export 유지
+export { DetailCommunityPage as default } from '@/page-views/community';
