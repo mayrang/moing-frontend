@@ -81,6 +81,61 @@ src/shared/hooks/
 export { default } from '@/shared/hooks/useInfiniteScroll';
 ```
 
+### Step 2: features/search 구축
+
+search 관련 파일을 FSD features 레이어로 이전:
+
+```
+features/search/
+├── hooks/
+│   ├── useSearch.ts          ← hooks/search/useSearch.ts 이전
+│   └── useRelationKeyword.ts ← hooks/search/useRelationKeyword.ts 이전
+├── ui/
+│   ├── SearchResultList.tsx  ← components/SearchResultList.tsx 이전
+│   ├── RecommendKeyword.tsx  ← components/RecommendKeyword.tsx 이전
+│   ├── RelationKeyword.tsx   ← components/relationKeyword/RelationKeyword.tsx 이전
+│   └── RelationKeywordList.tsx ← components/relationKeyword/RelationKeywordList.tsx 이전
+└── index.ts
+```
+
+**console.log 제거 1개:**
+- `RelationKeywordList.tsx`: `console.log(data, "관련 키워드.")`
+
+### Step 3: features/trip 구축
+
+trip 관련 파일을 FSD features 레이어로 이전:
+
+```
+features/trip/
+├── hooks/
+│   ├── useCreateTrip.ts      ← hooks/createTrip/useCreateTrip.ts 이전
+│   ├── useTripList.ts        ← hooks/useTripList.ts 이전
+│   └── useUserInfo.ts        ← hooks/useUserInfo.ts 이전
+├── ui/
+│   ├── TripCarousel.tsx      ← components/TripCarousel.tsx 이전
+│   ├── TripCarouselItem.tsx  ← components/TripCarouselItem.tsx 이전
+│   ├── TripInfiniteList.tsx  ← components/triplist/TripInfiniteList.tsx 이전
+│   └── PopularPlaceList.tsx  ← components/triplist/PopularPlaceList.tsx 이전
+└── index.ts
+```
+
+**import 경로 변경:**
+- `@/api/trip` → `@/entities/trip`
+- `@/model/trip` → `@/entities/trip`
+- `@/api/home` → `@/entities/trip` (getUserProfile → getHomeUserProfile)
+- `./Spacing` → `@/components/Spacing`
+- `@/hooks/useInfiniteScroll` → `@/shared/hooks/useInfiniteScroll`
+- `@/hooks/useViewTransition` → `@/shared/hooks/useViewTransition`
+- `../icons/FullHeartIcon` → `@/shared/ui/icons/FullHeartIcon`
+- `../icons/EmptyHeartIcon` → `@/shared/ui/icons/EmptyHeartIcon`
+- `../designSystem/modal/CheckingModal` → `@/shared/ui` (CheckingModal)
+
+**dead import 제거:**
+- `useTripList.ts`의 미사용 `import useAuth from "./user/useAuth"` 제거
+
+**console.log 제거 1개 (Step 3 과정에서 발견):**
+- `components/HorizonBoxLayout.tsx`: `console.log(tagsCount, "tagsCount")`
+
 ### Step 1: features/auth 구축
 
 auth 관련 파일을 FSD features 레이어로 이전:
@@ -136,19 +191,35 @@ Before:
 src/
 ├── hooks/user/useAuth.ts          (FSD 외부)
 ├── hooks/useVerifyEmail.tsx       (FSD 외부)
+├── hooks/useTripList.ts           (FSD 외부)
+├── hooks/useUserInfo.ts           (FSD 외부)
+├── hooks/createTrip/useCreateTrip.ts (FSD 외부)
 ├── components/login/EmailLoginForm.tsx  (FSD 외부)
+├── components/TripCarousel.tsx    (FSD 외부)
+├── components/triplist/TripInfiniteList.tsx (FSD 외부)
 └── features/                      (비어있음)
 
 After:
 src/
 ├── hooks/user/useAuth.ts          → re-export 래퍼
 ├── hooks/useVerifyEmail.tsx       → re-export 래퍼
-├── components/login/EmailLoginForm.tsx → re-export 래퍼
+├── hooks/useTripList.ts           → re-export 래퍼
+├── hooks/useUserInfo.ts           → re-export 래퍼
+├── hooks/createTrip/useCreateTrip.ts → re-export 래퍼
+├── components/TripCarousel.tsx    → re-export 래퍼
+├── components/triplist/TripInfiniteList.tsx → re-export 래퍼
 ├── shared/hooks/                  (7개 범용 훅)
-└── features/auth/
-    ├── hooks/useAuth.ts
-    ├── hooks/useVerifyEmail.ts
-    ├── ui/EmailLoginForm.tsx
+├── features/auth/
+│   ├── hooks/{useAuth, useVerifyEmail}.ts
+│   ├── ui/EmailLoginForm.tsx
+│   └── index.ts
+├── features/search/
+│   ├── hooks/{useSearch, useRelationKeyword}.ts
+│   ├── ui/{SearchResultList, RecommendKeyword, RelationKeyword, RelationKeywordList}.tsx
+│   └── index.ts
+└── features/trip/
+    ├── hooks/{useCreateTrip, useTripList, useUserInfo}.ts
+    ├── ui/{TripCarousel, TripCarouselItem, TripInfiniteList, PopularPlaceList}.tsx
     └── index.ts
 ```
 
@@ -186,26 +257,76 @@ return HttpResponse.json({
 
 ---
 
-## 6. 진행 중인 작업 (업데이트 예정)
+## 6. 전체 완료 현황
 
-| Step | feature | 상태 | 테스트 |
-|------|---------|------|--------|
-| Step 0 | shared/hooks | ✅ 완료 | — |
-| Step 1 | auth | ✅ 완료 | 12개 |
-| Step 2 | search | 🔜 | — |
-| Step 3 | trip | 🔜 | — |
-| Step 4 | tripDetail | 🔜 | — |
-| Step 5 | enrollment | 🔜 | — |
-| Step 6 | bookmark | 🔜 | — |
-| Step 7 | myTrip | 🔜 | — |
-| Step 8 | comment | 🔜 | — |
-| Step 9 | community | 🔜 | — |
-| Step 10 | notification | 🔜 | — |
-| Step 11 | myPage | 🔜 | — |
-| Step 12 | userProfile | 🔜 | — |
+| Step | feature | 상태 | 테스트 | 주요 변경 |
+|------|---------|------|--------|-----------|
+| Step 0 | shared/hooks | ✅ 완료 | — | 범용 훅 7개 이전 |
+| Step 1 | auth | ✅ 완료 | 12개 | console.log 5개 제거 |
+| Step 2 | search | ✅ 완료 | 10개 | console.log 1개 제거 |
+| Step 3 | trip | ✅ 완료 | 14개 | console.log 1개 제거, dead import 제거 |
+| Step 4 | tripDetail | ✅ 완료 | 6개 | console.log 1개 제거 |
+| Step 5 | enrollment | ✅ 완료 | 4개 | — |
+| Step 6 | bookmark | ✅ 완료 | 6개 | console.log 2개 제거 |
+| Step 7 | myTrip | ✅ 완료 | 6개 | — |
+| Step 8 | comment | ✅ 완료 | 3개 | dead import 제거 |
+| Step 9 | community | ✅ 완료 | 3개 | dead import 2개 제거, MSW 경로 수정 |
+| Step 10 | notification | ✅ 완료 | 2개 | dead import 제거 |
+| Step 11 | myPage | ✅ 완료 | 3개 | — |
+| Step 12 | userProfile | ✅ 완료 | 3개 | — |
+
+### 최종 수치
+- **테스트**: 159개 → **231개** (+72개, 49개 테스트 파일)
+- **console.log 위반**: 10개 추가 제거 (Phase 3 누계)
+- **dead import 제거**: 5건 (useTripList, useComment, useCommunity, useNotification, useEnrollment.test)
+- **E2E 드래프트**: 12개 spec 파일 (`test.describe.skip` 상태)
+- **MSW 핸들러**: 12개 도메인 핸들러 + server.ts
 
 ---
 
-## 7. 회고 / 배운 점 (완료 후 추가 예정)
+## 7. 트러블슈팅 추가
 
-_Phase 3 전체 완료 후 작성_
+### 문제 3: `act` import 출처 혼동
+
+**증상**: `useUpdateBookmark.test.ts`와 `useEnrollment.test.ts`에서 `act is not a function` 런타임 에러 또는 TypeScript 에러.
+
+**원인**: `act`를 `vitest`에서 import했으나, `vitest`는 `act`를 export하지 않는다. `act`는 `@testing-library/react`에서 import해야 한다.
+
+```ts
+// 잘못된 import
+import { describe, it, expect, vi, act } from 'vitest';
+
+// 올바른 import
+import { describe, it, expect, vi } from 'vitest';
+import { renderHook, act, waitFor } from '@testing-library/react';
+```
+
+**교훈**: Testing Library 관련 유틸리티(`act`, `waitFor`, `renderHook`)는 `@testing-library/react`에서, 테스트 프레임워크 유틸리티(`describe`, `it`, `expect`, `vi`)는 `vitest`에서 import한다.
+
+### 문제 4: MSW 핸들러 경로와 실제 API 경로 불일치
+
+**증상**: community 테스트 실행 시 `GET /api/community/posts/1` 및 `GET /api/community/1/images` 경로에 대한 MSW 경고.
+
+**원인**: 초기 community MSW 핸들러를 `/api/travel/community`, `/api/community/:communityNumber` 경로로 작성했으나, 실제 `entities/community/api.ts`는 `/api/community/posts`, `/api/community/posts/:communityNumber` 경로를 사용했다.
+
+**해결**: `entities/community/api.ts`를 직접 확인하여 실제 경로 기반으로 핸들러를 재작성. 이미지 핸들러(`/api/community/:communityNumber/images`)도 추가.
+
+**교훈**: MSW 핸들러 작성 시 반드시 `entities/{domain}/api.ts`의 실제 경로를 참조하고, 테스트 실행 시 MSW 경고 메시지를 확인하여 누락된 핸들러를 즉시 보완한다.
+
+---
+
+## 8. 회고 / 배운 점
+
+### 잘 된 점
+- **feature별 완성(Option B)** 전략으로 각 기능을 독립적으로 검증하며 진행할 수 있었다. 한 feature에서 발견한 패턴(MSW 응답 포맷, import 경로 규칙)을 다음 feature에 즉시 적용했다.
+- **re-export 래퍼** 전략으로 기존 코드를 수정하지 않고 점진적 마이그레이션이 가능했다. 대규모 PR 없이 feature 단위로 병합 가능한 구조가 됐다.
+- **dead import 제거** 과정에서 5건의 미사용 import를 발견했다. 테스트를 작성하며 실제로 사용되지 않는 코드를 자연스럽게 찾아낼 수 있었다.
+- **console.log 총 10개 추가 제거** — Phase 2에서 9개, Phase 3에서 10개. 리팩토링 과정이 코드 품질 개선의 기회가 됐다.
+
+### 다음에 다르게 할 것
+- MSW 핸들러를 feature 이전 전에 먼저 작성하면 테스트 실행 시 경고 없이 진행 가능했을 것이다. 현재는 hook 작성 → 테스트 작성 → MSW 경고 확인 → 핸들러 수정 순서였다.
+- E2E 드래프트 selector가 실제 구현과 맞지 않을 수 있다. Phase 4에서 pages/widgets 구현 시 드래프트를 함께 검토해야 한다.
+
+### 인사이트
+- FSD의 핵심 가치는 "어디를 수정해야 하는지 명확하다"는 것이다. 이전에는 `hooks/`와 `components/`를 동시에 뒤져야 했지만, 이제는 `features/community/`만 열면 community 관련 모든 로직이 있다.
+- 하위 호환 re-export는 기술 부채처럼 보이지만, 점진적 마이그레이션에서 필수적인 안전망이다. Phase 4 완료 후 re-export 래퍼를 일괄 제거하는 것이 더 안전한 순서다.

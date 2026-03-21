@@ -1,2 +1,12 @@
 export { authHandlers } from './auth';
 export { searchHandlers } from './search';
+export { tripHandlers } from './trip';
+export { tripDetailHandlers } from './tripDetail';
+export { enrollmentHandlers } from './enrollment';
+export { bookmarkHandlers } from './bookmark';
+export { myTripHandlers } from './myTrip';
+export { commentHandlers } from './comment';
+export { communityHandlers } from './community';
+export { notificationHandlers } from './notification';
+export { myPageHandlers } from './myPage';
+export { userProfileHandlers } from './userProfile';
