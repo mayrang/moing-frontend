@@ -1,6 +1,5 @@
 "use client";
 import { ISearchData } from "@/entities/search";
-import styled from "@emotion/styled";
 import React from "react";
 import Spacing from "@/components/Spacing";
 import HorizonBoxLayout from "@/components/HorizonBoxLayout";
@@ -41,17 +40,23 @@ const SearchResultList = ({
   };
 
   return (
-    <Container>
+    <div>
       <Spacing size={15} />
       <SortHeader sort={sort} list={LIST} clickSort={clickSort}>
-        <CountContainer>
-          총&nbsp;<Count>{searchResult[0].page.totalElements}건</Count>
-        </CountContainer>
+        <div className="text-sm font-medium leading-[16.71px] tracking-[-0.025em]">
+          총&nbsp;
+          <span className="text-[var(--color-keycolor)] font-bold">
+            {searchResult[0].page.totalElements}건
+          </span>
+        </div>
       </SortHeader>
       <Spacing size={16} />
       {searchResult.map((page) =>
         page.content.map((content) => (
-          <BoxContainer key={content.travelNumber}>
+          <div
+            key={content.travelNumber}
+            className="py-[11px] border-b border-[rgb(240,240,240)] relative"
+          >
             <div onClick={() => clickTrip(content.travelNumber)}>
               <HorizonBoxLayout
                 bookmarkNeed={true}
@@ -63,35 +68,18 @@ const SearchResultList = ({
                 location={content.location}
                 total={content.maxPerson}
                 daysAgo={formatTime(content.createdAt)}
-                daysLeft={dayjs(content.registerDue, "YYYY-MM-DD").diff(dayjs().startOf("day"), "day")}
+                daysLeft={dayjs(content.registerDue, "YYYY-MM-DD").diff(
+                  dayjs().startOf("day"),
+                  "day"
+                )}
                 recruits={content.nowPerson}
               />
             </div>
-          </BoxContainer>
+          </div>
         ))
       )}
-    </Container>
+    </div>
   );
 };
-
-const BoxContainer = styled.div`
-  padding: 11px 0;
-  border-bottom: 1px solid rgb(240, 240, 240);
-  position: relative;
-`;
-
-const Container = styled.div``;
-
-const CountContainer = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 16.71px;
-  letter-spacing: -0.025em;
-`;
-
-const Count = styled.span`
-  color: #3e8d00;
-  font-weight: 700;
-`;
 
 export default SearchResultList;

@@ -1,9 +1,8 @@
 "use client";
 import { SpotType } from "@/entities/trip";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import React, { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
+import { cn } from "@/shared/lib/cn";
 
 const TripCarouselItem = ({ spots }: { spots: SpotType[] }) => {
   const [topRef, topInview] = useInView();
@@ -25,124 +24,58 @@ const TripCarouselItem = ({ spots }: { spots: SpotType[] }) => {
       setInview((prev) => ({ ...prev, bottom: false }));
     }
   }, [topInview, bottomInview]);
+
+  const isOverThree = spots.length > 3;
+
   return (
     <div style={{ position: "relative" }}>
-      <TopShadow isOverThree={spots.length > 3} isBottom={inView.bottom} />
-      <ContentContainer isTop={inView.top} isBottom={inView.bottom} isOverThree={spots.length > 3}>
+      {/* TopShadow */}
+      <div
+        className="absolute left-0 right-0 top-0 h-[14px] z-[1] pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(to bottom, var(--color-bg), transparent)",
+          opacity: isOverThree && inView.bottom ? 1 : 0,
+        }}
+      />
+      {/* ContentContainer */}
+      <div className="max-h-[260px] overflow-y-auto no-scrollbar px-5 relative">
         <div ref={topRef} style={{ width: "100%", height: 1 }} />
         {spots.map((spot, idx) => (
-          <SpotItem isLast={idx === spots.length - 1}>
-            <LeftContainer>
-              <Index>{idx + 1}</Index>
-              <TextContainer>
-                <SpotTitle>{spot.name}</SpotTitle>
-                <Description>
+          <li
+            key={idx}
+            className={cn(
+              "flex px-[10px] items-center justify-between transition-all duration-200 ease-out h-[58px] select-none touch-none",
+              idx === spots.length - 1 ? "mb-0" : "mb-[15px]"
+            )}
+          >
+            <div className="flex gap-6 items-center">
+              <div className="flex items-center justify-center text-center w-[18px] rounded-full h-[18px] bg-[var(--color-text-base)] text-white font-semibold text-xs leading-[14px]">
+                {idx + 1}
+              </div>
+              <div className="flex flex-col gap-1">
+                <div className="text-base font-semibold text-black leading-[19px]">
+                  {spot.name}
+                </div>
+                <div className="text-xs font-normal text-[var(--color-text-muted)] leading-[14px]">
                   {spot.category} · {spot.region}
-                </Description>
-              </TextContainer>
-            </LeftContainer>
-          </SpotItem>
+                </div>
+              </div>
+            </div>
+          </li>
         ))}
         <div ref={bottomRef} style={{ width: "100%", height: 1 }} />
-      </ContentContainer>
-      <BottomShadow isOverThree={spots.length > 3} isTop={inView.top} />
+      </div>
+      {/* BottomShadow */}
+      <div
+        className="absolute left-0 right-0 bottom-0 h-[14px] z-[1] pointer-events-none"
+        style={{
+          background: "linear-gradient(to top, var(--color-bg), transparent)",
+          opacity: isOverThree && inView.top ? 1 : 0,
+        }}
+      />
     </div>
   );
 };
-
-const TextContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const SpotTitle = styled.div`
-  font-size: 16px;
-  font-weight: 600;
-  color: #000;
-  line-height: 19px;
-`;
-
-const Description = styled.div`
-  font-size: 12px;
-  font-weight: 400;
-  color: ${palette.비강조};
-  line-height: 14px;
-`;
-
-const SpotItem = styled.li<{ isLast: boolean }>`
-  display: flex;
-  margin-bottom: ${(props) => (props.isLast ? "0" : "15px")};
-  padding: 0 10px;
-  align-items: center;
-  justify-content: space-between;
-  transition: all 0.2s ease-out;
-  height: 58px;
-  user-select: none;
-  touch-action: none;
-`;
-
-const Index = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  width: 18px;
-  border-radius: 100px;
-  height: 18px;
-  background-color: ${palette.기본};
-  color: #fff;
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 14px;
-`;
-
-const LeftContainer = styled.div`
-  display: flex;
-  gap: 24px;
-  align-items: center;
-`;
-
-const TopShadow = styled.div<{
-  isOverThree: boolean;
-  isBottom: boolean;
-}>`
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 14px;
-  z-index: 1;
-  background: linear-gradient(to bottom, ${palette.BG}, transparent);
-  opacity: ${(props) => (props.isOverThree && props.isBottom ? 1 : 0)};
-  pointer-events: none;
-`;
-
-const BottomShadow = styled.div<{
-  isOverThree: boolean;
-
-  isTop: boolean;
-}>`
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 14px;
-  z-index: 1;
-  background: linear-gradient(to top, ${palette.BG}, transparent);
-  opacity: ${(props) => (props.isOverThree && props.isTop ? 1 : 0)};
-
-  pointer-events: none;
-`;
-
-const ContentContainer = styled.div`
-  max-height: 260px;
-  overflow-y: auto;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  padding: 0 20px;
-  position: relative;
-`;
 
 export default TripCarouselItem;

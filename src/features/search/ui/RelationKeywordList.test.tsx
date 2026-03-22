@@ -17,10 +17,6 @@ vi.mock('@/utils/search', () => ({
   splitByKeyword: (keyword: string, data: string) => [{ str: data, match: false }],
 }));
 
-vi.mock('@/styles/palette', () => ({
-  palette: { keycolor: '#000', 기본: '#333' },
-}));
-
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },

@@ -14,12 +14,6 @@ const OauthNaver = () => {
   const { socialLogin, socialLoginMutation } = useAuth();
   const { setSocialLogin } = userStore();
   const { isSuccess, isPending, isError } = socialLoginMutation;
-  // useEffect(() => {
-  //   if (socialLoginMutation.isSuccess) {
-  //     router.push("/");
-  //     setSocialLogin("naver", null);
-  //   }
-  // }, [isSuccess]);
 
   useEffect(() => {
     if (code && state) {
@@ -27,7 +21,6 @@ const OauthNaver = () => {
 
       getToken("naver", code, state)
         .then((user: any) => {
-          console.log("user client", user);
           if (user?.userStatus === "ABLE") {
             socialLogin({
               socialLoginId: user?.socialLoginId as string,

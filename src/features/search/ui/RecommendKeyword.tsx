@@ -1,6 +1,4 @@
 'use client'
-import styled from '@emotion/styled'
-import React from 'react'
 import Spacing from '@/components/Spacing'
 import { SearchFilterTag } from '@/shared/ui'
 
@@ -13,9 +11,9 @@ interface RecoomendKeywordProps {
 const RecommendKeyword = ({ setKeyword }: RecoomendKeywordProps) => {
   return (
     <div>
-      <Title>추천 검색어</Title>
+      <h5 className="text-sm font-medium leading-[16.71px]">추천 검색어</h5>
       <Spacing size={14} />
-      <TagContainer>
+      <div className="flex items-center justify-around">
         {TAG_LIST.map((keyword, idx) => (
           <SearchFilterTag
             idx={idx}
@@ -24,20 +22,9 @@ const RecommendKeyword = ({ setKeyword }: RecoomendKeywordProps) => {
             onClick={() => setKeyword(keyword)}
           />
         ))}
-      </TagContainer>
+      </div>
     </div>
   )
 }
-
-const Title = styled.h5`
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 16.71px;
-`
-const TagContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-`
 
 export default RecommendKeyword

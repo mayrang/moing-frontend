@@ -1,6 +1,5 @@
 'use client'
 
-import { palette } from '@/styles/palette'
 import React from 'react'
 
 interface TripNotificationIconProps {
@@ -11,8 +10,8 @@ interface TripNotificationIconProps {
 
 const TripNotificationIcon = ({
   size = 24,
-  circleColor = palette.keycolorBG,
-  heartColor = palette.keycolor
+  circleColor = "var(--color-keycolor-bg)",
+  heartColor = "var(--color-keycolor)"
 }: TripNotificationIconProps) => {
   return (
     <svg

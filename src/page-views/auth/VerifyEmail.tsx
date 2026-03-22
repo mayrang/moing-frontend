@@ -9,8 +9,6 @@ import useVerifyEmail from "@/hooks/useVerifyEmail";
 import useViewTransition from "@/hooks/useViewTransition";
 import { errorStore } from "@/store/client/errorStore";
 import { userStore } from "@/store/client/userStore";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -63,12 +61,15 @@ const VerifyEmail = () => {
   }, [verifyEmail.isPending, verifyEmail.isError, verifyEmail.isSuccess]);
 
   return (
-    <Container>
-      <Label>코드를 입력해주세요</Label>
+    <div className="px-[25px] pt-[30px]">
+      <label className="text-2xl leading-[34px] font-semibold px-[6px] tracking-[-0.04em]">
+        코드를 입력해주세요
+      </label>
       <Spacing size={8} />
-      <SubLabel>
-        입력하신 이메일 <sub>{email}</sub>(으)로 인증 코드를 보냈어요.
-      </SubLabel>
+      <div className="text-base font-normal text-[var(--color-text-muted)] px-[6px] leading-[140%] tracking-[-0.025em]">
+        입력하신 이메일{" "}
+        <sub className="text-black">{email}</sub>(으)로 인증 코드를 보냈어요.
+      </div>
       <Spacing size={28} />
       <CodeInput refs={inputRefs} onValueChange={handleValueChange} />
       {error === "" ? (
@@ -98,33 +99,8 @@ const VerifyEmail = () => {
           />
         )}
       </ButtonContainer>
-    </Container>
+    </div>
   );
 };
-
-const Container = styled.div`
-  padding: 0 25px;
-  padding-top: 30px;
-`;
-
-const Label = styled.label`
-  font-size: 24px;
-  line-height: 34px;
-  font-weight: 600;
-  padding: 0 6px;
-  letter-spacing: -0.04;
-`;
-
-const SubLabel = styled.div`
-  font-size: 16px;
-  font-weight: 400;
-  color: ${palette.비강조};
-  padding: 0 6px;
-  line-height: 140%;
-  letter-spacing: -0.025em;
-  & sub {
-    color: #000;
-  }
-`;
 
 export default VerifyEmail;

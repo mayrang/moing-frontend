@@ -1,12 +1,10 @@
 "use client";
 import Button from "@/components/designSystem/Buttons/Button";
-import styled from "@emotion/styled";
 import { userStore } from "@/store/client/userStore";
 import { MouseEventHandler, useEffect, useState } from "react";
 import Spacing from "@/components/Spacing";
 import useAuth from "@/hooks/user/useAuth";
 
-import { palette } from "@/styles/palette";
 import { IRegisterGoogle, IRegisterKakao } from "@/model/auth";
 import { useRouter } from "next/navigation";
 import SearchFilterTag from "@/components/designSystem/tag/SearchFilterTag";
@@ -218,22 +216,28 @@ const RegisterTripStyle = () => {
 
   // width가 390px 미만인 경우에도 버튼의 위치가 고정될 수 있도록. width값 조정.
   const newRightPosition = windowSize.width.toString() + "px";
+  const buttonWrapperWidth =
+    windowSize.width > 0 && windowSize.width < 390
+      ? newRightPosition
+      : "390px";
 
   return (
-    <RegisterTripStyleWrapper>
-      <StepIconContainer>
+    <div className="px-6 min-h-[calc(100svh-68px-30px)]">
+      <div className="mt-[30px]">
         <RegisterThirdStepIcon />
-      </StepIconContainer>
-      <TripStyleStep>
-        <ContentName>
-          <UserName>{tempName ?? name}</UserName> 님은 어떤
-        </ContentName>
-
-        <ContentText>어떤 여행을 선호하세요?</ContentText>
-      </TripStyleStep>
-      <MultipleSelectionText>중복 선택 가능 (최대 5개)</MultipleSelectionText>
-      <TripStyleContainer>
-        <StyleBtns>
+      </div>
+      <div className="mt-[40px] text-2xl font-semibold">
+        <div className="flex items-center">
+          <span className="inline-block text-center">{tempName ?? name}</span>{" "}
+          님은 어떤
+        </div>
+        <div className="mt-[10px]">어떤 여행을 선호하세요?</div>
+      </div>
+      <div className="mt-[10px] text-base font-medium text-[var(--color-text-muted2)]">
+        중복 선택 가능 (최대 5개)
+      </div>
+      <div className="mt-[40px] px-[6px]">
+        <div className="mt-[14px] flex flex-wrap gap-4">
           {categoryButtonTextArray.map((item, idx) => (
             <SearchFilterTag
               key={item.label}
@@ -243,11 +247,11 @@ const RegisterTripStyle = () => {
                   ? "rgba(227, 239, 217, 1)"
                   : " rgba(240, 240, 240, 1)",
                 color: isActive(idx)
-                  ? `${palette.keycolor}`
+                  ? `var(--color-keycolor)`
                   : "rgba(52, 52, 52, 1)",
                 border: isActive(idx)
-                  ? `1px solid ${palette.keycolor}`
-                  : `1px solid ${palette.검색창}`,
+                  ? `1px solid var(--color-keycolor)`
+                  : `1px solid var(--color-search-bg)`,
                 borderRadius: "30px",
                 fontSize: "16",
                 lineHeight: "22px",
@@ -259,10 +263,14 @@ const RegisterTripStyle = () => {
               onClick={handleButtonClick}
             />
           ))}
-        </StyleBtns>
-      </TripStyleContainer>
+        </div>
+      </div>
       <Spacing size={120} />
-      <ButtonWrapper width={newRightPosition}>
+      {/* ButtonWrapper */}
+      <div
+        className="fixed bottom-0 bg-white -ml-6 px-6 pb-[38px] pt-[14px] z-[10]"
+        style={{ width: buttonWrapperWidth }}
+      >
         <Button
           disabled={tripStyleArray.length === 0 || isPending || isSocialPending}
           text="다음"
@@ -275,79 +283,13 @@ const RegisterTripStyle = () => {
             color:
               tripStyleArray.length > 0
                 ? "rgba(240, 240, 240, 1)"
-                : palette.비강조,
+                : "var(--color-text-muted)",
             boxShadow: "rgba(170, 170, 170, 0.1)",
           }}
         />
-      </ButtonWrapper>
-    </RegisterTripStyleWrapper>
+      </div>
+    </div>
   );
 };
 
 export default RegisterTripStyle;
-
-const ButtonWrapper = styled.div<{ width: string }>`
-  width: 390px;
-  @media (max-width: 389px) {
-    width: ${(props) => props.width};
-  }
-  @media (max-width: 450px) {
-    width: ${(props) => props.width};
-  }
-  position: fixed;
-  bottom: 0;
-
-  background-color: white;
-  margin-left: -24px;
-  padding: 14px 24px 38px 24px;
-  z-index: 10;
-`;
-
-const BlurSpacing = styled(Spacing)`
-  backdrop-filter: blur(1.5px);
-  position: fixed;
-  width: 100vw;
-  left: 0;
-  bottom: 0;
-`;
-
-const RegisterTripStyleWrapper = styled.div`
-  padding: 0px 24px;
-
-  min-height: calc(100svh - 68px - 30px);
-`;
-const StepIconContainer = styled.div`
-  margin-top: 30px;
-`;
-const TripStyleStep = styled.div`
-  margin-top: 40px;
-  font-size: 24px;
-  font-weight: 600;
-`;
-const TripStyleContainer = styled.div`
-  margin-top: 40px;
-  padding: 0px 6px;
-`;
-const StyleBtns = styled.div`
-  margin-top: 14px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-`;
-const UserName = styled.span`
-  display: inline-block;
-  text-align: center;
-`;
-const ContentText = styled.div`
-  margin-top: 10px;
-`;
-const ContentName = styled.div`
-  display: flex;
-  align-items: center;
-`;
-const MultipleSelectionText = styled.div`
-  margin-top: 10px;
-  font-size: 16px;
-  font-weight: 500;
-  color: rgba(171, 171, 171, 1);
-`;

@@ -14,9 +14,7 @@ import { authStore } from "@/store/client/authStore";
 import { useBackPathStore } from "@/store/client/backPathStore";
 import { reportStore } from "@/store/client/reportStore";
 import { tripDetailStore } from "@/store/client/tripDetailStore";
-import { palette } from "@/styles/palette";
 import { isGuestUser } from "@/utils/user";
-import styled from "@emotion/styled";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -69,7 +67,6 @@ export default function TripDetailHeader() {
   const { setNotification } = useBackPathStore();
   const tripInfos = tripDetail.data as any;
   useEffect(() => {
-    console.log(tripInfos);
     if (tripDetail.isFetched) {
       const {
         travelNumber,
@@ -95,7 +92,6 @@ export default function TripDetailHeader() {
         profileUrl,
         loginMemberRelatedInfo,
       } = tripInfos;
-      console.log("location2", location);
       // const [year, month, day] = dueDate.split("-").map((v: string) => +v);
       // const DUEDATE = {
       //   year,
@@ -172,8 +168,6 @@ export default function TripDetailHeader() {
       // 삭제 요청.
 
       deleteTripDetailMutation().then((res) => {
-        console.log("result", res);
-
         setIsToastShow(true);
         setTimeout(() => {
           router.push("/");
@@ -201,20 +195,26 @@ export default function TripDetailHeader() {
   };
 
   return (
-    <Container hostUserCheck={hostUserCheck} isTripDetailEdit={Boolean(isTripDetailEdit)}>
+    <div
+      className="flex items-center justify-around"
+      style={{
+        display: isTripDetailEdit ? "none" : "flex",
+        width: hostUserCheck ? "136px" : "auto",
+      }}
+    >
       {!isGuestUser() && (
-        <IconContainer onClick={handleNotification}>
-          <AlarmIcon size={23} stroke={palette.기본} />
-        </IconContainer>
+        <div className="w-12 h-12 flex items-center justify-center" onClick={handleNotification}>
+          <AlarmIcon size={23} stroke="var(--color-text-base)" />
+        </div>
       )}
-      <IconContainer>
+      <div className="w-12 h-12 flex items-center justify-center">
         <ShareIcon />
-      </IconContainer>
+      </div>
 
       {!isGuestUser() && (
-        <IconContainer onClick={onClickThreeDots}>
+        <div className="w-12 h-12 flex items-center justify-center" onClick={onClickThreeDots}>
           <MoreIcon />
-        </IconContainer>
+        </div>
       )}
 
       <EditAndDeleteModal
@@ -243,25 +243,7 @@ export default function TripDetailHeader() {
         setModalOpen={setIsResultModalOpen}
       />
       <ResultToast bottom="80px" isShow={isToastShow} setIsShow={setIsToastShow} text="여행 게시글이 삭제되었어요." />
-    </Container>
+    </div>
   );
 }
 
-const IconContainer = styled.div`
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Container = styled.div<{
-  hostUserCheck: boolean;
-  isTripDetailEdit: boolean;
-}>`
-  display: ${(props) => (props.isTripDetailEdit ? "none" : "flex")};
-  align-items: center;
-  justify-content: space-around;
-
-  width: ${(props) => (props.hostUserCheck ? "136px" : "auto")};
-`;

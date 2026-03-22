@@ -7,7 +7,6 @@ import Spacing from "@/components/Spacing";
 import useViewTransition from "@/hooks/useViewTransition";
 import { createTripStore } from "@/store/client/createTripStore";
 import { isGuestUser } from "@/utils/user";
-import styled from "@emotion/styled";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -41,11 +40,11 @@ const CreateTripIntroduce = () => {
   };
 
   return (
-    <Container>
-      <StepIconContainer>
+    <div className="px-6">
+      <div className="mt-2 mb-10">
         <FifthStepIcon />
-      </StepIconContainer>
-      <Title>여행을 소개해주세요.</Title>
+      </div>
+      <h2 className="text-xl font-semibold leading-7 ml-[6px] text-left">여행을 소개해주세요.</h2>
       <Spacing size={16} />
       <InputField
         value={title}
@@ -61,7 +60,7 @@ const CreateTripIntroduce = () => {
         placeholder="어떤 여행을 떠나실 예정인가요?
 자유롭게 소개해보세요. (최대 2,000자)"
       />
-      <ButtonContainer>
+      <div className="absolute left-0 bottom-0 w-full px-6 bg-white pt-4 pb-10">
         <Button
           onClick={handleNext}
           disabled={title === "" || details === ""}
@@ -76,40 +75,9 @@ const CreateTripIntroduce = () => {
           }
           text={"다음"}
         />
-      </ButtonContainer>
-    </Container>
+      </div>
+    </div>
   );
 };
-
-const ButtonContainer = styled.div`
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-
-  position: absolute;
-  padding: 0 24px;
-  background-color: white;
-  padding-top: 16px;
-  padding-bottom: 40px;
-  left: 0;
-`;
-
-const StepIconContainer = styled.div`
-  margin-top: 8px;
-  margin-bottom: 40px;
-`;
-
-const Container = styled.div`
-  padding: 0 24px;
-`;
-
-const Title = styled.h2`
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 28px;
-  margin-left: 6px;
-  text-align: left;
-`;
 
 export default CreateTripIntroduce;

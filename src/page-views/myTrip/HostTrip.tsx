@@ -1,8 +1,6 @@
 "use client";
 import { useMyTrip } from "@/hooks/myTrip/useMyTrip";
 import useInfiniteScroll from "@/hooks/useInfiniteScroll";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import dayjs from "dayjs";
 import React from "react";
 import { useInView } from "react-intersection-observer";
@@ -41,11 +39,11 @@ export default function HostTrip() {
     return null;
   }
   return (
-    <Container isNodata={isNoData}>
+    <div className={`px-6 relative ${isNoData ? "flex justify-center items-center" : ""}`}>
       {isNoData && (
-        <Empty>
+        <div className="fixed top-0 w-full flex flex-col items-center justify-center h-svh">
           <RoundedImage size={80} src="/images/noData.png" />
-          <NoData>
+          <div className="mt-4 flex flex-col items-center justify-center text-center text-base font-semibold leading-[22.4px] tracking-[-0.025em] text-[var(--color-text-base)]">
             {isGuestUser() ? (
               <>
                 로그인 후 <br />
@@ -57,8 +55,8 @@ export default function HostTrip() {
                 아직 만든 여행이 없어요 <br /> 지금 첫 여행 게시글을 등록해 볼까요?
               </div>
             )}
-          </NoData>
-        </Empty>
+          </div>
+        </div>
       )}
       {!isLoading &&
         data &&
@@ -77,7 +75,10 @@ export default function HostTrip() {
                 bookmarked,
                 nowPerson,
               }) => (
-                <BoxContainer key={travelNumber}>
+                <div
+                  key={travelNumber}
+                  className="p-4 gap-2 rounded-[20px] pt-[11px] shadow-[0px_2px_4px_3px_#aaaaaa14] mb-4 bg-[var(--color-bg)] relative"
+                >
                   <div onClick={() => clickTrip(travelNumber)}>
                     <HorizonBoxLayout
                       isBookmark={true}
@@ -97,56 +98,12 @@ export default function HostTrip() {
                     />
                   </div>
                   <HostTripIconBtns travelNumber={travelNumber} bookmarked={bookmarked} />
-                </BoxContainer>
+                </div>
               )
             )}
           </React.Fragment>
         ))}
       <div ref={ref} style={{ height: 80 }} />
-    </Container>
+    </div>
   );
 }
-const NoData = styled.div`
-  margin-top: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-family: Pretendard;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 22.4px;
-  letter-spacing: -0.025em;
-  text-align: center;
-  color: ${palette.기본};
-`;
-const Empty = styled.div`
-  position: fixed;
-  top: 0;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100svh;
-`;
-const Container = styled.div<{ isNodata: boolean | undefined }>`
-  padding: 0 24px;
-  position: relative;
-  display: ${(props) => (props.isNodata ? "flex" : "auto")};
-  justify-content: center;
-  align-items: center;
-`;
-const BoxContainer = styled.div`
-  padding: 16px;
-  gap: 8px;
-  border-radius: 20px;
-  padding-top: 11px;
-  opacity: 0px;
-  box-shadow: 0px 2px 4px 3px #aaaaaa14;
-
-  margin-bottom: 16px;
-  background-color: ${palette.BG};
-  position: relative;
-`;

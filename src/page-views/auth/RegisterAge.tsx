@@ -1,10 +1,8 @@
 "use client";
 import Button from "@/components/designSystem/Buttons/Button";
-import styled from "@emotion/styled";
 import { userStore } from "@/store/client/userStore";
 import { createContext, useContext, useEffect, useState } from "react";
 import SearchFilterTag from "@/components/designSystem/tag/SearchFilterTag";
-import { palette } from "@/styles/palette";
 import ButtonContainer from "@/components/ButtonContainer";
 import useViewTransition from "@/hooks/useViewTransition";
 import { useRouter } from "next/navigation";
@@ -49,7 +47,6 @@ const RegisterAge = ({ children }: { children: React.ReactNode }) => {
   const nextStepClickHandler = () => {
     if (agegroup) {
       if (location.pathname == "/registerAge") {
-        console.log(1);
         router.push("/registerAge/registerGender");
       } else if (
         genderCheck &&
@@ -82,14 +79,16 @@ const RegisterAge = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <RegisterAgeContext.Provider value={{ genderCheck, setGenderCheck }}>
-      <RegisterAgeWrapper>
-        <StepIconContainer>
+      <div className="px-6 min-h-[calc(100svh-68px-30px)] pb-[89px]">
+        <div className="mt-[30px]">
           <RegisterSecondStepIcon />
-        </StepIconContainer>
+        </div>
 
-        <AgeStep>
-          <Content>나이가 어떻게 되세요?</Content>
-          <AgeList>
+        <div className="mt-[40px]">
+          <div className="text-2xl font-semibold px-[6px] pb-4">
+            나이가 어떻게 되세요?
+          </div>
+          <div className="flex-wrap flex gap-4 w-[77%]">
             {AGE_LIST.map((age, idx) => (
               <SearchFilterTag
                 addStyle={{
@@ -99,14 +98,16 @@ const RegisterAge = ({ children }: { children: React.ReactNode }) => {
                       : " rgba(240, 240, 240, 1)",
                   color:
                     agegroup === age
-                      ? `${palette.keycolor}`
+                      ? `var(--color-keycolor)`
                       : "rgba(52, 52, 52, 1)",
                   borderRadius: "30px",
                   fontSize: "16",
                   lineHeight: "22px",
                   padding: "10px 20px",
                   border:
-                    agegroup === age ? `1px solid ${palette.keycolor}` : "none",
+                    agegroup === age
+                      ? `1px solid var(--color-keycolor)`
+                      : "none",
                 }}
                 style={{ cursor: "pointer" }}
                 idx={idx}
@@ -115,8 +116,8 @@ const RegisterAge = ({ children }: { children: React.ReactNode }) => {
                 key={age}
               />
             ))}
-          </AgeList>
-        </AgeStep>
+          </div>
+        </div>
         {children}
         <ButtonContainer>
           <Button
@@ -137,43 +138,9 @@ const RegisterAge = ({ children }: { children: React.ReactNode }) => {
             }
           />
         </ButtonContainer>
-      </RegisterAgeWrapper>
+      </div>
     </RegisterAgeContext.Provider>
   );
 };
 
 export default RegisterAge;
-
-const AgeList = styled.div`
-  flex-wrap: wrap;
-  display: flex;
-  gap: 16px;
-  width: 77%;
-`;
-
-const RegisterAgeWrapper = styled.div`
-  padding: 0px 24px;
-
-  min-height: calc(100svh - 68px - 30px);
-  padding-bottom: 89px;
-`;
-const StepIconContainer = styled.div`
-  margin-top: 30px;
-`;
-
-const AgeStep = styled.div`
-  margin-top: 40px;
-`;
-const Content = styled.div`
-  font-size: 24px;
-  font-weight: 600;
-  padding: 0px 6px;
-  padding-bottom: 16px;
-`;
-
-const ButtonWrapper = styled.div`
-  right: 24px;
-  left: 24px;
-  position: absolute;
-  bottom: 4.7svh;
-`;

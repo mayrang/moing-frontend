@@ -1,8 +1,6 @@
 "use client";
 import MyTripHorizonBoxLayout from "@/components/MyTripHorizonBoxLayout";
 import useInfiniteScroll from "@/hooks/useInfiniteScroll";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import dayjs from "dayjs";
 import React from "react";
 import { useInView } from "react-intersection-observer";
@@ -13,7 +11,6 @@ import { daysAgo } from "@/utils/time";
 import { useRequestedTrip } from "@/hooks/myTrip/useMyRequestedTrip";
 import LoginButtonForGuest from "@/components/LoginButtonForGuest";
 import { isGuestUser } from "@/utils/user";
-import CustomLink from "@/components/CustomLink";
 import { useBackPathStore } from "@/store/client/backPathStore";
 import useViewTransition from "@/hooks/useViewTransition";
 
@@ -42,11 +39,11 @@ export default function RequestedTrip() {
     return null;
   }
   return (
-    <Container isNodata={isNoData}>
+    <div className={`px-6 relative ${isNoData ? "flex justify-center items-center" : ""}`}>
       {isNoData && (
-        <Empty>
+        <div className="fixed top-0 flex flex-col items-center justify-center h-svh">
           <RoundedImage size={80} src="/images/noData.png" />
-          <NoData
+          <div
             style={{
               marginTop: "16px",
               display: "flex",
@@ -54,6 +51,7 @@ export default function RequestedTrip() {
               justifyContent: "center",
               textAlign: "center",
             }}
+            className="text-base font-medium leading-[22.4px] tracking-[-0.025em] text-[var(--color-text-base)]"
           >
             {isGuestUser() ? (
               <>
@@ -65,8 +63,8 @@ export default function RequestedTrip() {
                 아직 신청 대기 중인 <br /> 여행이 없어요
               </>
             )}
-          </NoData>
-        </Empty>
+          </div>
+        </div>
       )}
       {!isLoading &&
         data &&
@@ -85,7 +83,10 @@ export default function RequestedTrip() {
                 registerDue,
                 bookmarked,
               }) => (
-                <BoxContainer key={travelNumber}>
+                <div
+                  key={travelNumber}
+                  className="relative pt-[11px] px-4 pb-4 gap-2 rounded-[20px] shadow-[0px_2px_4px_3px_#aaaaaa14] mb-4 bg-[var(--color-bg)]"
+                >
                   <div onClick={() => clickTrip(travelNumber)}>
                     <MyTripHorizonBoxLayout
                       travelNumber={travelNumber}
@@ -101,59 +102,13 @@ export default function RequestedTrip() {
                     />
                   </div>
                   <BookmarkIconBtns travelNumber={travelNumber} bookmarked={bookmarked} />
-                </BoxContainer>
+                </div>
               )
             )}
           </React.Fragment>
         ))}
 
       <div ref={ref} style={{ height: 80 }} />
-    </Container>
+    </div>
   );
 }
-const NoData = styled.div`
-  font-family: Pretendard;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 22.4px;
-  letter-spacing: -0.025em;
-  text-align: center;
-  color: ${palette.기본};
-`;
-const Empty = styled.div`
-  position: fixed;
-  top: 0;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100svh;
-`;
-const Container = styled.div<{ isNodata: boolean | undefined }>`
-  padding: 0 24px;
-  position: relative;
-  display: ${(props) => (props.isNodata ? "flex" : "auto")};
-  justify-content: center;
-  align-items: center;
-`;
-
-const TopContainer = styled.div`
-  margin-bottom: 16px;
-`;
-const Title = styled.div`
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 16px;
-`;
-
-const BoxContainer = styled.div`
-  position: relative;
-  padding: 11px 16px;
-  gap: 8px;
-  border-radius: 20px;
-  opacity: 0px;
-  box-shadow: 0px 2px 4px 3px #aaaaaa14;
-  margin-bottom: 16px;
-  background-color: ${palette.BG};
-`;

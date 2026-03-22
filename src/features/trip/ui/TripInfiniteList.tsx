@@ -1,18 +1,15 @@
 "use client";
 import useInfiniteScroll from "@/shared/hooks/useInfiniteScroll";
 import { useTripList } from "../hooks/useTripList";
-import styled from "@emotion/styled";
 import React, { useState } from "react";
 import { useInView } from "react-intersection-observer";
 import HorizonBoxLayout from "@/components/HorizonBoxLayout";
 import dayjs from "dayjs";
 import FullHeartIcon from "@/shared/ui/icons/FullHeartIcon";
 import EmptyHeartIcon from "@/shared/ui/icons/EmptyHeartIcon";
-import { palette } from "@/styles/palette";
 import { authStore } from "@/store/client/authStore";
 import { useUpdateBookmark } from "@/hooks/bookmark/useUpdateBookmark";
 import { daysAgo } from "@/utils/time";
-import CustomLink from "@/components/CustomLink";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CheckingModal } from "@/shared/ui";
 import { isGuestUser } from "@/utils/user";
@@ -47,13 +44,16 @@ const TripInfiniteList = () => {
   };
 
   return (
-    <Container>
+    <div className="px-6">
       {!isLoading &&
         data &&
         data.pages.map((page, pageIndex) => (
           <React.Fragment key={pageIndex}>
-            {page.content.map((content, itemIndex) => (
-              <BoxContainer key={content.travelNumber}>
+            {page.content.map((content) => (
+              <div
+                key={content.travelNumber}
+                className="py-[11px] border-b border-[rgb(240,240,240)] relative"
+              >
                 <div
                   style={{ cursor: "pointer" }}
                   onClick={() => clickTrip(content.travelNumber)}
@@ -75,12 +75,12 @@ const TripInfiniteList = () => {
                     recruits={content.nowPerson}
                   />
                 </div>
-              </BoxContainer>
+              </div>
             ))}
           </React.Fragment>
         ))}
       <div ref={ref} style={{ height: 80 }} />
-    </Container>
+    </div>
   );
 }; // 아래 북마크 버튼은 Link에 구속되지 않도록 하는 버튼.
 interface BookmarkButtonProps {
@@ -124,42 +124,23 @@ const BookmarkButton = ({ bookmarked, travelNumber }: BookmarkButtonProps) => {
         modalButtonText="로그인"
         setModalOpen={setShowLoginModal}
       />
-      <BookmarkBtn onClick={bookmarkClickHandler}>
+      <button
+        type="button"
+        className="absolute top-[18px] right-[6px]"
+        onClick={bookmarkClickHandler}
+      >
         {bookmarked ? (
           <FullHeartIcon width={24} height={21.4} />
         ) : (
           <EmptyHeartIcon
             width={24}
             height={21.4}
-            stroke={`${palette.비강조3}`}
+            stroke="var(--color-muted3)"
           />
         )}
-      </BookmarkBtn>
+      </button>
     </>
   );
 };
-const BookmarkBtn = styled.button`
-  position: absolute;
-  top: 18px;
-  right: 6px;
-`;
-const Container = styled.div`
-  padding: 0 24px;
-`;
-
-const TopContainer = styled.div`
-  margin-bottom: 16px;
-`;
-const Title = styled.div`
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 16px;
-`;
-
-const BoxContainer = styled.div`
-  padding: 11px 0;
-  border-bottom: 1px solid rgb(240, 240, 240);
-  position: relative;
-`;
 
 export default TripInfiniteList;

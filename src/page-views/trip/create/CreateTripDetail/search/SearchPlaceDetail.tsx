@@ -8,8 +8,6 @@ import Spacing from "@/components/Spacing";
 import { createTripStore } from "@/store/client/createTripStore";
 import { editTripStore } from "@/store/client/editTripStore";
 import { tripPlanStore } from "@/store/client/tripPlanStore";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import {
   APIProvider,
   Map,
@@ -19,6 +17,7 @@ import {
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+
 const SearchPlaceDetail = () => {
   const { placeId, planOrder } = useParams();
   const map = useMap();
@@ -44,22 +43,18 @@ const SearchPlaceDetail = () => {
   }, []);
 
   useEffect(() => {
-    console.log(map, placesLib, placeId);
-
     let isMounted = true;
     let script: HTMLScriptElement | null = null;
 
     async function fetchPlacePredictions() {
       try {
-        console.log(placesLib, "info");
         // @ts-ignore
         const { Place } = placesLib;
         const place = new Place({
           id: placeId,
-          requestedLanguage: "ko", // 원하는 언어 설정
+          requestedLanguage: "ko",
         });
 
-        // 원하는 필드 요청
         await place.fetchFields({
           fields: [
             "displayName",
@@ -70,7 +65,6 @@ const SearchPlaceDetail = () => {
             "primaryType",
           ],
         });
-        console.log(place, "placew");
         if (isMounted) {
           setPlaceDetails({
             name: place.displayName,
@@ -100,7 +94,6 @@ const SearchPlaceDetail = () => {
             if (!isMounted) return;
 
             if (status === window.kakao.maps.services.Status.OK) {
-              console.log(data[0]);
               setPlaceDetails({
                 name: data[0].place_name,
                 address:
@@ -115,18 +108,14 @@ const SearchPlaceDetail = () => {
             } else if (
               status === window.kakao.maps.services.Status.ZERO_RESULT
             ) {
-              console.log("zero result");
+              // zero result
             } else if (status === window.kakao.maps.services.Status.ERROR) {
               console.error("검색 결과 중 오류가 발생했습니다.");
             }
           }
 
           const ps = new window.kakao.maps.services.Places();
-
-          // 검색 결과 목록이나 마커를 클릭했을 때 장소명을 표출할 인포윈도우를 생성합니다
           const infowindow = new window.kakao.maps.InfoWindow({ zIndex: 1 });
-          console.log("placeId", decodeURIComponent(placeId as string));
-          // 장소검색 객체를 통해 키워드로 장소검색을 요청합니다
           ps.keywordSearch(
             decodeURIComponent(placeId as string),
             placesSearchCB
@@ -142,8 +131,6 @@ const SearchPlaceDetail = () => {
       }
     };
   }, [placeId, locationName.mapType, placesLib, map]);
-
-  console.log(placeDetails, "placeDetail");
 
   const handlePlans = () => {
     if (!planOrder) return;
@@ -206,12 +193,15 @@ const SearchPlaceDetail = () => {
     return <></>;
   }
   if (!isClient) {
-    return null; // 또는 로딩 인디케이터
+    return null;
   }
 
   return (
     <>
-      <BackButton onClick={() => router.back()}>
+      <div
+        className="cursor-pointer fixed bg-white z-[1004] top-[52px] left-6 w-12 h-12 rounded-full flex shadow-[-2px_3px_5px_rgba(106,97,73,0.1)] items-center justify-center"
+        onClick={() => router.back()}
+      >
         <svg
           width="20"
           height="20"
@@ -222,13 +212,13 @@ const SearchPlaceDetail = () => {
           <path
             d="M17.7782 2.22202L2.22183 17.7784M17.7782 17.7784L2.22183 2.22202"
             stroke="#1A1A1A"
-            stroke-width="3"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </svg>
-      </BackButton>
-      <MapContainer>
+      </div>
+      <div className="w-full h-[calc(100svh-116px)]">
         {placeDetails?.location.lat &&
           (locationName.mapType === "google" ? (
             <GoogleMap
@@ -258,21 +248,21 @@ const SearchPlaceDetail = () => {
               lat={placeDetails?.location.lat - 0.013}
               lng={placeDetails?.location.lng}
               zoom={6}
-            ></KakaoMap>
+            />
           ))}
-      </MapContainer>
+      </div>
       <MapBottomModal initialHeight={400}>
-        <ModalWrapper>
-          <ModalContainer>
-            <TitleContainer>
-              <Title>{placeDetails?.name}</Title>
-              <SubTitle>
+        <div className="flex flex-col h-full relative overflow-hidden">
+          <div className="grow overflow-y-auto px-5 mt-[45px] pb-[104px] no-scrollbar">
+            <div className="h-12 flex items-center pl-1 gap-2">
+              <div className="leading-6 font-semibold text-xl text-[var(--color-text-base)]">{placeDetails?.name}</div>
+              <div className="leading-[17px] text-sm font-normal text-[var(--color-text-muted)]">
                 {placeDetails?.type}ㆍ{placeDetails?.region}
-              </SubTitle>
-            </TitleContainer>
+              </div>
+            </div>
             <Spacing size={4} />
-            <Description>
-              <IconContainer>
+            <div className="flex items-center gap-2 h-8 text-xs font-normal">
+              <div className="w-6 h-8 flex items-center justify-center">
                 <svg
                   width="12"
                   height="16"
@@ -289,12 +279,12 @@ const SearchPlaceDetail = () => {
                     fill="#FEFEFE"
                   />
                 </svg>
-              </IconContainer>
+              </div>
               <div>{placeDetails?.address}</div>
-            </Description>
+            </div>
             {placeDetails?.openingHours !== "" && (
-              <Description>
-                <IconContainer>
+              <div className="flex items-center gap-2 h-8 text-xs font-normal">
+                <div className="w-6 h-8 flex items-center justify-center">
                   <svg
                     width="16"
                     height="16"
@@ -315,13 +305,13 @@ const SearchPlaceDetail = () => {
                       strokeLinejoin="round"
                     />
                   </svg>
-                </IconContainer>
+                </div>
                 <div>{placeDetails?.openingHours}</div>
-              </Description>
+              </div>
             )}
-          </ModalContainer>
-        </ModalWrapper>
-        <ButtonContainer>
+          </div>
+        </div>
+        <div className="flex justify-center items-center gap-4 absolute left-0 bottom-0 w-full min-[440px]:w-[390px] min-[440px]:left-1/2 min-[440px]:-translate-x-1/2 px-6 bg-[var(--color-bg)] h-[104px] pt-4 pb-10">
           <Button
             onClick={handlePlans}
             disabled={false}
@@ -336,135 +326,10 @@ const SearchPlaceDetail = () => {
             }
             text={"추가"}
           />
-        </ButtonContainer>
+        </div>
       </MapBottomModal>
     </>
   );
 };
-
-const MapContainer = styled.div<{ isMapFull: boolean }>`
-  width: 100%;
-
-  height: calc(100svh - 116px);
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
-  left: 0;
-  bottom: 0;
-  position: absolute;
-  width: 100%;
-
-  @media (min-width: 440px) {
-    width: 390px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  padding: 0 24px;
-  background-color: ${palette.BG};
-
-  height: 104px;
-  padding: 16px 24px 40px 24px;
-  width: calc(100%);
-`;
-
-const Description = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 32px;
-  font-size: 12px;
-  font-weight: 400;
-`;
-
-const IconContainer = styled.div`
-  width: 24px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const ModalWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-`;
-
-const ModalContainer = styled.div`
-  flex-grow: 1;
-  overflow-y: auto;
-  padding: 0 20px;
-  margin-top: 45px;
-  padding-bottom: 104px;
-
-  &::-webkit-scrollbar {
-    // scrollbar 자체의 설정
-    // 너비를 작게 설정
-    width: 0px;
-  }
-  &::-webkit-scrollbar-track {
-    // scrollbar의 배경부분 설정
-    // 부모와 동일하게 함(나중에 절전모드, 밤모드 추가되면 수정하기 번거로우니까... 미리 보이는 노동은 최소화)
-    background: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    // scrollbar의 bar 부분 설정
-    // 동글동글한 회색 바를 만든다.
-    border-radius: 1rem;
-
-    background: rgba(217, 217, 217, 1);
-  }
-  &::-webkit-scrollbar-button {
-    // scrollbar의 상하단 위/아래 이동 버튼
-    // 크기를 안줘서 안보이게 함.
-    width: 0;
-    height: 0;
-  }
-`;
-
-const TitleContainer = styled.div`
-  height: 48px;
-  display: flex;
-  align-items: center;
-  padding-left: 4px;
-  gap: 8px;
-`;
-
-const Title = styled.div`
-  line-height: 24px;
-  font-weight: 600;
-  font-size: 20px;
-  color: ${palette.기본};
-`;
-
-const BackButton = styled.div`
-  cursor: pointer;
-  position: fixed;
-  background-color: white;
-  z-index: 1004;
-  top: 52px;
-  left: 24px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: flex;
-  box-shadow: -2px 3px 5px rgba(106, 97, 73, 0.1);
-  align-items: center;
-  justify-content: center;
-`;
-
-const SubTitle = styled.div`
-  line-height: 17px;
-  font-size: 14px;
-  font-weight: 400;
-  color: ${palette.비강조};
-`;
 
 export default SearchPlaceDetail;

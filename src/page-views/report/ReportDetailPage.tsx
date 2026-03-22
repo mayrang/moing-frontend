@@ -1,5 +1,4 @@
 "use client";
-import styled from "@emotion/styled";
 import { useParams, useRouter } from "next/navigation";
 import React, { FormEvent, useEffect, useState } from "react";
 import { REPORT_LIST } from "@/page-views/report/ReportPage";
@@ -8,7 +7,6 @@ import Image from "next/image";
 import ButtonContainer from "@/components/ButtonContainer";
 import Button from "@/components/designSystem/Buttons/Button";
 import TextareaField from "@/components/designSystem/input/TextareaField";
-import { palette } from "@/styles/palette";
 import { postReport } from "@/api/report";
 import { authStore } from "@/store/client/authStore";
 import { reportStore } from "@/store/client/reportStore";
@@ -89,14 +87,12 @@ const ReportDetail = () => {
       }
     }
   }, [isSuccess, isError]);
-  console.log(type);
   const handleClick = (idx: number) => (e: React.MouseEvent<HTMLDivElement>) => {
     setCheckIndex((prev) => (prev === idx ? -1 : idx));
   };
 
   const submitReport = async (e: FormEvent) => {
     e.preventDefault();
-    console.log(id, accessToken, type, checkIndex);
     if (!id || !accessToken || !userNumber) {
       return;
     }
@@ -121,15 +117,15 @@ const ReportDetail = () => {
   }
   if (type?.query === "etc") {
     return (
-      <Container>
-        <Title>{type?.title}</Title>
+      <div className="px-6 pt-[18px] pb-[214px]">
+        <div className="text-lg leading-9 font-semibold pl-[6px] flex items-center">{type?.title}</div>
         <Spacing size={16} />
         <TextareaField
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="신고 사유 직접 입력 (최대 500자)"
           height="120px"
-          placeholderColor={palette.비강조}
+          placeholderColor="var(--color-text-muted)"
           isReport
           padding={"12px 16px"}
           lineHeight="20px"
@@ -152,15 +148,20 @@ const ReportDetail = () => {
             text={"신고하기"}
           />
         </ButtonContainer>
-      </Container>
+      </div>
     );
   }
   return (
-    <Container>
-      <Title>{type?.title}</Title>
+    <div className="px-6 pt-[18px] pb-[214px]">
+      <div className="text-lg leading-9 font-semibold pl-[6px] flex items-center">{type?.title}</div>
       <Spacing size={16} />
       {type?.item?.map((item, idx) => (
-        <Description onClick={handleClick(idx)} isFirst={idx === 0}>
+        <div
+          key={item.id}
+          className="flex cursor-pointer text-base leading-4 font-normal w-full items-center gap-2 h-[66px] border-b border-[#e7e7e7]"
+          style={{ borderTop: idx === 0 ? "1px solid #e7e7e7" : "0" }}
+          onClick={handleClick(idx)}
+        >
           <Image
             src={checkIndex === idx ? "/images/radio_active.svg" : "/images/radio.svg"}
             alt=""
@@ -168,8 +169,8 @@ const ReportDetail = () => {
             width={18}
           />
 
-          <Text>{item.title}</Text>
-        </Description>
+          <div className="pl-1">{item.title}</div>
+        </div>
       ))}
       <ButtonContainer>
         <Button
@@ -187,41 +188,8 @@ const ReportDetail = () => {
           text={"신고하기"}
         />
       </ButtonContainer>
-    </Container>
+    </div>
   );
 };
 
 export default ReportDetail;
-
-const Container = styled.div`
-  padding: 0 24px;
-  padding-top: 18px;
-  padding-bottom: 214px;
-`;
-
-const Title = styled.div`
-  font-size: 18px;
-  line-height: 36px;
-  font-weight: 600;
-  padding-left: 6px;
-  display: flex;
-  align-items: center;
-`;
-
-const Text = styled.div`
-  padding-left: 4px;
-`;
-
-const Description = styled.div<{ isFirst: boolean }>`
-  display: flex;
-  cursor: pointer;
-  font-size: 16px;
-  line-height: 16px;
-  font-weight: 400;
-  width: 100%;
-  align-items: center;
-  gap: 8px;
-  height: 66px;
-  border-bottom: 1px #e7e7e7 solid;
-  border-top: ${(props) => (props.isFirst ? "1px" : 0)} #e7e7e7 solid;
-`;

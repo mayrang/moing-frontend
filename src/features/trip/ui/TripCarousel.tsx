@@ -1,10 +1,7 @@
 import React, { useEffect } from "react";
 import { EmblaOptionsType } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
-import styled from "@emotion/styled";
-import { palette } from "@/styles/palette";
 import { getDateByPlanOrder } from "@/utils/time";
-import { tripDetailStore } from "@/store/client/tripDetailStore";
 import Spacing from "@/components/Spacing";
 import { SpotType } from "@/entities/trip";
 import TripCarouselItem from "./TripCarouselItem";
@@ -36,106 +33,50 @@ const TripCarousel: React.FC<PropType> = (props) => {
   }, [emblaApi]);
 
   return (
-    <Embla>
-      <Viewport ref={emblaRef}>
-        <Container>
+    <div
+      className="max-w-[48rem]"
+      style={
+        {
+          "--slide-height": "19rem",
+          "--slide-size": "70%",
+        } as React.CSSProperties
+      }
+    >
+      <div className="overflow-hidden" ref={emblaRef}>
+        <div
+          className="flex -ml-3"
+          style={{ touchAction: "pan-y pinch-zoom" }}
+        >
           {slides?.map((item, index) => (
-            <Slide key={index}>
-              <Item>
-                <Tab>
-                  <TitleContainer>
-                    <Title>Day {item.planOrder}</Title>
-                    <Date>{getDateByPlanOrder(props.startDate, item.planOrder)}</Date>
-                    <Count>{item.spots.length}</Count>
-                  </TitleContainer>
+            <div
+              key={index}
+              className="flex-[0_0_87%] min-w-0 pl-3"
+              style={{ transform: "translate3d(0, 0, 0)" }}
+            >
+              <div className="py-5 bg-white rounded-[20px] select-none">
+                <label className="block text-base leading-[16px] h-[42px] px-5">
+                  <div className="flex items-center gap-2 px-5">
+                    <div className="font-semibold text-base text-black">
+                      Day {item.planOrder}
+                    </div>
+                    <div className="font-normal text-xs text-[var(--color-text-muted)]">
+                      {getDateByPlanOrder(props.startDate, item.planOrder)}
+                    </div>
+                    <div className="w-[18px] h-4 bg-[var(--color-keycolor)] rounded-[20px] flex items-center justify-center text-xs font-semibold text-[var(--color-muted4)]">
+                      {item.spots.length}
+                    </div>
+                  </div>
                   <Spacing size={16} />
                   <TripCarouselItem spots={item.spots} />
-                </Tab>
-              </Item>
+                </label>
+              </div>
               {index === slides.length - 1 && props.inView}
-            </Slide>
+            </div>
           ))}
-        </Container>
-      </Viewport>
-    </Embla>
+        </div>
+      </div>
+    </div>
   );
 };
-
-const Embla = styled.div`
-  max-width: 48rem;
-
-  --slide-height: 19rem;
-
-  --slide-size: 70%;
-`;
-const Viewport = styled.div`
-  overflow: hidden;
-`;
-
-const Container = styled.div`
-  display: flex;
-  touch-action: pan-y pinch-zoom;
-  margin-left: calc(12px * -1);
-`;
-const Slide = styled.div`
-  transform: translate3d(0, 0, 0);
-  flex: 0 0 87%;
-  min-width: 0;
-  padding-left: 12px;
-`;
-
-const Item = styled.div`
-  padding: 20px 0;
-  background-color: #fff;
-  border-radius: 20px;
-  user-select: none;
-`;
-
-const Tab = styled.label<{
-  tabLineHeight: string;
-  tabPadding: string;
-  fontWeight: number;
-}>`
-  font-size: 16px;
-  line-height: 16px;
-
-  height: 42px;
-  padding: 0 20px;
-`;
-
-const Title = styled.div`
-  font-weight: 600;
-  font-size: 16px;
-  color: #000;
-`;
-
-const Count = styled.div`
-  width: 18px;
-  height: 16px;
-
-  background-color: ${palette.keycolor};
-  border-radius: 20px;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  font-size: 12px;
-  font-weight: 600;
-  color: ${palette.비강조4};
-`;
-
-const TitleContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 20px;
-`;
-
-const Date = styled.div`
-  font-weight: 400;
-  font-size: 12px;
-  color: ${palette.비강조};
-`;
 
 export default TripCarousel;

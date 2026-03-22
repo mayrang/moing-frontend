@@ -1,55 +1,22 @@
 "use client";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import React from "react";
 import ContactInfinite from "./ContactInfinite";
 
 const ContactList = () => {
   return (
     <>
-      <SortContainer>
-        <CountContainer>
+      <div className="px-6 pt-[22px] pb-4 sticky top-[172px] z-[1001] bg-[var(--color-bg)] box-border">
+        <div className="text-sm font-medium leading-[16.71px] tracking-[-0.025em]">
           총&nbsp;
           {/* <Count>{data?.pages[0].page.totalElements ?? 0}건</Count> */}
-          <Count>{0}건</Count>
-        </CountContainer>
-      </SortContainer>
-      <Container>
+          <span className="text-[#3e8d00] font-bold">{0}건</span>
+        </div>
+      </div>
+      <div className="px-6 min-h-full overflow-y-auto w-full">
         <ContactInfinite />
-      </Container>
+      </div>
     </>
   );
 };
-
-const Container = styled.div`
-  padding: 0 24px;
-  min-height: 100%;
-  overflow-y: auto;
-  width: 100%;
-`;
-
-const SortContainer = styled.div`
-  padding: 0 24px;
-  padding-top: 22px;
-  padding-bottom: 16px;
-
-  position: sticky;
-  top: 172px;
-  z-index: 1001;
-
-  background-color: ${palette.BG};
-  box-sizing: border-box;
-`;
-const CountContainer = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 16.71px;
-  letter-spacing: -0.025em;
-`;
-
-const Count = styled.span`
-  color: #3e8d00;
-  font-weight: 700;
-`;
 
 export default ContactList;

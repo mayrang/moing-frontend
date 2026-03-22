@@ -12,8 +12,6 @@ import RequestError from "@/context/ReqeustError";
 import { IContactCreate } from "@/model/contact";
 import { authStore } from "@/store/client/authStore";
 import { myPageStore } from "@/store/client/myPageStore";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import { useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import React, { FormEvent, useEffect, useState } from "react";
@@ -25,7 +23,6 @@ const CreateContact = () => {
   const searchParams = useSearchParams();
   const type = searchParams?.get("type") ?? "";
   const paramsEmail = searchParams?.get("email") ?? "";
-  console.log("email", initEmail);
   const [isChange, setIsChange] = useState<boolean>(false);
   const [inquiryType, setInquiryType] = useState<string>(
     type === "block" ? "계정 신고 및 차단 문의" : "계정 및 로그인"
@@ -68,12 +65,12 @@ const CreateContact = () => {
   };
   return (
     <>
-      <Container>
-        <InquiryTypeContainer>
-          <Label htmlFor="inqueryType">문의 유형을 선택해주세요</Label>
+      <div className="px-6 min-h-full overflow-y-auto w-full">
+        <div className="my-6">
+          <label htmlFor="inqueryType" className="block py-[10px] px-[6px] text-base mb-1 leading-4 tracking-[-0.025em] font-semibold">문의 유형을 선택해주세요</label>
 
           {type === "block" ? (
-            <Block>계정 신고 및 차단 문의</Block>
+            <div className="h-12 w-full rounded-[30px] bg-[var(--color-bg)] border border-[var(--color-muted3)] px-5 py-[14px] text-base leading-5 text-[var(--color-text-muted)] font-normal">계정 신고 및 차단 문의</div>
           ) : (
             <Select
               id="inQueryType"
@@ -83,9 +80,9 @@ const CreateContact = () => {
               list={INQUIRYTYPE_LIST}
             ></Select>
           )}
-        </InquiryTypeContainer>
-        <EmailContainer>
-          <Label htmlFor="email">답변 받을 이메일</Label>
+        </div>
+        <div className="mt-6" style={{ marginBottom: isChange ? "32px" : "47px" }}>
+          <label htmlFor="email" className="block py-[10px] px-[6px] text-base mb-1 leading-4 tracking-[-0.025em] font-semibold">답변 받을 이메일</label>
           {isChange || initEmail === "" ? (
             <InputField
               placeholder="이메일 입력"
@@ -94,25 +91,25 @@ const CreateContact = () => {
               isRemove={false}
             />
           ) : (
-            <EmailBox>
-              <EmailText>{email}</EmailText>
+            <div className="flex gap-2 items-center">
+              <div className="font-normal leading-4 text-base text-[var(--color-text-muted)] py-[8.5px] pl-[6px]">{email}</div>
               <div onClick={() => setIsChange(true)} style={{ cursor: "pointer" }}>
                 <BoxLayoutTag
                   size="small"
                   text="변경하기"
                   addStyle={{
                     backgroundColor: "#fff",
-                    border: `1px solid ${palette.비강조3}`,
-                    color: palette.기본,
+                    border: "1px solid var(--color-muted3)",
+                    color: "var(--color-text-base)",
                     fontWeight: "400",
                   }}
                 />
               </div>
-            </EmailBox>
+            </div>
           )}
-        </EmailContainer>
-        <ContentContainer>
-          <Label>문의 내용</Label>
+        </div>
+        <div className="mb-[208px]">
+          <label className="block py-[10px] px-[6px] text-base mb-1 leading-4 tracking-[-0.025em] font-semibold">문의 내용</label>
           <InputField
             isRemove={false}
             value={title}
@@ -126,7 +123,7 @@ const CreateContact = () => {
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
-        </ContentContainer>
+        </div>
         <ButtonContainer>
           <Button
             onClick={submitContact}
@@ -143,7 +140,7 @@ const CreateContact = () => {
             text={"문의하기"}
           />
         </ButtonContainer>
-      </Container>
+      </div>
 
       <ResultModal
         isModalOpen={isResultModalOpen}
@@ -156,62 +153,3 @@ const CreateContact = () => {
 };
 
 export default CreateContact;
-
-const Container = styled.div`
-  padding: 0 24px;
-  min-height: 100%;
-  overflow-y: auto;
-  width: 100%;
-`;
-
-const InquiryTypeContainer = styled.div`
-  margin: 24px 0;
-`;
-
-const EmailContainer = styled.div<{ isChange: boolean }>`
-  margin-top: 24px;
-  margin-bottom: ${(props) => (props.isChange ? "32px" : "47px")};
-`;
-
-const ContentContainer = styled.div`
-  margin-bottom: 208px;
-`;
-
-const Block = styled.div`
-  height: 48px;
-  width: 100%;
-  border-radius: 30px;
-  background-color: ${palette.BG};
-  border: 1px solid ${palette.비강조3};
-  padding: 14px 20px;
-  font-size: 16px;
-  line-height: 20px;
-  color: ${palette.비강조};
-  font-weight: 400;
-`;
-
-const EmailBox = styled.div`
-  display: flex;
-  gap: 8px;
-  align-items: center;
-`;
-
-const EmailText = styled.div`
-  font-weight: 400;
-  line-height: 16px;
-  font-size: 16px;
-
-  color: ${palette.비강조};
-  padding: 8.5px 0;
-  padding-left: 6px;
-`;
-
-const Label = styled.label`
-  display: block;
-  padding: 10px 6px;
-  font-size: 16px;
-  margin-bottom: 4px;
-  line-height: 16px;
-  letter-spacing: -0.025em;
-  font-weight: 600;
-`;

@@ -10,6 +10,7 @@
 | Phase 2 | entities 레이어 | ✅ 완료 | 2026-03-21 | 2026-03-21 |
 | Phase 3 | features 레이어 | ✅ 완료 | 2026-03-21 | 2026-03-21 |
 | Phase 4 | page-views / widgets 레이어 | ✅ 완료 | 2026-03-21 | 2026-03-21 |
+| Phase 5 | Tailwind CSS 전환 — Emotion 완전 제거 | ✅ 완료 | 2026-03-22 | 2026-03-22 |
 
 ---
 
@@ -145,3 +146,36 @@ _작업 완료 후 기록_
 
 ### 참조
 - [Phase 4 상세 문서](refactoring/phase-4.md)
+
+---
+
+## Phase 5: Tailwind CSS 전환 — Emotion 완전 제거
+
+### 체크리스트
+- [x] Step 0: `cn()` 유틸리티 생성, `src/styles/globalStyle.ts` 정리
+- [x] Step 1: `src/components/` 범용 UI 21개 → `src/shared/ui/` 이동 + Tailwind 전환
+- [x] Step 2: `components/community/` → `features/community/ui/` 이동 + Tailwind 전환
+- [x] Step 3: `components/userProfile/`, `components/ApplyTripProfile`, `components/LoginButtonForGuest` 등 → `features/auth/ui/`, `features/userProfile/ui/`
+- [x] Step 4: `components/notification/`, `components/comment/`, `components/travellog/` → 각 features/*/ui/
+- [x] Step 5: `components/RegionModal`, `TripRegion`, `MapBottomModal`, `calendar/`, `HomeInputField` → `features/trip/ui/`, `page-views/home/`
+- [x] Step 6: `features/auth/ui/EmailLoginForm`, `features/search/ui/` 4개, `features/trip/ui/` 4개 — Tailwind 전환
+- [x] Step 7: `widgets/home/` 4개 — Tailwind 전환
+- [x] Step 8: `page-views/home/`, `page-views/auth/` — Tailwind 전환
+- [x] Step 9: `page-views/community/` — Tailwind 전환
+- [x] Step 10: `page-views/trip/` (+ create/) — Tailwind 전환
+- [x] Step 11: `page-views/myTrip/`, `page-views/myPage/` — Tailwind 전환
+- [x] Step 12: `page-views/contact/`, `notification/`, `report/`, `onBoarding/`, `userProfile/`, `search/`, `comment/`, `BlockPage`, `ExplanationPage`, `SplashPage` — Tailwind 전환
+- [x] Step 13: 최종 정리 — Emotion 3개 패키지 uninstall, `RootStyleRegistry.tsx` 삭제, `src/styles/` 디렉토리 삭제
+
+### 결과
+- 전환 파일: **~140개** (`@emotion/styled` 사용 파일 전부)
+- palette 참조 제거: **~100개+ 파일**
+- 삭제 패키지: `@emotion/cache`, `@emotion/react`, `@emotion/styled`
+- 삭제 파일: `RootStyleRegistry.tsx`, `globalStyle.ts`, `palette.ts`, `src/styles/` 디렉토리
+- console.log 제거: 40개+ (각 단계에서 순차 제거)
+- TypeScript: 에러 0개
+- Vitest: **228개 통과** (52개 테스트 파일, 3 suite는 `next-view-transitions` 기존 이슈)
+
+### 참조
+- [Phase 5 상세 문서](refactoring/phase-5.md)
+- [ADR 001: Tailwind 전환 결정](decisions/001-tailwind.md)

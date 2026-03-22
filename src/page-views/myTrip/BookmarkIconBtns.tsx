@@ -5,8 +5,6 @@ import EmptyHeartIcon from "@/components/icons/EmptyHeartIcon";
 import FullHeartIcon from "@/components/icons/FullHeartIcon";
 import { useUpdateBookmark } from "@/hooks/bookmark/useUpdateBookmark";
 import { authStore } from "@/store/client/authStore";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import React, { useEffect, useState } from "react";
 
 interface BookmarkIconBtnsProps {
@@ -23,7 +21,6 @@ export default function BookmarkIconBtns({ bookmarked, travelNumber }: BookmarkI
     if (bookmarked) {
       setBookmarkModalOpen(true);
     } else {
-      // 북마크 추가.
       postBookmarkMutation();
     }
   };
@@ -38,17 +35,17 @@ export default function BookmarkIconBtns({ bookmarked, travelNumber }: BookmarkI
 
   return (
     <div>
-      <HeartBtn style={{ display: "flex" }} onClick={bookmarkClickHandler}>
+      <div className="absolute top-[18px] right-[22px]" style={{ display: "flex" }} onClick={bookmarkClickHandler}>
         {bookmarked ? (
           <div>
             <FullHeartIcon width={24} height={21.4} />
           </div>
         ) : (
           <div>
-            <EmptyHeartIcon width={24} height={21.4} stroke={`${palette.비강조3}`} />
+            <EmptyHeartIcon width={24} height={21.4} stroke="var(--color-muted3)" />
           </div>
         )}
-      </HeartBtn>
+      </div>
       <CheckingModal
         isModalOpen={bookmarkModalOpen}
         modalMsg={"북마크를 해제할까요?"}
@@ -66,8 +63,3 @@ export default function BookmarkIconBtns({ bookmarked, travelNumber }: BookmarkI
     </div>
   );
 }
-const HeartBtn = styled.div`
-  position: absolute;
-  top: 18px;
-  right: 22px;
-`;

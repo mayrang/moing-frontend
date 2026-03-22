@@ -1,8 +1,7 @@
 'use client'
-import styled from '@emotion/styled'
 import RelationSearchIcon from '@/components/icons/RelationSearchIcon'
 import { splitByKeyword } from '@/utils/search'
-import { palette } from '@/styles/palette'
+import { cn } from '@/shared/lib/cn'
 
 interface RelationKeyowrdProps {
   data: string
@@ -13,33 +12,25 @@ const RelationKeyword = ({ data, keyword }: RelationKeyowrdProps) => {
   const matchingKeyword = splitByKeyword(keyword, data)
 
   return (
-    <Container>
+    <div className="flex items-center gap-5 py-[14px] px-1">
       <RelationSearchIcon />
       <span>
         {matchingKeyword.map((value, idx) => (
-          <Keyword
+          <span
             key={idx}
-            match={value.match}>
+            className={cn(
+              'text-base leading-[19.09px]',
+              value.match
+                ? 'text-[var(--color-keycolor)] font-bold'
+                : 'text-[var(--color-text-base)] font-medium'
+            )}
+          >
             {value.str}
-          </Keyword>
+          </span>
         ))}
       </span>
-    </Container>
+    </div>
   )
 }
-
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 14px 4px;
-`
-
-const Keyword = styled.span<{ match: boolean }>`
-  font-size: 16px;
-  color: ${props => (props.match ? palette.keycolor : palette.기본)};
-  font-weight: ${props => (props.match ? 700 : 500)};
-  line-height: 19.09px;
-`
 
 export default RelationKeyword

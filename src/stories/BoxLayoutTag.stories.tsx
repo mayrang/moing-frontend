@@ -2,7 +2,6 @@ import { fn } from '@storybook/test'
 import type { Meta, StoryObj } from '@storybook/react'
 import InfoText from '@/components/designSystem/text/InfoText'
 import BoxLayoutTag from '@/components/designSystem/tag/BoxLayoutTag'
-import { palette } from '@/styles/palette'
 
 const meta = {
   title: 'tag/BoxLayoutTag',
@@ -26,12 +25,12 @@ const meta = {
           backgroundColor: {
             control: 'color',
             description: '배경색',
-            defaultValue: palette.비강조4
+            defaultValue: "var(--color-muted4)"
           },
           color: {
             control: 'color',
             description: '글자색',
-            defaultValue: palette.비강조
+            defaultValue: "var(--color-text-muted)"
           },
           height: {
             control: 'text',
@@ -77,9 +76,9 @@ export const Small: Story = {
       fontSize: '14px',
       height: '33px',
       borderRadius: '16px',
-      border: `1px solid ${palette.keycolor}`,
-      backgroundColor: palette.keycolorBG,
-      color: palette.keycolor
+      border: "1px solid var(--color-keycolor)",
+      backgroundColor: "var(--color-keycolor-bg)",
+      color: "var(--color-keycolor)"
     }
   }
 }
@@ -92,9 +91,9 @@ export const Medium: Story = {
       fontSize: '16px',
       height: '42px',
       borderRadius: '30px',
-      border: `1px solid ${palette.keycolor}`,
-      backgroundColor: palette.keycolorBG,
-      color: palette.keycolor
+      border: "1px solid var(--color-keycolor)",
+      backgroundColor: "var(--color-keycolor-bg)",
+      color: "var(--color-keycolor)"
     }
   }
 }
@@ -107,9 +106,9 @@ export const Large: Story = {
       fontSize: '16px',
       height: '48px',
       borderRadius: '30px',
-      border: `1px solid ${palette.keycolor}`,
-      backgroundColor: palette.keycolorBG,
-      color: palette.keycolor
+      border: "1px solid var(--color-keycolor)",
+      backgroundColor: "var(--color-keycolor-bg)",
+      color: "var(--color-keycolor)"
     }
   }
 }

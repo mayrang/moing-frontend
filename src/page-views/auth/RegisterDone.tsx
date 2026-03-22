@@ -1,7 +1,6 @@
 "use client";
 import useAuth from "@/hooks/user/useAuth";
 import { userStore } from "@/store/client/userStore";
-import styled from "@emotion/styled";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
@@ -17,10 +16,15 @@ export default function RegisterDone() {
     }, 2000);
   }, []);
   return (
-    <Container>
-      <div></div>
-      <Img>
-        <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <div className="flex flex-col items-center justify-center h-svh">
+      <div>
+        <svg
+          width="200"
+          height="200"
+          viewBox="0 0 200 200"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <g clipPath="url(#clip0_2307_12382)">
             <path
               d="M94.9549 167.207C131.687 167.207 161.465 137.336 161.465 100.488C161.465 63.64 131.687 33.7687 94.9549 33.7687C58.2224 33.7687 28.4448 63.64 28.4448 100.488C28.4448 137.336 58.2224 167.207 94.9549 167.207Z"
@@ -81,50 +85,25 @@ export default function RegisterDone() {
           </g>
           <defs>
             <clipPath id="clip0_2307_12382">
-              <rect width="159" height="169" fill="white" transform="translate(21 16)" />
+              <rect
+                width="159"
+                height="169"
+                fill="white"
+                transform="translate(21 16)"
+              />
             </clipPath>
           </defs>
         </svg>
-      </Img>
-      <TextBox>
-        <Congrats>축하합니다!</Congrats>
-        <DoneText>
+      </div>
+      <div className="flex mt-5 flex-col items-center justify-center">
+        <div className="text-lg font-normal leading-[25.2px] tracking-[-0.025em] text-left text-[var(--color-text-muted2)]">
+          축하합니다!
+        </div>
+        <div className="text-2xl font-semibold leading-[33.6px] text-center text-[rgba(52,52,52,1)]">
           가입이 <br />
           완료되었어요
-        </DoneText>
-      </TextBox>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 }
-const TextBox = styled.div`
-  display: flex;
-  margin-top: 20px;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-const DoneText = styled.div`
-  font-family: Pretendard;
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 33.6px;
-  text-align: center;
-  color: rgba(52, 52, 52, 1);
-`;
-const Congrats = styled.div`
-  font-family: Pretendard;
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 25.2px;
-  letter-spacing: -0.025em;
-  text-align: left;
-  color: rgba(171, 171, 171, 1);
-`;
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100svh;
-`;
-const Img = styled.div``;

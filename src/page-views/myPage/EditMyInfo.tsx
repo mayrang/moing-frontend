@@ -8,8 +8,6 @@ import Spacing from "@/components/Spacing";
 import useAuth from "@/hooks/user/useAuth";
 import { authStore } from "@/store/client/authStore";
 import { myPageStore } from "@/store/client/myPageStore";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import React, { useEffect, useState } from "react";
 import ProfileEditModal from "./ProfileEditModal";
 import { isGuestUser } from "@/utils/user";
@@ -80,7 +78,7 @@ export default function EditMyInfo() {
   }, [isLogoutClicked]);
 
   return (
-    <Container>
+    <div className="px-6">
       <ResultToast
         height={120}
         isShow={isNameChangeToastShow}
@@ -113,7 +111,7 @@ export default function EditMyInfo() {
         setIsSelected={setIsLogoutClicked}
         setModalOpen={setCheckingLogoutModalClicked}
       />
-      <ProfileImg>
+      <div className="flex justify-center h-20">
         <div onClick={() => setShowModal(true)} style={{ position: "relative" }}>
           <img
             src={profileUrl}
@@ -134,7 +132,7 @@ export default function EditMyInfo() {
             <CameraIconForProfileEdit />
           </div>
         </div>
-      </ProfileImg>
+      </div>
       <div>
         <Spacing size={24} />
         <TextButton
@@ -149,12 +147,12 @@ export default function EditMyInfo() {
           titleWeight="semibold"
         />
 
-        <Line></Line>
+        <div className="h-px border-b border-[#e7e7e7]"></div>
         <Spacing size={8} />
 
         <TextButton isRightVector={false} isLeftVector={false} text="이메일" rightText={email} titleWeight="semibold" />
 
-        <Line></Line>
+        <div className="h-px border-b border-[#e7e7e7]"></div>
         {!userSocialTF && (
           <>
             <Spacing size={8} />
@@ -169,30 +167,30 @@ export default function EditMyInfo() {
               titleWeight="semibold"
             />
 
-            <Line></Line>
+            <div className="h-px border-b border-[#e7e7e7]"></div>
           </>
         )}
         <Spacing size={8} />
-        <TagBox
+        <div
           onClick={() => {
             document.documentElement.style.viewTransitionName = "forward";
             navigateWithTransition("/editMyTag");
           }}
         >
           <TextButton isRightVector={true} isLeftVector={false} text="나의 태그" titleWeight="semibold" />
-          <MyTag>
-            <AgeBox style={{ display: "flex" }}>
-              <LastTitle>연령대</LastTitle>
-              <Tags>
+          <div className="px-2 pb-4">
+            <div className="flex items-center">
+              <div className="text-sm font-semibold w-[52px] leading-[16.71px] tracking-[-0.025em] text-left text-[var(--color-text-muted)]">연령대</div>
+              <div className="flex flex-wrap gap-2 ml-2">
                 <Badge
                   isDueDate={false}
                   fontWeight="600"
-                  color={palette.keycolor}
-                  backgroundColor={palette.keycolorBG}
+                  color="var(--color-keycolor)"
+                  backgroundColor="var(--color-keycolor-bg)"
                   text={agegroup}
                 />
-              </Tags>
-            </AgeBox>
+              </div>
+            </div>
             <div
               style={{
                 marginTop: "16px",
@@ -200,144 +198,44 @@ export default function EditMyInfo() {
                 alignItems: "center",
               }}
             >
-              <LastTitle>선호태그</LastTitle>
-              <Tags>
+              <div className="text-sm font-semibold w-[52px] leading-[16.71px] tracking-[-0.025em] text-left text-[var(--color-text-muted)]">선호태그</div>
+              <div className="flex flex-wrap gap-2 ml-2">
                 {preferredTags.map((text: string) => (
                   <Badge
                     key={text}
                     isDueDate={false}
                     fontWeight="500"
-                    color={palette.비강조}
-                    backgroundColor={palette.비강조4}
+                    color="var(--color-text-muted)"
+                    backgroundColor="var(--color-muted4)"
                     text={text}
                   />
                 ))}
-              </Tags>
+              </div>
             </div>
-          </MyTag>
-        </TagBox>
+          </div>
+        </div>
         <Spacing size={8} />
-        <Line></Line>
+        <div className="h-px border-b border-[#e7e7e7]"></div>
         <Spacing size={8} />
 
         {!isGuestUser() && (
-          <LogoutBox>
-            <LogoutButton onClick={() => setCheckingLogoutModalClicked(true)}>로그아웃</LogoutButton>
-            <VerticalLine>|</VerticalLine>
-            <DrawalButton
+          <div className="h-4 text-sm font-normal leading-4 text-left text-[var(--color-text-muted2)] mt-8 flex justify-center">
+            <div className="cursor-pointer" onClick={() => setCheckingLogoutModalClicked(true)}>로그아웃</div>
+            <div className="h-4 text-[rgba(231,231,231,1)] mx-4 py-0.5 flex items-center">|</div>
+            <div
+              className="cursor-pointer"
               onClick={() => {
                 document.documentElement.style.viewTransitionName = "forward";
                 navigateWithTransition("/withdrawal");
               }}
             >
               탈퇴하기
-            </DrawalButton>
-          </LogoutBox>
+            </div>
+          </div>
         )}
         <Spacing size={150} />
         {showModal && <ProfileEditModal showModal={showModal} setShowModal={setShowModal} />}
       </div>
-    </Container>
+    </div>
   );
 }
-
-const LogoutButton = styled.div`
-  cursor: pointer;
-`;
-const DrawalButton = styled.div`
-  cursor: pointer;
-`;
-const VerticalLine = styled.div`
-  height: 16px;
-  color: rgba(231, 231, 231, 1);
-  margin: 0px 16px;
-  padding: 2px 0px;
-  display: flex;
-  align-items: center;
-`;
-const LogoutBox = styled.div`
-  height: 16px;
-  font-size: 14px;
-
-  font-weight: 400;
-  line-height: 16px;
-  text-align: left;
-  color: ${palette.비강조2};
-  margin-top: 32px;
-  display: flex;
-  justify-content: center;
-  /* align-items: center; */
-`;
-const AgeBox = styled.div`
-  display: flex;
-  align-items: center;
-`;
-const MyTag = styled.div`
-  padding: 0px 8px 16px 8px;
-  opacity: 0px;
-`;
-const TagBox = styled.div``;
-const SmallTitle = styled.div`
-  font-family: Pretendard;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 16px;
-  letter-spacing: -0.25px;
-  text-align: center;
-
-  color: ${palette.기본};
-`;
-const LastTitle = styled.div`
-  font-family: Pretendard;
-  font-size: 14px;
-  font-weight: 600;
-  width: 52px;
-  line-height: 16.71px;
-  letter-spacing: -0.025em;
-  text-align: left;
-  color: ${palette.비강조};
-`;
-const Value = styled.div`
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 16px;
-  color: ${palette.비강조};
-  text-align: center;
-`;
-const Name = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-const Container = styled.div`
-  padding: 0px 24px;
-`;
-const ProfileImg = styled.div`
-  display: flex;
-  justify-content: center;
-  height: 80px;
-`;
-const Box = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  width: 100%;
-  height: 52px;
-  padding: 14px 8px;
-
-  opacity: 0px;
-  &:active {
-    background-color: ${palette.buttonActive};
-  }
-`;
-const Line = styled.div`
-  height: 1px;
-  border-bottom: 1px solid rgba(231, 231, 231, 1);
-`;
-const Tags = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-left: 8px;
-`;

@@ -8,8 +8,6 @@ import Spacing from "@/components/Spacing";
 import useMyPage from "@/hooks/myPage/useMyPage";
 import { myPageStore } from "@/store/client/myPageStore";
 import { userStore } from "@/store/client/userStore";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -124,7 +122,6 @@ export default function NewPassword() {
           throw new Error("비밀번호 업데이트 에러");
         }
       } catch (e) {
-        console.log(e, "새 비밀번호 업데이트 에러");
         setShake((prev) => ({
           ...prev,
           email: true,
@@ -175,9 +172,9 @@ export default function NewPassword() {
   }, [isUpdatedPasswordError]);
 
   return (
-    <Container onSubmit={handleSubmit}>
-      <FieldContainer>
-        <Label htmlFor="password">새로운 비밀번호를 입력해주세요</Label>
+    <form className="px-6 mt-6" onSubmit={handleSubmit}>
+      <div className="flex w-full flex-col">
+        <label htmlFor="password" className="text-base font-semibold leading-4 text-[var(--color-text-base)] text-left">새로운 비밀번호를 입력해주세요</label>
         <Spacing size={16} />
         <StateInputField
           handleRemoveValue={() => handleRemoveValue("password")}
@@ -198,10 +195,10 @@ export default function NewPassword() {
         ) : (
           <InfoText>영문 대문자, 특수문자 포함 8~20자</InfoText>
         )}
-      </FieldContainer>
+      </div>
 
       <Spacing size={14} />
-      <FieldContainer>
+      <div className="flex w-full flex-col">
         <StateInputField
           shake={shake.confirmPassword}
           handleRemoveValue={() => handleRemoveValue("confirmPassword")}
@@ -215,7 +212,7 @@ export default function NewPassword() {
         />
         <Spacing size={10} />
         {error.confirmPassword ? <InfoText hasError>{error.confirmPassword}</InfoText> : <Spacing size={16} />}
-      </FieldContainer>
+      </div>
       <ButtonContainer>
         {allSuccess ? (
           <Button text="완료" />
@@ -231,25 +228,6 @@ export default function NewPassword() {
           />
         )}
       </ButtonContainer>
-    </Container>
+    </form>
   );
 }
-const Container = styled.form`
-  padding: 0 24px;
-  margin-top: 24px;
-`;
-
-const FieldContainer = styled.div`
-  display: flex;
-  width: 100%;
-
-  flex-direction: column;
-`;
-
-const Label = styled.label`
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 16px;
-  color: ${palette.기본};
-  text-align: left;
-`;

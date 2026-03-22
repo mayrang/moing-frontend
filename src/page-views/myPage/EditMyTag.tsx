@@ -5,9 +5,7 @@ import SearchFilterTag from "@/components/designSystem/tag/SearchFilterTag";
 import Spacing from "@/components/Spacing";
 import useMyPage from "@/hooks/myPage/useMyPage";
 import { myPageStore } from "@/store/client/myPageStore";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
-import React, { MouseEventHandler, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import WarningToast from "@/components/designSystem/toastMessage/WarningToast";
 const TAG_LIST = [
@@ -45,7 +43,6 @@ export default function EditMyTag() {
     preferredTags,
     addIsTagUpdated,
   } = myPageStore();
-  console.log(agegroup, preferredTags, "나이, 태그");
   const { updateMyPageMutation, isUpdatedSuccess } = useMyPage();
   const [taggedArray, setTaggedArray] = useState<string[]>(preferredTags);
   const [limitCountToastShow, setLimitCountToastShow] = useState(false);
@@ -60,7 +57,6 @@ export default function EditMyTag() {
   };
   useEffect(() => {
     if (isUpdatedSuccess) {
-      console.log("태그 변경 성공.");
       addIsTagUpdated(true);
       router.back();
     }
@@ -98,16 +94,16 @@ export default function EditMyTag() {
   };
 
   return (
-    <Container>
+    <div className="px-6">
       <WarningToast
         height={120}
         isShow={limitCountToastShow}
         setIsShow={setLimitCountToastShow}
         text="최대 5개까지 설정할 수 있어요"
       />
-      <AgeStep>
-        <Content>연령대를 선택해주세요</Content>
-        <AgeList>
+      <div className="mt-6">
+        <div className="flex items-center py-[10px] px-[6px] text-base font-semibold leading-4 text-left text-[var(--color-text-base)]">연령대를 선택해주세요</div>
+        <div className="flex flex-wrap gap-4 w-[70%] mt-2">
           {AGE_LIST.map((ageValue, idx) => (
             <SearchFilterTag
               addStyle={{
@@ -117,7 +113,7 @@ export default function EditMyTag() {
                     : " rgba(240, 240, 240, 1)",
                 color:
                   age === ageValue
-                    ? `${palette.keycolor}`
+                    ? "var(--color-keycolor)"
                     : "rgba(52, 52, 52, 1)",
                 fontWeight: age === ageValue ? "600" : "400",
                 borderRadius: "30px",
@@ -125,7 +121,7 @@ export default function EditMyTag() {
                 lineHeight: "22px",
                 padding: "10px 20px",
                 border:
-                  age === ageValue ? `1px solid ${palette.keycolor}` : "none",
+                  age === ageValue ? `1px solid var(--color-keycolor)` : "none",
               }}
               idx={idx}
               onClick={() => handleClickage(ageValue)}
@@ -134,16 +130,16 @@ export default function EditMyTag() {
               style={{ cursor: "pointer" }}
             />
           ))}
-        </AgeList>
-      </AgeStep>
-      <TripStyleContainer>
-        <Content>
+        </div>
+      </div>
+      <div className="mt-9">
+        <div className="flex items-center py-[10px] px-[6px] text-base font-semibold leading-4 text-left text-[var(--color-text-base)]">
           취향을 선택해주세요
-          <SubContent>(최대 5개)</SubContent>
-        </Content>
-        <StyleBtns>
+          <div className="text-sm font-normal leading-4 text-left text-[var(--color-text-muted2)] pl-[10px]">(최대 5개)</div>
+        </div>
+        <div className="mt-2 flex flex-wrap gap-4">
           {TAG_LIST.map((item, idx) => (
-            <TagContainer>
+            <div key={idx} className="flex items-center gap-4 flex-wrap">
               {item.tags.map((tag, idx) => (
                 <SearchFilterTag
                   key={tag}
@@ -153,11 +149,11 @@ export default function EditMyTag() {
                       ? "rgba(227, 239, 217, 1)"
                       : " rgba(240, 240, 240, 1)",
                     color: isActive(tag.split(" ")[1])
-                      ? `${palette.keycolor}`
+                      ? "var(--color-keycolor)"
                       : "rgba(52, 52, 52, 1)",
                     border: isActive(tag.split(" ")[1])
-                      ? `1px solid ${palette.keycolor}`
-                      : `1px solid ${palette.검색창}`,
+                      ? `1px solid var(--color-keycolor)`
+                      : `1px solid var(--color-search-bg)`,
                     borderRadius: "30px",
                     fontSize: "16",
                     lineHeight: "22px",
@@ -169,10 +165,10 @@ export default function EditMyTag() {
                   onClick={() => clickTag(tag.split(" ")[1])}
                 />
               ))}
-            </TagContainer>
+            </div>
           ))}
-        </StyleBtns>
-      </TripStyleContainer>
+        </div>
+      </div>
       <Spacing size={120} />
       <ButtonContainer>
         <Button
@@ -187,63 +183,11 @@ export default function EditMyTag() {
             color:
               taggedArray.length > 0
                 ? "rgba(240, 240, 240, 1)"
-                : palette.비강조,
+                : "var(--color-text-muted)",
             boxShadow: "rgba(170, 170, 170, 0.1)",
           }}
         />
       </ButtonContainer>
-    </Container>
+    </div>
   );
 }
-const TagContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-`;
-const SubContent = styled.div`
-  font-family: Pretendard;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 16px;
-  text-align: left;
-  color: ${palette.비강조2};
-  padding-left: 10px;
-`;
-const Container = styled.div`
-  padding: 0px 24px;
-`;
-const AgeList = styled.div`
-  flex-wrap: wrap;
-  display: flex;
-  gap: 16px;
-  width: 70%;
-  margin-top: 8px;
-`;
-const AgeStep = styled.div`
-  margin-top: 24px;
-`;
-const Content = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 10px 6px;
-
-  opacity: 0px;
-
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 16px;
-
-  text-align: left;
-  color: ${palette.기본};
-`;
-
-const TripStyleContainer = styled.div`
-  margin-top: 36px;
-`;
-const StyleBtns = styled.div`
-  margin-top: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-`;

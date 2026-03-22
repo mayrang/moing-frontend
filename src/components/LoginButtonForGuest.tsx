@@ -1,7 +1,5 @@
 "use client";
 import { useBackPathStore } from "@/store/client/backPathStore";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 
@@ -9,24 +7,15 @@ export default function LoginButtonForGuest() {
   const router = useRouter();
   const pathname = usePathname();
   return (
-    <LoginButton
+    <button
+      type="button"
+      className="mt-4 w-[143px] h-[42px] text-[var(--color-muted4)] px-5 py-[10px] gap-[10px] rounded-[40px] bg-[var(--color-keycolor)]"
       onClick={() => {
         localStorage.setItem("loginPath", pathname);
         router.push("/login");
       }}
     >
       로그인
-    </LoginButton>
+    </button>
   );
 }
-const LoginButton = styled.button`
-  margin-top: 16px;
-  width: 143px;
-  height: 42px;
-  color: ${palette.비강조4};
-  padding: 10px 20px;
-  gap: 10px;
-  border-radius: 40px;
-  opacity: 0px;
-  background-color: ${palette.keycolor};
-`;

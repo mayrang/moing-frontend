@@ -5,3 +5,7 @@ export { default as TripCarousel } from './ui/TripCarousel';
 export { default as TripCarouselItem } from './ui/TripCarouselItem';
 export { default as TripInfiniteList } from './ui/TripInfiniteList';
 export { default as PopularPlaceList } from './ui/PopularPlaceList';
+export { default as RegionModal } from './ui/RegionModal';
+export { default as TripRegion } from './ui/TripRegion';
+export { default as MapBottomModal } from './ui/MapBottomModal';
+export { default as CalendarView } from './ui/CalendarView';

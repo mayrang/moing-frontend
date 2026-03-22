@@ -1,6 +1,4 @@
 'use client'
-import styled from '@emotion/styled'
-import React from 'react'
 import CustomLink from '@/components/CustomLink'
 
 const TAG_LIST = [
@@ -13,90 +11,28 @@ const TAG_LIST = [
 
 const PopularPlaceList = () => {
   return (
-    <Container>
-      <Title>인기 여행 장소</Title>
-      <TagContainer>
-        {TAG_LIST.map((item, idx) => (
+    <div className="flex gap-4 flex-col">
+      <div className="text-base font-semibold px-6 leading-[16px]">인기 여행 장소</div>
+      <div className="flex px-6 relative pb-[3px] w-full overflow-x-auto no-scrollbar items-center gap-2">
+        {TAG_LIST.map((item) => (
           <CustomLink
             key={item.value}
-            to={`/search/travel?keyword=${item.value}`}>
-            <PlaceImage src={item.src}>
-              <Background />
-              <Text>{item.value}</Text>
-            </PlaceImage>
+            to={`/search/travel?keyword=${item.value}`}
+          >
+            <div
+              className="bg-cover min-w-[80px] w-[80px] h-[80px] flex items-center justify-center text-white rounded-full relative text-sm font-semibold leading-[19.6px]"
+              style={{ backgroundImage: `url(${item.src})` }}
+            >
+              <div className="bg-[#0000004d] absolute top-0 left-0 min-w-[80px] w-[80px] h-[80px] rounded-full" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[10]">
+                {item.value}
+              </div>
+            </div>
           </CustomLink>
         ))}
-      </TagContainer>
-    </Container>
+      </div>
+    </div>
   )
 }
-
-const Container = styled.div`
-  display: flex;
-  gap: 16px;
-  flex-direction: column;
-`
-
-const Title = styled.div`
-  font-size: 16px;
-  font-weight: 600;
-  padding: 0 24px;
-  line-height: 16px;
-`
-
-const Text = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-`
-
-const TagContainer = styled.div`
-  display: flex;
-  padding: 0 24px;
-  position: relative;
-  -ms-overflow-style: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  padding-bottom: 3px;
-  width: 100%;
-  overflow-x: auto;
-  white-space: nowrap;
-  overflow-x: scroll;
-  align-items: center;
-  gap: 8px;
-`
-
-const PlaceImage = styled.div<{ src: string }>`
-  background-size: cover;
-  min-width: 80px;
-  width: 80px;
-  height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  border-radius: 50%;
-  position: relative;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 19.6px;
-
-  background-image: url(${props => props.src});
-`
-
-const Background = styled.div`
-  background-color: #0000004d;
-  position: absolute;
-  top: 0;
-  left: 0;
-  min-width: 80px;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-`
 
 export default PopularPlaceList

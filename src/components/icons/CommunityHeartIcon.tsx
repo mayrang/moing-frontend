@@ -1,5 +1,4 @@
 'use client'
-import { palette } from '@/styles/palette'
 
 interface CommunityHeartIconProps {
   size?: number
@@ -8,7 +7,7 @@ interface CommunityHeartIconProps {
 
 const CommunityHeartIcon = ({
   size = 20,
-  fill = palette.keycolor
+  fill = "var(--color-keycolor)"
 }: CommunityHeartIconProps) => {
   return (
     <svg

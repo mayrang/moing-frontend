@@ -3,16 +3,14 @@ import Button from "@/components/designSystem/Buttons/Button";
 import StateInputField from "@/components/designSystem/input/StateInputField";
 import InfoText from "@/components/designSystem/text/InfoText";
 import Spacing from "@/components/Spacing";
-import Terms from "@/components/Terms";
 import { userStore } from "@/store/client/userStore";
-import styled from "@emotion/styled";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import { checkEmail } from "@/api/user";
 import ButtonContainer from "@/components/ButtonContainer";
-import { emailSchema, passwordSchema } from "@/utils/schema";
+import { passwordSchema } from "@/utils/schema";
 import useViewTransition from "@/hooks/useViewTransition";
 import { useRouter } from "next/navigation";
 import ValidationInputField from "@/components/designSystem/input/ValidationInputField";
+
 interface ErrorProps {
   password: undefined | string;
   confirmPassword: undefined | string;
@@ -135,11 +133,16 @@ const RegisterPassword = () => {
 
   return (
     <>
-      <Container onSubmit={handleSubmit}>
+      <form className="px-6 pt-[30px]" onSubmit={handleSubmit}>
         {isRegisterEmail && (
           <>
-            <FieldContainer>
-              <Label htmlFor="password">비밀번호를 입력해주세요</Label>
+            <div className="flex w-full flex-col">
+              <label
+                className="text-2xl leading-[34px] font-semibold px-[6px] tracking-[-0.04em]"
+                htmlFor="password"
+              >
+                비밀번호를 입력해주세요
+              </label>
               <Spacing size={16} />
               <StateInputField
                 handleRemoveValue={() => handleRemoveValue("password")}
@@ -162,10 +165,10 @@ const RegisterPassword = () => {
                   <InfoText>영문 대문자, 특수문자 포함 8~20자</InfoText>
                 )}
               </div>
-            </FieldContainer>
+            </div>
 
             <Spacing size={14} />
-            <FieldContainer>
+            <div className="flex w-full flex-col">
               <ValidationInputField
                 shake={shake.confirmPassword}
                 handleRemoveValue={() => handleRemoveValue("confirmPassword")}
@@ -178,7 +181,7 @@ const RegisterPassword = () => {
                 success={success.confirmPassword}
                 message={error.confirmPassword ?? ""}
               />
-            </FieldContainer>
+            </div>
           </>
         )}
         <ButtonContainer>
@@ -197,29 +200,9 @@ const RegisterPassword = () => {
             />
           )}
         </ButtonContainer>
-      </Container>
+      </form>
     </>
   );
 };
 
-const Container = styled.form`
-  padding: 0 24px;
-
-  padding-top: 30px;
-`;
-
-const FieldContainer = styled.div`
-  display: flex;
-  width: 100%;
-
-  flex-direction: column;
-`;
-
-const Label = styled.label`
-  font-size: 24px;
-  line-height: 34px;
-  font-weight: 600;
-  padding: 0 6px;
-  letter-spacing: -0.04;
-`;
 export default RegisterPassword;

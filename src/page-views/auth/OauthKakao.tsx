@@ -14,18 +14,10 @@ const OauthKakao = () => {
   const { socialLogin, socialLoginMutation } = useAuth();
   const { isError, isSuccess } = socialLoginMutation;
 
-  // useEffect(() => {
-  //   if (socialLoginMutation.isSuccess) {
-  //     router.push("/");
-  //   }
-  // }, [isSuccess]);
-
   useEffect(() => {
-    console.log(code, state, "code");
     if (code && state) {
       getToken("kakao", code, state)
         .then((user: any) => {
-          console.log("user client", user);
           if (user?.userStatus === "PENDING" && user?.userNumber && user?.userName) {
             setTempName(user.userName);
             setSocialLogin("kakao", Number(user.userNumber) as number);

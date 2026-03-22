@@ -1,5 +1,4 @@
 'use client'
-import { palette } from '@/styles/palette'
 
 interface NavbarIconProps {
   width?: number
@@ -10,7 +9,7 @@ interface NavbarIconProps {
 const BookIcon = ({
   width = 16,
   height = 14,
-  stroke = `${palette.비강조3}`,
+  stroke = "var(--color-muted3)",
   fill = 'none'
 }: NavbarIconProps) => {
   return (

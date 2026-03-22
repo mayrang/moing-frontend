@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { palette } from "@/styles/palette";
 import SearchFilterTag from "@/components/designSystem/tag/SearchFilterTag";
 
 const meta = {
@@ -35,12 +34,12 @@ const meta = {
             control: "color",
 
             description: "배경색",
-            defaultValue: palette.검색창,
+            defaultValue: "var(--color-search-bg)",
           },
           color: {
             control: "color",
             description: "글자색",
-            defaultValue: palette.기본,
+            defaultValue: "var(--color-text-base)",
           },
 
           borderRadius: {
@@ -51,7 +50,7 @@ const meta = {
           border: {
             control: "text",
             description: "외곽선",
-            defaultValue: `1px solid ${palette.비강조3}`,
+            defaultValue: "1px solid var(--color-muted3)",
           },
           padding: {
             control: "text",
@@ -90,9 +89,9 @@ export const NoneActive: Story = {
       fontSize: "14px",
       fontWeight: "600",
       borderRadius: "16px",
-      border: `1px solid ${palette.비강조3}`,
+      border: "1px solid var(--color-muted3)",
       backgroundColor: "#fff",
-      color: palette.기본,
+      color: "var(--color-text-base)",
     },
   },
 };
@@ -108,8 +107,8 @@ export const Active: Story = {
       fontSize: "14px",
       fontWeight: "600",
       borderRadius: "15px",
-      border: `1px solid ${palette.비강조3}`,
-      backgroundColor: palette.keycolor,
+      border: "1px solid var(--color-muted3)",
+      backgroundColor: "var(--color-keycolor)",
       color: "#fff",
     },
   },

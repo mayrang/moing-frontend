@@ -1,7 +1,5 @@
 "use client";
 import useEnrollment from "@/hooks/enrollment/useEnrollment";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import React, { useEffect, useState } from "react";
 import TripEnrollmentCard from "./TripEnrollmentCard";
 import { tripDetailStore } from "@/store/client/tripDetailStore";
@@ -54,7 +52,6 @@ export default function TripEnrollmentList() {
 
   const tripInfos = tripDetail.data as any;
   useEffect(() => {
-    console.log(tripInfos);
     if (tripDetail.isFetched) {
       const {
         travelNumber,
@@ -127,12 +124,12 @@ export default function TripEnrollmentList() {
   }, []);
 
   return (
-    <Container>
+    <div className="px-6">
       {list && lastViewed && (
         <>
-          <Count>
-            총<p style={{ marginLeft: "4px", color: palette.keycolor }}>{!list.totalCount ? 0 : list.totalCount}</p>건
-          </Count>
+          <div className="flex text-base font-semibold leading-4 text-left">
+            총<p style={{ marginLeft: "4px", color: "var(--color-keycolor)" }}>{!list.totalCount ? 0 : list.totalCount}</p>건
+          </div>
           <div style={{ marginTop: "16px" }}>
             {list.enrollments?.map((enrollment: enrollment) => (
               <TripEnrollmentCard
@@ -150,17 +147,6 @@ export default function TripEnrollmentList() {
         </>
       )}
       <div></div>
-    </Container>
+    </div>
   );
 }
-
-const Container = styled.div`
-  padding: 0px 24px;
-`;
-const Count = styled.div`
-  display: flex;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 16px;
-  text-align: left;
-`;

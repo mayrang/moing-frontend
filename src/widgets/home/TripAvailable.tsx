@@ -1,5 +1,4 @@
 "use client";
-import styled from "@emotion/styled";
 import TitleContainer from "@/widgets/home/ContentTitleContainer";
 import { useTripList } from "@/hooks/useTripList";
 import HorizonBoxLayout from "@/components/HorizonBoxLayout";
@@ -9,8 +8,6 @@ import "slick-carousel/slick/slick-theme.css";
 import ThreeRowCarousel from "@/components/ThreeRowCarousel";
 import { IMyTripList } from "@/model/myTrip";
 import { daysAgo } from "@/utils/time";
-import Link from "next/link";
-import { palette } from "@/styles/palette";
 import { useRouter } from "next/navigation";
 import { useBackPathStore } from "@/store/client/backPathStore";
 
@@ -27,7 +24,7 @@ const TripAvailable = () => {
   };
 
   return (
-    <Container>
+    <div className="mt-8 w-full">
       <TitleContainer
         detailLink={`/trip/list?sort=recent`}
         linkText="참가 가능한 여행 "
@@ -43,8 +40,15 @@ const TripAvailable = () => {
         {cutTrips &&
           cutTrips?.map((post, idx) => {
             return (
-              <BoxContainer key={post.travelNumber}>
-                <Box style={(idx + 1) % 3 === 0 || cutTrips.length === idx + 1 ? { borderBottom: 0 } : {}}>
+              <div key={post.travelNumber}>
+                <div
+                  className="border-[var(--color-muted4)] h-[90px] box-content mx-4 py-[10px]"
+                  style={
+                    (idx + 1) % 3 === 0 || cutTrips.length === idx + 1
+                      ? { borderBottom: 0 }
+                      : { borderBottom: "1px solid" }
+                  }
+                >
                   <div onClick={() => clickTrip(post.travelNumber)}>
                     <HorizonBoxLayout
                       travelNumber={post.travelNumber}
@@ -55,32 +59,21 @@ const TripAvailable = () => {
                       userName={post.userName}
                       tags={post.tags}
                       daysAgo={daysAgo(post?.createdAt)}
-                      daysLeft={dayjs(post.registerDue, "YYYY-MM-DD").diff(dayjs().startOf("day"), "day")}
+                      daysLeft={dayjs(post.registerDue, "YYYY-MM-DD").diff(
+                        dayjs().startOf("day"),
+                        "day"
+                      )}
                       title={post.title}
                       recruits={post.nowPerson}
                       total={post.maxPerson}
                     />
                   </div>
-                </Box>
-              </BoxContainer>
+                </div>
+              </div>
             );
           })}
       </ThreeRowCarousel>
-    </Container>
+    </div>
   );
 };
 export default TripAvailable;
-
-const Container = styled.div`
-  margin-top: 32px;
-  width: 100%;
-`;
-const BoxContainer = styled.div``;
-
-const Box = styled.div`
-  border-bottom: 1px solid ${palette.비강조4};
-  height: 90px;
-  box-sizing: content-box;
-  margin: 0 16px;
-  padding: 10px 0;
-`;
