@@ -2,7 +2,7 @@
 import Spacing from "@/components/Spacing";
 import { useState } from "react";
 
-import Navbar from "@/page-views/home/Navbar";
+import Navbar from "@/widgets/home/Navbar";
 import SortHeader from "@/components/SortHeader";
 import CommunityInfinite from "@/components/community/CommunityInfinite";
 import ResultToast from "@/components/designSystem/toastMessage/resultToast";

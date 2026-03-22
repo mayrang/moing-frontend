@@ -7,11 +7,11 @@ import PopularPlaceList from "@/components/triplist/PopularPlaceList";
 
 import { authStore } from "@/store/client/authStore";
 import React, { useState } from "react";
-import Navbar from "@/page-views/home/Navbar";
+import Navbar from "@/widgets/home/Navbar";
 import TripInfiniteList from "@/components/triplist/TripInfiniteList";
 import SortHeader from "@/components/SortHeader";
 import { useTripList } from "@/hooks/useTripList";
-import CreateTripButton from "@/page-views/home/CreateTripButton";
+import CreateTripButton from "@/widgets/home/CreateTripButton";
 import { useBackPathStore } from "@/store/client/backPathStore";
 import useViewTransition from "@/hooks/useViewTransition";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
