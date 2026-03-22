@@ -1,6 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import styled from "@emotion/styled";
+import React, { useState, useEffect, useRef } from "react";
 import Button from "@/components/designSystem/Buttons/Button";
 import { useRouter } from "next/navigation";
 
@@ -18,7 +17,7 @@ import CalendarWrapper from "./CalendarWrapper";
 import InfoWrapper from "./InfoWrapper";
 import MapContainer from "./MapContainer";
 import { useInView } from "react-intersection-observer";
-import "dayjs/locale/ko"; // 한국어 로케일 추가
+import "dayjs/locale/ko";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import CreateScheduleItem from "./CreateScheduleItem";
@@ -26,7 +25,7 @@ import TripToast from "@/components/designSystem/toastMessage/tripToast";
 import { getDateRangeCategory } from "@/utils/time";
 import { tripPlanStore } from "@/store/client/tripPlanStore";
 
-dayjs.locale("ko"); // 한국어 설정
+dayjs.locale("ko");
 dayjs.extend(isSameOrBefore);
 export function getDatesArray(startDate, endDate) {
   const dates: string[] = [];
@@ -121,7 +120,7 @@ const CreateTripDetail = () => {
     tags,
     plans: newPlan,
   };
-  const { createTripMutate } = useCreateTrip(travelData, accessToken as string); // 여행 생성 api 요청.
+  const { createTripMutate } = useCreateTrip(travelData, accessToken as string);
 
   const completeClickHandler = () => {
     if (
@@ -149,8 +148,8 @@ const CreateTripDetail = () => {
           router.push(`/`);
         }
       },
-      onError: (e) => {
-        console.log(e, "여행 생성에 오류 발생.");
+      onError: () => {
+        // 여행 생성에 오류 발생.
       },
     });
   };
@@ -162,18 +161,22 @@ const CreateTripDetail = () => {
       setIsToastShow(true);
     }
   }, [isMapFull]);
-  console.log(plans, "plans", locationName);
+
   return (
     <>
-      <CreateTripDetailWrapper>
-        <CreateTripDetailContainer id="container-scroll" ref={containerRef}>
+      <div className="relative">
+        <div
+          id="container-scroll"
+          ref={containerRef}
+          className="px-6 overflow-y-auto relative h-[calc(100svh-116px)] no-scrollbar overscroll-none pb-[104px]"
+        >
           <TopModal
             isToastShow={isToastShow}
             containerRef={containerRef}
             setIsMapFull={setIsMapFull}
             onHeightChange={setTopModalHeight}
           >
-            <ModalContainer>
+            <div className="px-6">
               <RegionWrapper
                 locationName={locationName}
                 addInitGeometry={addInitGeometry}
@@ -200,20 +203,24 @@ const CreateTripDetail = () => {
               <Spacing size={16} />
               <TagListWrapper addTags={addTags} taggedArray={tags} />
               <Spacing size={16} />
-              <Bar />
+              <div className="bg-[#e7e7e7] w-full h-[1px]" />
               <CalendarWrapper addDate={addDate} date={date} />
-              <Bar />
+              <div className="bg-[#e7e7e7] w-full h-[1px]" />
               <InfoWrapper
                 addGenderType={addGenderType}
                 addMaxPerson={addMaxPerson}
                 maxPerson={maxPerson}
                 genderType={genderType}
               />
-            </ModalContainer>
+            </div>
           </TopModal>
-          <BottomContainer
-            isMapFull={isMapFull}
-            topModalHeight={topModalHeight}
+          <div
+            style={{
+              marginTop: `${isMapFull ? 32 : topModalHeight + 32}px`,
+              minHeight: "100svh",
+              transition: "padding-top 0.3s ease-out",
+              overscrollBehavior: "none",
+            }}
           >
             <MapContainer
               index={openItemIndex}
@@ -224,13 +231,14 @@ const CreateTripDetail = () => {
               lng={initGeometry?.lng || 126.9816417}
               zoom={locationName.mapType === "google" ? 11 : 9}
             />
-            <ScheduleContainer>
-              <Title>여행 일정</Title>
-              <ScheduleList>
+            <div className="mt-6">
+              <div className="text-lg font-medium text-black leading-[21px]">여행 일정</div>
+              <div className="flex flex-col gap-4 mt-4">
                 {date &&
                   getDatesArray(date?.startDate ?? "", date?.endDate ?? "").map(
                     (item, idx) => (
                       <CreateScheduleItem
+                        key={idx}
                         plans={plans}
                         idx={idx}
                         addPlans={addPlans}
@@ -241,10 +249,10 @@ const CreateTripDetail = () => {
                       />
                     )
                   )}
-              </ScheduleList>
-            </ScheduleContainer>
-          </BottomContainer>
-        </CreateTripDetailContainer>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <ButtonContainer>
           <Button
@@ -257,67 +265,9 @@ const CreateTripDetail = () => {
             }}
           />
         </ButtonContainer>
-      </CreateTripDetailWrapper>
+      </div>
     </>
   );
 };
 
 export default CreateTripDetail;
-
-const CreateTripDetailWrapper = styled.div`
-  position: relative;
-`;
-
-const ScheduleContainer = styled.div`
-  margin-top: 24px;
-`;
-const Title = styled.div`
-  font-size: 18px;
-  font-weight: 500;
-  color: #000;
-  line-height: 21px;
-`;
-
-const ScheduleList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const CreateTripDetailContainer = styled.div<{ topModalHeight: number }>`
-  padding: 0px 24px;
-  overflow-y: auto;
-  position: relative;
-  height: calc(100svh - 116px);
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  overscroll-behavior: none;
-  padding-bottom: 104px;
-
-  /* margin-top: ${(props) => `${props.topModalHeight + 32}px`};
-  transition:
-    margin-top 0.3s ease-out,
-    transform 0.3s ease-out; */
-`;
-
-const ModalContainer = styled.div`
-  padding: 0 24px;
-`;
-
-const Bar = styled.div`
-  background-color: #e7e7e7;
-  width: 100%;
-  height: 1px;
-`;
-
-const BottomContainer = styled.div<{
-  topModalHeight: number;
-  isMapFull: boolean;
-}>`
-  margin-top: ${(props) =>
-    `${props.isMapFull ? 32 : props.topModalHeight + 32}px`};
-  min-height: 100svh;
-  transition: padding-top 0.3s ease-out;
-  overscroll-behavior: none;
-`;

@@ -8,8 +8,6 @@ import Spacing from "@/components/Spacing";
 import { TAG_LIST } from "@/constants/tags";
 import useViewTransition from "@/hooks/useViewTransition";
 import { createTripStore } from "@/store/client/createTripStore";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import React, { useEffect, useState } from "react";
 import TagList from "./component/TagList";
 import { useRouter } from "next/navigation";
@@ -51,19 +49,19 @@ const CreateTripTag = () => {
     navigateWithTransition("/create/trip/introduce");
   };
   return (
-    <Container>
+    <div className="px-6">
       <WarningToast
         height={120}
         isShow={limitCountToastShow}
         setIsShow={setLimitCountToastShow}
         text="최대 5개까지 설정할 수 있어요"
       />
-      <StepIconContainer>
+      <div className="mt-2 mb-10">
         <FourthStepIcon />
-      </StepIconContainer>
-      <Title>
-        여행 스타일을 알려주세요 <Small>(최대 5개)</Small>
-      </Title>
+      </div>
+      <h2 className="text-xl font-semibold leading-7 ml-[6px] text-left">
+        여행 스타일을 알려주세요 <span className="text-sm font-normal text-[var(--color-text-muted)]">(최대 5개)</span>
+      </h2>
       <Spacing size={20} />
       <TagList taggedArray={taggedArray} clickTag={clickTag} />
       <ButtonContainer>
@@ -82,38 +80,8 @@ const CreateTripTag = () => {
           text={"다음"}
         />
       </ButtonContainer>
-    </Container>
+    </div>
   );
 };
-
-const StepIconContainer = styled.div`
-  margin-top: 8px;
-  margin-bottom: 40px;
-`;
-
-const Container = styled.div`
-  padding: 0 24px;
-`;
-
-const Title = styled.h2`
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 28px;
-  margin-left: 6px;
-  text-align: left;
-`;
-
-const TagContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-`;
-
-const Small = styled.span`
-  font-size: 14px;
-  font-weight: 400;
-  color: ${palette.비강조};
-`;
 
 export default CreateTripTag;

@@ -1,9 +1,7 @@
 "use client";
 import BottomModal from "@/components/BottomModal";
-import { palette } from "@/styles/palette";
 import React, { useEffect, useState } from "react";
 import Button from "@/components/designSystem/Buttons/Button";
-import styled from "@emotion/styled";
 import RoundedImage from "@/components/designSystem/profile/RoundedImage";
 import { tripDetailStore } from "@/store/client/tripDetailStore";
 import useTripDetail from "@/hooks/tripDetail/useTripDetail";
@@ -73,22 +71,22 @@ export default function CompanionsView({ isOpen, setIsOpen }: CompanionsViewProp
           initialHeight={windowSize.height <= 700 ? 75 : 65} // height 비율이 짧아 진다면 58%로 맞추기.
           closeModal={handleCloseModal}
         >
-          <ModalWrapper style={{ marginTop: "6px" }}>
-            <ModalContainer style={{ padding: "0px 24px" }}>
-              <OwnerBox>
-                <Title>주최자</Title>
+          <div className="pb-[calc(4.7svh+48px)]" style={{ marginTop: "6px" }}>
+            <div style={{ padding: "0px 24px" }}>
+              <div className="flex flex-col justify-center w-16">
+                <div className="text-lg font-semibold leading-[25.2px] text-left flex items-center">주최자</div>
 
                 <div>
                   <div>
                     <RoundedImage size={64} src={profileUrl} />
                   </div>
-                  <OwnerInfo>
-                    <OwnerName>{userName}</OwnerName>
+                  <div className="flex flex-col justify-center items-center mt-2">
+                    <div className="text-base font-semibold leading-[19.09px] text-left text-[var(--color-text-base)] mb-1">{userName}</div>
                     <BoxLayoutTag
                       text={userAgeGroup}
                       addStyle={{
-                        backgroundColor: palette.keycolorBG,
-                        color: palette.keycolor,
+                        backgroundColor: "var(--color-keycolor-bg)",
+                        color: "var(--color-keycolor)",
                         padding: "4px 10px 4px 10px",
                         height: "22px",
                         borderRadius: "20px",
@@ -96,37 +94,37 @@ export default function CompanionsView({ isOpen, setIsOpen }: CompanionsViewProp
                         fontWeight: "600",
                       }}
                     />
-                  </OwnerInfo>
+                  </div>
                 </div>
-              </OwnerBox>
-              <Line></Line>
-              <PeopleBox>
-                <Title>
+              </div>
+              <div className="w-full my-6 border border-[var(--color-muted4)]"></div>
+              <div className="-mr-6">
+                <div className="text-lg font-semibold leading-[25.2px] text-left flex items-center">
                   모집 인원{" "}
                   <p
                     style={{
                       marginLeft: "4px",
                       fontWeight: "500",
-                      color: palette.비강조2,
+                      color: "var(--color-text-muted2)",
                     }}
                   >
                     ({nowPerson}/{maxPerson})
                   </p>
-                </Title>
-                <CompanionsBox>
+                </div>
+                <div className="flex mt-4 pl-[6px] overflow-x-scroll no-scrollbar">
                   {allCompanions?.map((person: Companion) => (
-                    <OwnerBox key={person.userName} style={{ marginRight: "16px" }}>
+                    <div key={person.userName} className="flex flex-col justify-center w-16" style={{ marginRight: "16px" }}>
                       <div>
                         <div>
                           <RoundedImage size={64} src={person?.profileUrl ? person?.profileUrl : ""} />
                         </div>
-                        <OwnerInfo>
-                          <OwnerName>{person.userName}</OwnerName>
+                        <div className="flex flex-col justify-center items-center mt-2">
+                          <div className="text-base font-semibold leading-[19.09px] text-left text-[var(--color-text-base)] mb-1">{person.userName}</div>
                           <BoxLayoutTag
                             text={person.ageGroup}
                             addStyle={{
-                              backgroundColor: palette.keycolorBG,
-                              color: palette.keycolor,
+                              backgroundColor: "var(--color-keycolor-bg)",
+                              color: "var(--color-keycolor)",
                               padding: "4px 10px 4px 10px",
                               height: "22px",
                               borderRadius: "20px",
@@ -134,15 +132,18 @@ export default function CompanionsView({ isOpen, setIsOpen }: CompanionsViewProp
                               fontWeight: "600",
                             }}
                           />
-                        </OwnerInfo>
+                        </div>
                       </div>
-                    </OwnerBox>
+                    </div>
                   ))}
-                </CompanionsBox>
-              </PeopleBox>
-            </ModalContainer>
-          </ModalWrapper>
-          <ButtonWrapper showModal={isOpen} width={newRightPosition}>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            className="fixed bottom-[4.7svh] px-6 z-10"
+            style={{ width: windowSize.width < 390 ? newRightPosition : "390px" }}
+          >
             <div style={{ width: "100%" }}>
               <Button
                 text="닫기"
@@ -154,79 +155,9 @@ export default function CompanionsView({ isOpen, setIsOpen }: CompanionsViewProp
                 }}
               />
             </div>
-          </ButtonWrapper>
+          </div>
         </BottomModal>
       )}
     </>
   );
 }
-const OwnerInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-top: 8px;
-`;
-const OwnerName = styled.div`
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 19.09px;
-  text-align: left;
-  color: ${palette.기본};
-  margin-bottom: 4px;
-`;
-const Title = styled.div`
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 25.2px;
-  text-align: left;
-  display: flex;
-  align-items: center;
-`;
-const CompanionsBox = styled.div`
-  display: flex;
-  margin-top: 16px;
-  padding-left: 6px;
-  overflow-x: scroll;
-  ::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const ModalWrapper = styled.div`
-  padding-bottom: calc(4.7svh + 48px);
-`;
-const ModalContainer = styled.div``;
-
-const ButtonWrapper = styled.div<{ width: string; showModal: boolean }>`
-  width: 390px;
-  @media (max-width: 389px) {
-    width: ${(props) => props.width};
-  }
-  @media (max-width: 450px) {
-    width: ${(props) => props.width};
-  }
-  /* pointer-events: none; */
-  position: fixed;
-  /* top: 0; */
-  bottom: 4.7svh;
-  /* z-index: 1001; */
-
-  /* margin-left: ${(props) => (props.showModal ? "0px" : "-24px")}; */
-  padding: 0px 24px;
-  z-index: 10;
-`;
-const OwnerBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: 64px;
-`;
-const Line = styled.div`
-  width: 100%;
-  margin: 24px 0px;
-  border: 1px solid ${palette.비강조4};
-`;
-const PeopleBox = styled.div`
-  margin-right: -24px;
-`;

@@ -1,8 +1,6 @@
 "use client";
 import ArrowIcon from "@/components/icons/ArrowIcon";
 import PlaceIcon from "@/components/icons/PlaceIcon";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import React, { useCallback, useEffect, useState } from "react";
 
 import { APIProvider, Map, useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
@@ -20,7 +18,6 @@ const InnerMap = ({ locationNameStr, locationName, setRegionInfo, addInitGeometr
   const fetchPlaceInfo = useCallback(async () => {
     if (!map || !placesLib) return;
 
-    console.log(map, placesLib, "result");
     const { PlacesService } = placesLib as google.maps.PlacesLibrary;
     const service = new PlacesService(map);
 
@@ -31,7 +28,6 @@ const InnerMap = ({ locationNameStr, locationName, setRegionInfo, addInitGeometr
 
     service.findPlaceFromQuery(request, (results, status) => {
       if (status === google.maps.places.PlacesServiceStatus.OK && results) {
-        console.log(results, "result");
         if (results[0].geometry?.location?.lat() && results[0].geometry?.location?.lng()) {
           addInitGeometry({
             lat: results[0].geometry?.location?.lat(),
@@ -70,8 +66,6 @@ const InnerMap = ({ locationNameStr, locationName, setRegionInfo, addInitGeometr
       const geocoder = new window.kakao.maps.services.Geocoder();
 
       geocoder.addressSearch(locationNameStr, (result, status) => {
-        console.log(result, "result");
-
         if (status === window.kakao.maps.services.Status.OK && result.length > 0) {
           if (result[0].x && result[0].y) {
             addInitGeometry({
@@ -154,7 +148,6 @@ const RegionWrapper = ({
   const [isModalOPen, setIsModalOpen] = useState(false);
   const locationNameStr = location ?? locationName.locationName;
 
-  // 카카오맵 스크립트 로딩
   useEffect(() => {
     const script: HTMLScriptElement = document.createElement("script");
     script.async = true;
@@ -175,7 +168,7 @@ const RegionWrapper = ({
 
   if (isDetail) {
     return (
-      <TextContainer>
+      <div className="flex flex-col gap-1">
         <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API || ""}>
           <InnerMap
             locationNameStr={locationNameStr}
@@ -186,11 +179,11 @@ const RegionWrapper = ({
             isLoad={isLoad}
           />
         </APIProvider>
-        <Region>{locationNameStr}</Region>
-        <Small>
+        <div className="text-base font-semibold text-[var(--color-text-base)] leading-4">{locationNameStr}</div>
+        <div className="leading-4 text-xs text-[var(--color-text-muted)] font-normal">
           {regionInfo?.country} {regionInfo?.adminArea}
-        </Small>
-      </TextContainer>
+        </div>
+      </div>
     );
   } else {
     return (
@@ -211,65 +204,26 @@ const RegionWrapper = ({
             isLoad={isLoad}
           />
         </APIProvider>
-        <Container>
-          <PlaceIconContainer>
+        <div className="flex items-center">
+          <div className="flex items-center justify-center w-9 h-[42px]">
             <PlaceIcon width={21} height={24} />
-          </PlaceIconContainer>
-          <TextContainer>
-            <Region>{locationNameStr}</Region>
-            <Small>
+          </div>
+          <div className="flex flex-col gap-1">
+            <div className="text-base font-semibold text-[var(--color-text-base)] leading-4">{locationNameStr}</div>
+            <div className="leading-4 text-xs text-[var(--color-text-muted)] font-normal">
               {regionInfo?.country} {regionInfo?.adminArea}
-            </Small>
-          </TextContainer>
-          <ArrowIconContainer onClick={() => setIsModalOpen(true)}>
+            </div>
+          </div>
+          <div
+            className="flex items-center justify-center w-12 cursor-pointer h-12"
+            onClick={() => setIsModalOpen(true)}
+          >
             <ArrowIcon />
-          </ArrowIconContainer>
-        </Container>
+          </div>
+        </div>
       </>
     );
   }
 };
-
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const TextContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const PlaceIconContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 42px;
-`;
-
-const ArrowIconContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  cursor: pointer;
-  height: 48px;
-`;
-
-const Region = styled.div`
-  font-size: 16px;
-  font-weight: 600;
-  color: ${palette.기본};
-  line-height: 16px;
-`;
-
-const Small = styled.div`
-  line-height: 16px;
-  font-size: 12px;
-  color: ${palette.비강조};
-  font-weight: 400;
-`;
 
 export default RegionWrapper;

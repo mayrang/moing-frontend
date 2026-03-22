@@ -1,13 +1,11 @@
 "use client";
 import Spacing from "@/components/Spacing";
 import useInfiniteScroll from "@/hooks/useInfiniteScroll";
-import styled from "@emotion/styled";
 import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import InputField from "@/components/designSystem/input/InputField";
 import SortHeader from "@/components/SortHeader";
 import CategoryList from "@/components/community/CategoryList";
-import { palette } from "@/styles/palette";
 import CommunityItem from "@/components/community/CommunityItem";
 import useCommunity from "@/hooks/useCommunity";
 import CustomLink from "@/components/CustomLink";
@@ -85,7 +83,7 @@ const SearchCommunity = () => {
   };
 
   return (
-    <Container>
+    <div className="px-6">
       <InputField
         value={keyword}
         onChange={changeKeyword}
@@ -94,11 +92,11 @@ const SearchCommunity = () => {
         handleRemoveValue={handleRemoveValue}
       />
       <Spacing size={16} />
-      <SortContainer>
+      <div className="pb-[11px] border-b border-[rgb(240,240,240)] bg-[var(--color-bg)] box-border">
         <SortHeader list={LIST} clickSort={onClickSort} sort={sort}>
           <CategoryList type={category} setType={onClickCategory} list={["전체", "잡담", "여행팁", "후기"]} />
         </SortHeader>
-      </SortContainer>
+      </div>
       <>
         {isLoading && <div>검색 중...</div>}
         {!isLoading && data && data.pages[0].content.length > 0 && keyword !== "" && (
@@ -121,20 +119,8 @@ const SearchCommunity = () => {
           </>
         )}
       </>
-    </Container>
+    </div>
   );
 };
-
-const Container = styled.div`
-  padding: 0 24px;
-`;
-
-const SortContainer = styled.div`
-  padding-bottom: 11px;
-  border-bottom: 1px solid rgb(240, 240, 240);
-
-  background-color: ${palette.BG};
-  box-sizing: border-box;
-`;
 
 export default SearchCommunity;

@@ -1,7 +1,5 @@
 "use client";
 import Calendar from "@/components/icons/Calendar";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import React, { useState } from "react";
 import { formatDateRange } from "@/page-views/trip/create/CalendarClient";
 import ArrowIcon from "@/components/icons/ArrowIcon";
@@ -33,68 +31,27 @@ const CalendarWrapper = ({
         initDate={date}
         setShowModal={setShowModal}
       />
-      <Container onClick={() => setShowModal(true)}>
-        <TextContainer>
-          <TitleContainer>
+      <div
+        className="py-[11px] pl-2 flex cursor-pointer items-center justify-between"
+        onClick={() => setShowModal(true)}
+      >
+        <div className="flex items-center">
+          <div className="flex items-center w-[100px] gap-2 mr-3">
             <Calendar />
-            <Title>여행 날짜</Title>
-          </TitleContainer>
-
-          <Content>
+            <div className="text-sm leading-5 text-[var(--color-text-muted)] font-semibold">여행 날짜</div>
+          </div>
+          <div className="text-sm leading-5 text-[var(--color-text-base)] font-medium">
             {date
               ? formatDateRange(date?.startDate ?? "", date?.endDate ?? "")
               : "날짜를 선택하세요."}
-          </Content>
-        </TextContainer>
-        <ArrowIconContainer>
+          </div>
+        </div>
+        <div className="flex items-center justify-center w-12 h-12">
           <ArrowIcon />
-        </ArrowIconContainer>
-      </Container>
+        </div>
+      </div>
     </>
   );
 };
 
-const Container = styled.div`
-  padding: 11px 0;
-  padding-left: 8px;
-  display: flex;
-  cursor: pointer;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const ArrowIconContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-`;
-
-const Title = styled.div`
-  font-size: 14px;
-  line-height: 20px;
-  color: ${palette.비강조};
-  font-weight: 600;
-`;
-
-const TextContainer = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const Content = styled.div`
-  font-size: 14px;
-  line-height: 20px;
-  color: ${palette.기본};
-  font-weight: 500;
-`;
-
-const TitleContainer = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100px;
-  gap: 8px;
-  margin-right: 12px;
-`;
 export default CalendarWrapper;

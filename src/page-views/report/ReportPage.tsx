@@ -5,8 +5,6 @@ import Button from "@/components/designSystem/Buttons/Button";
 import TextareaField from "@/components/designSystem/input/TextareaField";
 import ArrowIcon from "@/components/icons/ArrowIcon";
 import { reportStore } from "@/store/client/reportStore";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -75,7 +73,6 @@ const Report = () => {
   const router = useRouter();
   const pathname = usePathname();
   const handleClick = (idx: number) => (e: React.MouseEvent<HTMLDivElement>) => {
-    console.log(idx);
     router.push(`${pathname}/${REPORT_LIST[idx].query}`);
   };
 
@@ -83,83 +80,31 @@ const Report = () => {
     setReportSuccess(true);
     router.back();
   };
-  console.log(checkItem, checkItem === -1 || checkItem === 5 ? (text === "" ? true : false) : false);
   return (
-    <Container>
-      <Title>신고 유형을 선택해 주세요.</Title>
-      <Subtitle>
+    <div className="px-6 pt-[18px] pb-[214px]">
+      <div className="text-xl leading-4 font-semibold flex items-center pl-1">신고 유형을 선택해 주세요.</div>
+      <div className="text-sm font-normal text-[var(--color-text-muted)] leading-5 mt-3 mb-[26px]">
         신고는 익명으로 처리되며,
         <br />
         순차적으로 확인 후 조치해 드릴게요
-      </Subtitle>
+      </div>
       {REPORT_LIST.map((item, idx) => (
-        <Description onClick={handleClick(idx)} isFirst={idx === 0}>
-          <Text>{item.title}</Text>
-          <ArrowIconContainer>
+        <div
+          key={item.query}
+          className="flex cursor-pointer text-base leading-4 font-normal w-full items-center justify-between h-[66px] border-b border-[#e7e7e7]"
+          style={{ borderTop: idx === 0 ? "1px solid #e7e7e7" : "0" }}
+          onClick={handleClick(idx)}
+        >
+          <div className="pl-1">{item.title}</div>
+          <div className="flex items-center justify-center w-12 h-12">
             <svg width="10" height="18" viewBox="0 0 10 18" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M1 17L9 9L1 1" stroke="#ABABAB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-          </ArrowIconContainer>
-        </Description>
+          </div>
+        </div>
       ))}
-    </Container>
+    </div>
   );
 };
-
-const Container = styled.div`
-  padding: 0 24px;
-  padding-top: 18px;
-  padding-bottom: 214px;
-`;
-
-const Title = styled.div`
-  font-size: 20px;
-  line-height: 16px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  padding-left: 4px;
-`;
-
-const Subtitle = styled.div`
-  font-size: 14px;
-  font-weight: 400;
-  color: ${palette.비강조};
-  line-height: 20px;
-  margin-top: 12px;
-  margin-bottom: 26px;
-`;
-
-const Text = styled.div`
-  padding-left: 4px;
-`;
-
-const RadioContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-const Description = styled.div<{ isFirst: boolean }>`
-  display: flex;
-  cursor: pointer;
-  font-size: 16px;
-  line-height: 16px;
-  font-weight: 400;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  height: 66px;
-  border-bottom: 1px #e7e7e7 solid;
-  border-top: ${(props) => (props.isFirst ? "1px" : 0)} #e7e7e7 solid;
-`;
-
-const ArrowIconContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-`;
 
 export default Report;

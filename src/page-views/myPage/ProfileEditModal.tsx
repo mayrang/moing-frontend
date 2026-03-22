@@ -9,10 +9,8 @@ import Spacing from "@/components/Spacing";
 import useMyPage from "@/hooks/myPage/useMyPage";
 import { authStore } from "@/store/client/authStore";
 import { myPageStore } from "@/store/client/myPageStore";
-import { palette } from "@/styles/palette";
 import { isDefaultProfile } from "@/utils/profileUrl";
-import styled from "@emotion/styled";
-import React, { act, ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface ModalProps {
@@ -69,44 +67,39 @@ export default function ProfileEditModal({ showModal, setShowModal }: ModalProps
   const handleCloseModal = () => {
     setShowModal(false);
   };
-  console.log(profileUrl, active);
   const profileSaveHandler = () => {
     // 프로필 저장. 실제 update api 요청.
     if (active !== "custom" && active !== "camera") {
       updateDefaultProfileImgMutation(active as number)
         .then((res) => {
-          console.log("프로필 업데이트 후, res", res);
-
           addIsProfileImgUpdated(true);
         })
         .catch((e) => {
-          console.log(e, "디폴트 프로필 정식 등록 요청 에러");
+          // 디폴트 프로필 정식 등록 요청 에러
         });
     } else {
       // 갤러리 이미지로 선택.
       if (active === "custom") {
         updateRealProfileImgMutation(showImage)
           .then((res: any) => {
-            console.log("프로필 업데이트 후, res", res);
             setShowImage(res.url);
 
             setChanged(true);
             addIsProfileImgUpdated(true);
           })
           .catch((e) => {
-            console.log(e, "커스텀 프로필 정식 등록 요청 에러");
+            // 커스텀 프로필 정식 등록 요청 에러
           });
       } // 카메라 이미지로 선택
       else {
         updateRealProfileImgMutation(showImageCamera)
           .then((res: any) => {
-            console.log("카메라프로필 업데이트 후, res", res);
             setShowImage(res.url);
             setChanged(true);
             addIsProfileImgUpdated(true);
           })
           .catch((e) => {
-            console.log(e, "카메라 프로필 정식 등록 요청 에러");
+            // 카메라 프로필 정식 등록 요청 에러
           });
       }
     }
@@ -114,7 +107,6 @@ export default function ProfileEditModal({ showModal, setShowModal }: ModalProps
     setShowModal(false);
     setClickedSave(true);
   };
-  console.log(profileUrl, "이미지 url");
   // 임시 등록 요청(카메라)
   const addImageFileCamera = (event: ChangeEvent<HTMLInputElement>) => {
     setActive("camera");
@@ -127,7 +119,6 @@ export default function ProfileEditModal({ showModal, setShowModal }: ModalProps
       //이 아래 부분은 미리보기 추가 되면 지울고 미리보기 api로 교체 예정.
       tempProfileImageMutation(formData)
         .then((res: any) => {
-          console.log("카메라 프로필 임시 등록 요청 후, res", res);
           setShowImageCamera(res.tempUrl);
 
           setChanged(true);
@@ -135,13 +126,10 @@ export default function ProfileEditModal({ showModal, setShowModal }: ModalProps
           setIsCustomImgUpload(true);
         })
         .catch((e) => {
-          console.log(e, " 카메라 프로필 임시 등록 요청 에러");
+          // 카메라 프로필 임시 등록 요청 에러
         });
-
-      console.log(event.target.files[0]);
     }
   };
-  console.log(showImageCamera, "이미지 카메라");
   // 임시 등록 요청. (갤러리)
   const addImageFileGalary = (event: ChangeEvent<HTMLInputElement>) => {
     setActive("custom");
@@ -153,7 +141,6 @@ export default function ProfileEditModal({ showModal, setShowModal }: ModalProps
 
       tempProfileImageMutation(formData)
         .then((res: any) => {
-          console.log("갤러리 프로필 임시 등록 요청 후, res", res);
           setShowImage(res.tempUrl);
 
           setChanged(true);
@@ -161,10 +148,8 @@ export default function ProfileEditModal({ showModal, setShowModal }: ModalProps
           setIsCustomImgUpload(true);
         })
         .catch((e) => {
-          console.log(e, "갤러리 프로필 임시 등록 요청 에러");
+          // 갤러리 프로필 임시 등록 요청 에러
         });
-
-      console.log(event.target.files[0]);
     }
   };
 
@@ -174,7 +159,7 @@ export default function ProfileEditModal({ showModal, setShowModal }: ModalProps
       updateDefaultProfileImgMutation(defaultNumber);
       addIsProfileImgUpdated(true);
     } catch (error) {
-      console.log("기본 프로필 업로드 오류");
+      // 기본 프로필 업로드 오류
     }
   };
 
@@ -187,10 +172,9 @@ export default function ProfileEditModal({ showModal, setShowModal }: ModalProps
         setActive(1);
         setChanged(true);
         setShowImageCamera("");
-        console.log("카메라 임시 등록한 이미지 삭제 완료.");
       })
       .catch((e) => {
-        console.log("카메라 임시 등록 이미지 삭제 실패");
+        // 카메라 임시 등록 이미지 삭제 실패
       });
   };
   // 프로필 삭제.
@@ -206,11 +190,10 @@ export default function ProfileEditModal({ showModal, setShowModal }: ModalProps
             setActive(1);
             setChanged(true);
             // addProfileUrl('')
-            console.log("실제 프로필 삭제& 삭제 후 기본 이미지 등록 완료.");
           });
         })
         .catch(() => {
-          console.log("실제 프로필 삭제 실패 & 기본 이미지 등록 ");
+          // 실제 프로필 삭제 실패 & 기본 이미지 등록
         });
     } else {
       // 아니라면. 임시 저장된 것 삭제.
@@ -218,14 +201,12 @@ export default function ProfileEditModal({ showModal, setShowModal }: ModalProps
         .then(() => {
           setActive(1);
           setChanged(true);
-          console.log("갤러리 임시 등록한 이미지 삭제 완료.");
         })
         .catch(() => {
-          console.log("갤러리 임시 등록 이미지 삭제 실패");
+          // 갤러리 임시 등록 이미지 삭제 실패
         });
     }
   };
-  console.log(active);
   useEffect(() => {
     return () => {
       if (clickedSave === false && (showImage !== "" || showImageCamera !== "")) {
@@ -233,16 +214,14 @@ export default function ProfileEditModal({ showModal, setShowModal }: ModalProps
           if (showImage !== "" && isCustomImg && showImage !== profileUrl) {
             try {
               await deleteTempProfileImgMutation(showImage);
-              console.log("갤러리 임시 등록한 이미지 삭제 완료.");
             } catch (e) {
-              console.log("갤러리 임시 등록 이미지 삭제 실패");
+              // 갤러리 임시 등록 이미지 삭제 실패
             }
           } else if (showImageCamera !== "" && isCameraCustomImg && showImage !== profileUrl) {
             try {
               await deleteTempProfileImgMutation(showImageCamera);
-              console.log("카메라 임시 등록한 이미지 삭제 완료.");
             } catch (e) {
-              console.log("카메라 임시 등록 이미지 삭제 실패");
+              // 카메라 임시 등록 이미지 삭제 실패
             }
           }
         };
@@ -252,9 +231,6 @@ export default function ProfileEditModal({ showModal, setShowModal }: ModalProps
     };
   }, []); //컴포넌트 언마운트 시에만 실행
 
-  console.log("check", showImage, showImageCamera);
-
-  console.log(isCustomImgUpload, "isCustomImgUpload");
   // 갤러리 부분에 사진을 보여줘야하는 경우.
   const isShowingGallery = showImage !== "" && isCustomImg && (active === "custom" || isCustomImgUpload); // 이미지가 존재하고, 커스텀이며, 클릭되어있거나 or 클릭안해도 업로드는 해둔상태.
   if (typeof window === "undefined") {
@@ -265,12 +241,12 @@ export default function ProfileEditModal({ showModal, setShowModal }: ModalProps
       initialHeight={window?.innerHeight <= 700 ? 60 : 50} // height 비율이 짧아 진다면 58%로 맞추기.
       closeModal={handleCloseModal}
     >
-      <ModalWrapper style={{ marginTop: "6px" }}>
-        <ModalContainer style={{ padding: "0px 24px" }}>
-          <DetailTitle>프로필 이미지를 선택해 주세요</DetailTitle>
+      <div style={{ marginTop: "6px" }}>
+        <div style={{ padding: "0px 24px" }}>
+          <div className="text-lg font-semibold leading-[25.2px] text-left text-[var(--color-text-base)] h-[25px] px-[6px] gap-2">프로필 이미지를 선택해 주세요</div>
           <Spacing size={32} />
-          <ProfileContainer>
-            <ShowImg
+          <div className="flex gap-4 justify-center">
+            <div
               onClick={
                 (e: any) => {
                   e.stopPropagation();
@@ -278,11 +254,12 @@ export default function ProfileEditModal({ showModal, setShowModal }: ModalProps
                 }
                 // 이미지가 존재하고, 현재 보여진 이미지가 커스텀일 때만 active 보더 표시.
               }
-              isCustomImg={active === "custom"}
+              className="relative flex justify-center items-center cursor-pointer max-h-[72px] aspect-square w-full h-full bg-[var(--color-muted4)] rounded-full"
+              style={{ border: active === "custom" ? "2px solid var(--color-keycolor)" : "none" }}
             >
               {(showImage === "" || !isCustomImg) && (
                 <>
-                  <UploadImg onClick={(e: any) => e.stopPropagation()} htmlFor="imageInput"></UploadImg>
+                  <label className="flex justify-center items-center cursor-pointer max-h-[72px] aspect-square w-full h-full bg-[var(--color-muted4)] rounded-full" onClick={(e: any) => e.stopPropagation()} htmlFor="imageInput"></label>
                   <input
                     onChange={(event) => addImageFileGalary(event)}
                     type="file"
@@ -313,50 +290,63 @@ export default function ProfileEditModal({ showModal, setShowModal }: ModalProps
                   <ProfileRemoveIcon />
                 </div>
               )}
-            </ShowImg>
-            <DefaultProfile isSelected={active === 1}>
-              <Profile
+            </div>
+            <div
+              className="relative rounded-full w-full h-full"
+              style={{ border: active === 1 ? "2px solid var(--color-keycolor)" : "none" }}
+            >
+              <img
                 onClick={() => {
                   setActive(1);
                   setChanged(true);
                 }}
                 src="/images/defaultProfile.png"
                 alt=""
+                className="block object-cover cursor-pointer w-full h-full"
               />
-            </DefaultProfile>
-            <DefaultProfile isSelected={active === 3}>
-              <Profile
+            </div>
+            <div
+              className="relative rounded-full w-full h-full"
+              style={{ border: active === 3 ? "2px solid var(--color-keycolor)" : "none" }}
+            >
+              <img
                 onClick={() => {
                   setActive(3);
                   setChanged(true);
                 }}
                 src="/images/defaultProfile3.png"
                 alt=""
+                className="block object-cover cursor-pointer w-full h-full"
               />
-            </DefaultProfile>
-            <DefaultProfile isSelected={active === 5}>
-              <Profile
+            </div>
+            <div
+              className="relative rounded-full w-full h-full"
+              style={{ border: active === 5 ? "2px solid var(--color-keycolor)" : "none" }}
+            >
+              <img
                 onClick={() => {
                   setActive(5);
                   setChanged(true);
                 }}
                 src="/images/defaultProfile5.png"
                 alt=""
+                className="block object-cover cursor-pointer w-full h-full"
               />
-            </DefaultProfile>
-          </ProfileContainer>
-          <ProfileContainer style={{ marginTop: "16px" }}>
-            <ShowImg
+            </div>
+          </div>
+          <div className="flex gap-4 justify-center" style={{ marginTop: "16px" }}>
+            <div
               onClick={(e: any) => {
                 e.stopPropagation();
                 // 이미지가 존재하고, 현재 보여진 이미지가 커스텀일 때만 active 보더 표시.
                 if (showImageCamera !== "" && isCustomImg) setActive("camera");
               }}
-              isCustomImg={active === "camera"}
+              className="relative flex justify-center items-center cursor-pointer max-h-[72px] aspect-square w-full h-full bg-[var(--color-muted4)] rounded-full"
+              style={{ border: active === "camera" ? "2px solid var(--color-keycolor)" : "none" }}
             >
               {(showImageCamera === "" || !isCustomImg) && (
                 <>
-                  <UploadImg onClick={(e: any) => e.stopPropagation()} htmlFor="cameraInput"></UploadImg>
+                  <label className="flex justify-center items-center cursor-pointer max-h-[72px] aspect-square w-full h-full bg-[var(--color-muted4)] rounded-full" onClick={(e: any) => e.stopPropagation()} htmlFor="cameraInput"></label>
                   <input
                     onChange={(event) => addImageFileCamera(event)}
                     type="file"
@@ -389,41 +379,53 @@ export default function ProfileEditModal({ showModal, setShowModal }: ModalProps
                   <ProfileRemoveIcon />
                 </div>
               )}
-            </ShowImg>
-            <DefaultProfile isSelected={active === 2}>
-              <Profile
+            </div>
+            <div
+              className="relative rounded-full w-full h-full"
+              style={{ border: active === 2 ? "2px solid var(--color-keycolor)" : "none" }}
+            >
+              <img
                 onClick={() => {
                   setActive(2);
                   setChanged(true);
                 }}
                 src="/images/defaultProfile2.png"
                 alt=""
+                className="block object-cover cursor-pointer w-full h-full"
               />
-            </DefaultProfile>
-            <DefaultProfile isSelected={active === 4}>
-              <Profile
+            </div>
+            <div
+              className="relative rounded-full w-full h-full"
+              style={{ border: active === 4 ? "2px solid var(--color-keycolor)" : "none" }}
+            >
+              <img
                 onClick={() => {
                   setActive(4);
                   setChanged(true);
                 }}
                 src="/images/defaultProfile4.png"
                 alt=""
+                className="block object-cover cursor-pointer w-full h-full"
               />
-            </DefaultProfile>
-            <DefaultProfile isSelected={active === 6}>
-              <Profile
+            </div>
+            <div
+              className="relative rounded-full w-full h-full"
+              style={{ border: active === 6 ? "2px solid var(--color-keycolor)" : "none" }}
+            >
+              <img
                 onClick={() => {
                   setActive(6);
                   setChanged(true);
                 }}
                 src="/images/defaultProfile6.png"
                 alt=""
+                className="block object-cover cursor-pointer w-full h-full"
               />
-            </DefaultProfile>
-          </ProfileContainer>
+            </div>
+          </div>
           <div style={{ marginTop: "16px" }}></div>
-        </ModalContainer>
-      </ModalWrapper>
+        </div>
+      </div>
       <ButtonContainer>
         <Button
           disabled={!changed}
@@ -439,62 +441,3 @@ export default function ProfileEditModal({ showModal, setShowModal }: ModalProps
     </BottomModal>
   );
 }
-// 프로필 사진 부분
-const ProfileContainer = styled.div`
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-`;
-const DefaultProfile = styled.div<{ isSelected: boolean }>`
-  position: relative;
-  border-radius: 50%;
-  width: 100%;
-  height: 100%;
-  border: ${(props) => (props.isSelected ? `2px solid ${palette.keycolor}` : "none")};
-`;
-const Profile = styled.img`
-  display: block;
-  object-fit: cover;
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-`;
-const ShowImg = styled.div<{ isCustomImg: boolean }>`
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  max-height: 72px;
-  aspect-ratio: 1 / 1;
-  width: 100%;
-  height: 100%;
-  background-color: ${palette.비강조4};
-  border-radius: 50%;
-  border: ${(props) => (props.isCustomImg ? `2px solid ${palette.keycolor}` : "none")};
-`;
-const UploadImg = styled.label`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  max-height: 72px;
-  aspect-ratio: 1 / 1;
-  width: 100%;
-  height: 100%;
-  background-color: ${palette.비강조4};
-  border-radius: 50%;
-`;
-const ModalWrapper = styled.div``;
-const ModalContainer = styled.div``;
-const DetailTitle = styled.div`
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 25.2px;
-  text-align: left;
-  color: ${palette.기본};
-  height: 25px;
-  padding: 0px 6px;
-  gap: 8px;
-  opacity: 0px;
-`;

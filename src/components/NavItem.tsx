@@ -2,7 +2,6 @@
 import React, { FunctionComponent } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { palette } from '@/styles/palette'
 
 interface NavItemProps {
   url: string
@@ -17,8 +16,8 @@ export default function NavItem({ url, Icon, text }: NavItemProps) {
   return (
     <Link href={url}>
       <Icon
-        stroke={isURLMatched ? palette.기본 : palette.비강조3}
-        fill={isURLMatched ? palette.기본 : palette.비강조3}
+        stroke={isURLMatched ? "var(--color-text-base)" : "var(--color-muted3)"}
+        fill={isURLMatched ? "var(--color-text-base)" : "var(--color-muted3)"}
       />
       <p>{text}</p>
     </Link>

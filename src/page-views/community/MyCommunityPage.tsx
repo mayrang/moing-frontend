@@ -1,7 +1,5 @@
 "use client";
 import Spacing from "@/components/Spacing";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import { useState } from "react";
 
 import Navbar from "@/page-views/home/Navbar";
@@ -17,6 +15,7 @@ import RoundedImage from "@/components/designSystem/profile/RoundedImage";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const LIST = ["최신순", "추천순", "등록일순"];
+
 const MyCommunity = () => {
   const searchParams = useSearchParams();
   const [fixed, setFixed] = useState(true);
@@ -59,10 +58,11 @@ const MyCommunity = () => {
       />
       <div>
         {isGuestUser() || DATA_COUNT === 0 ? (
-          <Container isNodata={true}>
-            <Empty>
+          <div className="px-6 relative flex justify-center items-center">
+            <div className="fixed top-0 flex flex-col items-center justify-center h-svh">
               <RoundedImage size={80} src="/images/noData.png" />
-              <NoData
+              <div
+                className="text-base font-medium leading-[22.4px] tracking-[-0.025em] text-center text-[var(--color-text-base)]"
                 style={{
                   marginTop: "16px",
                   display: "flex",
@@ -81,20 +81,28 @@ const MyCommunity = () => {
                     아직 작성한 <br /> 글이 없어요
                   </>
                 )}
-              </NoData>
-            </Empty>
-          </Container>
+              </div>
+            </div>
+          </div>
         ) : (
           <>
             <Spacing size={24} />
-            <SortContainer>
-              <SortHeader list={LIST} clickSort={onClickSort} setFixed={handleFixed} sort={sort}>
-                <CountContainer>
+            {/* SortContainer */}
+            <div className="px-6 pb-[11px] border-b border-[rgb(240,240,240)] sticky top-[100px] z-[1001] bg-[var(--color-bg)] box-border">
+              <SortHeader
+                list={LIST}
+                clickSort={onClickSort}
+                setFixed={handleFixed}
+                sort={sort}
+              >
+                <div className="text-sm font-medium leading-[16.71px] tracking-[-0.025em]">
                   총&nbsp;
-                  <Count>{DATA_COUNT}건</Count>
-                </CountContainer>
+                  <span className="text-[var(--color-keycolor)] font-bold">
+                    {DATA_COUNT}건
+                  </span>
+                </div>
               </SortHeader>
-            </SortContainer>
+            </div>
             <CommunityInfinite isMine={true} />
           </>
         )}
@@ -103,56 +111,5 @@ const MyCommunity = () => {
     </>
   );
 };
-
-const CountContainer = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 16.71px;
-  letter-spacing: -0.025em;
-`;
-
-const Count = styled.span`
-  color: #3e8d00;
-  font-weight: 700;
-`;
-
-const SortContainer = styled.div`
-  padding: 0 24px;
-  padding-bottom: 11px;
-  border-bottom: 1px solid rgb(240, 240, 240);
-  position: sticky;
-  top: 100px;
-  z-index: 1001;
-  background-color: ${palette.BG};
-  box-sizing: border-box;
-`;
-
-const Container = styled.div<{ isNodata: boolean | undefined }>`
-  padding: 0 24px;
-  position: relative;
-  display: ${(props) => (props.isNodata ? "flex" : "auto")};
-  justify-content: center;
-  align-items: center;
-`;
-
-const NoData = styled.div`
-  font-family: Pretendard;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 22.4px;
-  letter-spacing: -0.025em;
-  text-align: center;
-  color: ${palette.기본};
-`;
-const Empty = styled.div`
-  position: fixed;
-  top: 0;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100svh;
-`;
 
 export default MyCommunity;

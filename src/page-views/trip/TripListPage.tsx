@@ -6,8 +6,6 @@ import Spacing from "@/components/Spacing";
 import PopularPlaceList from "@/components/triplist/PopularPlaceList";
 
 import { authStore } from "@/store/client/authStore";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import React, { useState } from "react";
 import Navbar from "@/page-views/home/Navbar";
 import TripInfiniteList from "@/components/triplist/TripInfiniteList";
@@ -81,7 +79,7 @@ const TripList = () => {
   return (
     <>
       <div>
-        <SearchContainer>
+        <div className="flex px-6 pt-[52px] pb-4 items-center gap-[22px] sticky top-0 h-[116px] bg-[var(--color-bg)] z-[1000] justify-between">
           <div style={{ flex: 1 }}>
             <button style={{ width: "100%" }} onClick={onClickSearch}>
               <InputField
@@ -96,26 +94,26 @@ const TripList = () => {
           </div>
 
           {!isGuestUser() && (
-            <AlarmContainer onClick={handleNotification}>
+            <div className="cursor-pointer w-12 flex items-center justify-center" onClick={handleNotification}>
               <AlarmIcon />
-            </AlarmContainer>
+            </div>
           )}
-        </SearchContainer>
+        </div>
         <Spacing size={8} />
         <PopularPlaceList />
         <Spacing size={31} />
-        <SortContainer>
+        <div className="px-6 pb-[11px] border-b border-[rgb(240,240,240)] sticky top-[116px] z-[1001] bg-[var(--color-bg)]">
           <SortHeader
             list={LIST}
             clickSort={onClickSort}
             setFixed={handleFixed}
             sort={sort}
           >
-            <CountContainer>
-              총&nbsp;<Count>{data?.pages[0].page.totalElements ?? 0}건</Count>
-            </CountContainer>
+            <div className="text-sm font-medium leading-[16.71px] tracking-[-0.025em]">
+              총&nbsp;<span className="text-[#3e8d00] font-bold">{data?.pages[0].page.totalElements ?? 0}건</span>
+            </div>
           </SortHeader>
-        </SortContainer>
+        </div>
         <TripInfiniteList />
       </div>
       {fixed && <CreateTripButton />}
@@ -124,55 +122,5 @@ const TripList = () => {
   );
 };
 
-const SearchContainer = styled.div`
-  display: flex;
-  padding: 0 24px;
-  padding-top: 52px;
-  padding-bottom: 16px;
-  align-items: center;
-  gap: 22px;
-  position: sticky;
-  top: 0px;
-  height: 116px;
-  background-color: ${palette.BG};
-  z-index: 1000;
-  justify-content: space-between;
-`;
-const CountContainer = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 16.71px;
-  letter-spacing: -0.025em;
-`;
-
-const Count = styled.span`
-  color: #3e8d00;
-  font-weight: 700;
-`;
-
-const SortContainer = styled.div`
-  padding: 0 24px;
-  padding-bottom: 11px;
-  border-bottom: 1px solid rgb(240, 240, 240);
-  position: sticky;
-  top: 116px;
-  z-index: 1001;
-  background-color: ${palette.BG};
-`;
-
-const Bar = styled.div`
-  background-color: ${palette.비강조5};
-  width: 100%;
-  height: 6px;
-  margin: 3.8svh 0;
-`;
-
-const AlarmContainer = styled.div`
-  cursor: pointer;
-  width: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
 
 export default TripList;

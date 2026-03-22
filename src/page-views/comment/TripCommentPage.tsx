@@ -1,4 +1,3 @@
-/**  "jsxImportSource": "@emotion/react" */
 "use client";
 import Comment from "@/components/comment/Comment";
 import CommentForm from "@/components/comment/CommentForm";
@@ -6,7 +5,6 @@ import Spacing from "@/components/Spacing";
 import useComment from "@/hooks/comment/useComment";
 import useInfiniteScroll from "@/hooks/useInfiniteScroll";
 
-import styled from "@emotion/styled";
 import { useParams } from "next/navigation";
 import React from "react";
 import { useInView } from "react-intersection-observer";
@@ -31,7 +29,12 @@ const TripComment = () => {
     }
   }, [inView, !isFetching, fetchNextPage, hasNextPage]);
   return (
-    <Container>
+    <div
+      className="px-6 pt-7 overflow-y-auto"
+      style={{
+        height: "calc(100svh - (calc((16 * 100) / 844) * 1svh + 48px + calc((40 * 100) / 844) * 1svh + 68px + 24px))",
+      }}
+    >
       {!isLoading && data?.pages && data.pages[0].content.length > 0 ? (
         <>
           {data.pages.map((page, pageIndex) => (
@@ -51,7 +54,7 @@ const TripComment = () => {
         </>
       ) : (
         <>
-          <NoDataContainer>
+          <div className="flex flex-col items-center justify-center h-full">
             <img
               alt="댓글이 없습니다"
               width={80}
@@ -59,44 +62,17 @@ const TripComment = () => {
               src={"/images/noData.png"}
             />
             <Spacing size={16} />
-            <NoDataTitle>
+            <div className="text-sm font-normal leading-5 tracking-[-0.025em] text-center">
               아직 달린 댓글이 없어요
               <br />
               댓글을 달아보세요
-            </NoDataTitle>
-          </NoDataContainer>
+            </div>
+          </div>
         </>
       )}
       <CommentForm relatedType="travel" relatedNumber={Number(travelNumber)} />
-    </Container>
+    </div>
   );
 };
 
-const Container = styled.div`
-  padding: 28px 24px;
-  height: calc(
-    100svh -
-      (
-        calc((16 * 100) / 844) * 1svh + 48px + calc((40 * 100) / 844) * 1svh +
-          68px + 24px
-      )
-  );
-  overflow-y: auto;
-`;
-
-const NoDataContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-`;
-
-const NoDataTitle = styled.div`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  letter-spacing: -0.025em;
-  text-align: center;
-`;
 export default TripComment;

@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import styled from "@emotion/styled";
 import Button from "@/components/designSystem/Buttons/Button";
 import { useParams, useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
@@ -72,7 +71,6 @@ const TripEdit = () => {
     resetEditTripDetail,
   } = editTripStore();
   useEffect(() => {
-    console.log("trip", tripInfos, genderType, isEditSuccess, locationName);
     if (tripDetail.isFetched && !isEditSuccess) {
       if (title === "") {
         addTitle(tripInfos.title);
@@ -129,9 +127,7 @@ const TripEdit = () => {
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
-  console.log("init locationName", locationName);
   useEffect(() => {
-    console.log("locationName kakao", locationName);
     const handleLoad = () => {
       window.kakao.maps.load(() => {
         const geocoder = new window.kakao.maps.services.Geocoder();
@@ -180,16 +176,12 @@ const TripEdit = () => {
 
   // 첫 번째 useEffect - 데이터 초기화와 날짜 추가
   useEffect(() => {
-    console.log("data", data, dataInitialized, hasNextPage);
-
     if (!isLoading && data && !dataInitialized.isInitialized && !hasNextPage && date?.startDate) {
       const allPlans = data.pages.flatMap((page) => page.plans || []);
-      console.log("allPlans", allPlans);
       const formattedPlans = allPlans.map((plan) => {
         const planDate = dayjs(date?.startDate)
           .add(plan.planOrder - 1, "day")
           .format("YYYY-MM-DD");
-        console.log("date", date, planDate);
         return {
           ...plan,
           planOrder: plan.planOrder,
@@ -204,7 +196,6 @@ const TripEdit = () => {
         };
       });
 
-      console.log("formattedPlans", formattedPlans);
       setOriginalPlans(formattedPlans);
 
       addPlans(formattedPlans);
@@ -225,7 +216,6 @@ const TripEdit = () => {
   }, [dataInitialized.isInitialized, dataInitialized.travelNumber]);
 
   useEffect(() => {
-    console.log(hasNextPage);
     if (hasNextPage && !isFetching) {
       const timer = setTimeout(() => {
         fetchNextPage();
@@ -285,7 +275,6 @@ const TripEdit = () => {
     setOpenItemIndex(openItemIndex === index ? null : index);
   };
 
-  console.log("originalPlans", originalPlans);
   const completeClickHandler = () => {
     if (
       title === "" ||
@@ -297,18 +286,6 @@ const TripEdit = () => {
       tags?.length === 0 ||
       locationName.locationName === ""
     ) {
-      console.log(
-        "test",
-        title,
-        details,
-        maxPerson,
-        genderType,
-        !date?.startDate,
-        !date?.endDate,
-        periodType,
-        tags?.length,
-        locationName.locationName
-      );
       addCompletionStatus(false);
       setIsToastShow(true);
       return;
@@ -338,7 +315,7 @@ const TripEdit = () => {
         }
       },
       onError: (e) => {
-        console.log(e, "여행 수정 오류 발생.");
+        // 여행 수정 오류 발생
       },
     });
   };
@@ -352,15 +329,15 @@ const TripEdit = () => {
   }, [isMapFull]);
   return (
     <>
-      <CreateTripDetailWrapper>
-        <CreateTripDetailContainer id="container-scroll" ref={containerRef}>
+      <div className="relative">
+        <div id="container-scroll" ref={containerRef} className="px-6 overflow-y-auto relative h-[calc(100svh-116px)] no-scrollbar overscroll-none pb-[104px]">
           <TopModal
             isToastShow={isToastShow}
             containerRef={containerRef}
             setIsMapFull={setIsMapFull}
             onHeightChange={setTopModalHeight}
           >
-            <ModalContainer>
+            <div className="px-6">
               <RegionWrapper
                 locationName={locationName}
                 addInitGeometry={addInitGeometry}
@@ -387,9 +364,9 @@ const TripEdit = () => {
               <Spacing size={16} />
               <TagListWrapper addTags={addTags} taggedArray={tags ?? []} />
               <Spacing size={16} />
-              <Bar />
+              <div className="bg-[#e7e7e7] w-full h-[1px]" />
               <CalendarWrapper addDate={addDate} date={date} />
-              <Bar />
+              <div className="bg-[#e7e7e7] w-full h-[1px]" />
               <InfoWrapper
                 nowPerson={nowPerson}
                 addGenderType={addGenderType}
@@ -397,9 +374,12 @@ const TripEdit = () => {
                 maxPerson={maxPerson}
                 addMaxPerson={addMaxPerson}
               />
-            </ModalContainer>
+            </div>
           </TopModal>
-          <BottomContainer isMapFull={isMapFull} topModalHeight={topModalHeight}>
+          <div
+            className="min-h-svh transition-[margin-top] duration-300 ease-out overscroll-none"
+            style={{ marginTop: isMapFull ? "32px" : `${topModalHeight + 32}px` }}
+          >
             <MapContainer
               index={openItemIndex}
               plans={plans}
@@ -409,9 +389,9 @@ const TripEdit = () => {
               lng={initGeometry?.lng || 126.9816417}
               zoom={locationName.mapType === "google" ? 11 : 9}
             />
-            <ScheduleContainer>
-              <Title>여행 일정</Title>
-              <ScheduleList>
+            <div className="mt-6">
+              <div className="text-lg font-medium text-black leading-[21px]">여행 일정</div>
+              <div className="flex flex-col gap-4">
                 {!isLoading &&
                   plans.length > 0 &&
                   plans?.map((item, idx) => (
@@ -427,10 +407,10 @@ const TripEdit = () => {
                       onToggle={() => handleItemToggle(idx)}
                     />
                   ))}
-              </ScheduleList>
-            </ScheduleContainer>
-          </BottomContainer>
-        </CreateTripDetailContainer>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <ButtonContainer>
           <Button
@@ -443,61 +423,10 @@ const TripEdit = () => {
             }}
           />
         </ButtonContainer>
-      </CreateTripDetailWrapper>
+      </div>
     </>
   );
 };
 
 export default TripEdit;
 
-const CreateTripDetailWrapper = styled.div`
-  position: relative;
-`;
-
-const ScheduleContainer = styled.div`
-  margin-top: 24px;
-`;
-const Title = styled.div`
-  font-size: 18px;
-  font-weight: 500;
-  color: #000;
-  line-height: 21px;
-`;
-
-const ScheduleList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const CreateTripDetailContainer = styled.div<{ topModalHeight?: number }>`
-  padding: 0px 24px;
-  overflow-y: auto;
-  position: relative;
-  height: calc(100svh - 116px);
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  overscroll-behavior: none;
-  padding-bottom: 104px;
-`;
-
-const ModalContainer = styled.div`
-  padding: 0 24px;
-`;
-
-const Bar = styled.div`
-  background-color: #e7e7e7;
-  width: 100%;
-  height: 1px;
-`;
-
-const BottomContainer = styled.div<{
-  topModalHeight: number;
-  isMapFull: boolean;
-}>`
-  margin-top: ${(props) => `${props.isMapFull ? 32 : props.topModalHeight + 32}px`};
-  min-height: 100svh;
-  transition: padding-top 0.3s ease-out;
-  overscroll-behavior: none;
-`;

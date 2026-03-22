@@ -1,9 +1,6 @@
 "use client";
 import AlarmIcon from "@/components/icons/AlarmIcon";
 import Spacing from "@/components/Spacing";
-
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import React, { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/page-views/home/Navbar";
@@ -21,6 +18,7 @@ import { isGuestUser } from "@/utils/user";
 
 const LIST = ["최신순", "추천순", "등록일순"];
 const COMMUNITY_CATEGORY = ["전체", "잡담", "여행팁", "후기"];
+
 const Community = () => {
   const searchParams = useSearchParams();
   const [fixed, setFixed] = useState(true);
@@ -70,30 +68,44 @@ const Community = () => {
         text={COMMUNITY_TOAST_MESSAGES.deletePost}
       />
       <div>
-        <SearchContainer>
-          <Title>커뮤니티</Title>
-          <IconContainer>
-            <LinkContainer>
+        {/* SearchContainer */}
+        <div className="flex px-6 pt-[52px] h-[116px] items-center gap-[22px] sticky top-0 pb-4 bg-[var(--color-bg)] z-[1000]">
+          <h1 className="text-xl font-semibold flex-1">커뮤니티</h1>
+          <div className="flex items-center">
+            <div className="flex items-center justify-center w-12 h-12">
               <CustomLink to={`/search/community`}>
                 <SearchIcon width={24} height={22} />
               </CustomLink>
-            </LinkContainer>
+            </div>
             {!isGuestUser() && (
-              <LinkContainer>
-                <div onClick={handleNotification} style={{ cursor: "pointer" }}>
-                  <AlarmIcon stroke={palette.기본} />
+              <div className="flex items-center justify-center w-12 h-12">
+                <div
+                  onClick={handleNotification}
+                  style={{ cursor: "pointer" }}
+                >
+                  <AlarmIcon stroke="var(--color-text-base)" />
                 </div>
-              </LinkContainer>
+              </div>
             )}
-          </IconContainer>
-        </SearchContainer>
+          </div>
+        </div>
 
         <Spacing size={24} />
-        <SortContainer>
-          <SortHeader list={LIST} clickSort={onClickSort} setFixed={handleFixed} sort={sort}>
-            <CategoryList type={category} setType={onClickCategory} list={COMMUNITY_CATEGORY} />
+        {/* SortContainer */}
+        <div className="px-6 pb-[11px] border-b border-[rgb(240,240,240)] sticky top-[100px] z-[1001] bg-[var(--color-bg)] box-border">
+          <SortHeader
+            list={LIST}
+            clickSort={onClickSort}
+            setFixed={handleFixed}
+            sort={sort}
+          >
+            <CategoryList
+              type={category}
+              setType={onClickCategory}
+              list={COMMUNITY_CATEGORY}
+            />
           </SortHeader>
-        </SortContainer>
+        </div>
         <CommunityInfinite />
       </div>
       {fixed && <CreateTripButton type="community" />}
@@ -101,48 +113,5 @@ const Community = () => {
     </>
   );
 };
-
-const SearchContainer = styled.div`
-  display: flex;
-  padding: 0 24px;
-  padding-top: 52px;
-  height: 116px;
-  align-items: center;
-  gap: 22px;
-  position: sticky;
-  top: 0px;
-  padding-bottom: 16px;
-  background-color: ${palette.BG};
-  z-index: 1000;
-`;
-
-const SortContainer = styled.div`
-  padding: 0 24px;
-  padding-bottom: 11px;
-  border-bottom: 1px solid rgb(240, 240, 240);
-  position: sticky;
-  top: 100px;
-  z-index: 1001;
-  background-color: ${palette.BG};
-  box-sizing: border-box;
-`;
-
-const Title = styled.h1`
-  font-size: 20px;
-  font-weight: 600;
-  flex: 1;
-`;
-const IconContainer = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const LinkContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-`;
 
 export default Community;

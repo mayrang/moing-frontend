@@ -1,6 +1,5 @@
 "use client";
 import useInfiniteScroll from "@/hooks/useInfiniteScroll";
-import styled from "@emotion/styled";
 import React from "react";
 import { useInView } from "react-intersection-observer";
 
@@ -12,36 +11,8 @@ const ContactInfinite = () => {
   const [ref, inView] = useInView();
   const searchParams = useSearchParams();
 
-  // const {
-  //   communityList: { data, isFetching, hasNextPage, fetchNextPage, isLoading }
-  // } = useCommunity(
-  //   undefined,
-  //   {
-  //     sortingTypeName: sort,
-  //     categoryName: categoryName
-  //   },
-  //   isMine
-  // )
-
-  // useInfiniteScroll(() => {
-  //   if (inView) {
-  //     !isFetching && hasNextPage && fetchNextPage()
-  //   }
-  // }, [inView, !isFetching, fetchNextPage, hasNextPage])
-
   return (
     <>
-      {/* {!isLoading &&
-        data &&
-        data.pages.map((page, pageIndex) => (
-          <React.Fragment key={pageIndex}>
-            {page.content.map((content, itemIndex) => (
-              <CustomLink to={`/contact/${content.postNumber}`}>
-                <CommunityItem data={content} />
-              </CustomLink>
-            ))}
-          </React.Fragment>
-        ))} */}
       <CustomLink to={`/contact/${1}`}>
         <ContactItem
           data={{

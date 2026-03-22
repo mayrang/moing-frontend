@@ -7,3 +7,5 @@ export * from './select';
 export * from './tag';
 export * from './text';
 export * from './profile';
+export * from './layout';
+export * from './feedback';

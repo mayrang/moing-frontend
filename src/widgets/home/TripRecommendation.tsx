@@ -1,5 +1,4 @@
 "use client";
-import styled from "@emotion/styled";
 import TitleContainer from "@/widgets/home/ContentTitleContainer";
 import { useTripList } from "@/hooks/useTripList";
 import ThreeRowCarousel from "@/components/ThreeRowCarousel";
@@ -7,8 +6,6 @@ import HorizonBoxLayout from "@/components/HorizonBoxLayout";
 import dayjs from "dayjs";
 import { IMyTripList } from "@/model/myTrip";
 import { daysAgo } from "@/utils/time";
-import Link from "next/link";
-import { palette } from "@/styles/palette";
 import { useRouter } from "next/navigation";
 import { useBackPathStore } from "@/store/client/backPathStore";
 
@@ -23,9 +20,9 @@ const TripRecommendation = () => {
 
     router.push(`/trip/detail/${travelNumber}`);
   };
-  console.log("cut", cutTrips);
+
   return (
-    <Container>
+    <div className="mt-8">
       <TitleContainer
         detailLink={`/trip/list?sort=recommend`}
         linkText="여행 추천"
@@ -40,8 +37,15 @@ const TripRecommendation = () => {
       <ThreeRowCarousel>
         {cutTrips &&
           cutTrips?.map((post, idx) => (
-            <BoxContainer key={post.travelNumber}>
-              <Box style={(idx + 1) % 3 === 0 || cutTrips.length === idx + 1 ? { borderBottom: 0 } : {}}>
+            <div key={post.travelNumber}>
+              <div
+                className="border-[var(--color-muted4)] h-[90px] box-content mx-4 py-[10px]"
+                style={
+                  (idx + 1) % 3 === 0 || cutTrips.length === idx + 1
+                    ? { borderBottom: 0 }
+                    : { borderBottom: "1px solid" }
+                }
+              >
                 <div onClick={() => clickTrip(post.travelNumber)}>
                   <HorizonBoxLayout
                     bookmarked={post.bookmarked}
@@ -52,29 +56,20 @@ const TripRecommendation = () => {
                     userName={post.userName}
                     tags={post.tags}
                     daysAgo={daysAgo(post?.createdAt)}
-                    daysLeft={dayjs(post.registerDue, "YYYY-MM-DD").diff(dayjs().startOf("day"), "day")}
+                    daysLeft={dayjs(post.registerDue, "YYYY-MM-DD").diff(
+                      dayjs().startOf("day"),
+                      "day"
+                    )}
                     title={post.title}
                     recruits={post.nowPerson}
                     total={post.maxPerson}
                   />
                 </div>
-              </Box>
-            </BoxContainer>
+              </div>
+            </div>
           ))}
       </ThreeRowCarousel>
-    </Container>
+    </div>
   );
 };
 export default TripRecommendation;
-
-const Container = styled.div`
-  margin-top: 32px;
-`;
-const BoxContainer = styled.div``;
-const Box = styled.div`
-  border-bottom: 1px solid ${palette.비강조4};
-  height: 90px;
-  box-sizing: content-box;
-  margin: 0 16px;
-  padding: 10px 0;
-`;

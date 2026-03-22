@@ -244,6 +244,10 @@ body {
   }
 }
 
+/* 스크롤바 숨김 */
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
 /* Select 컴포넌트 커스텀 스크롤바 */
 .select-scrollbar::-webkit-scrollbar { width: 1px; }
 .select-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -285,6 +289,29 @@ body {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
   75% { transform: translateX(5px); }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translate3d(0, 20%, 0); }
+  to { opacity: 1; transform: translateZ(10); }
+}
+
+@keyframes slideUpMobile {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes slideDownMobile {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(100%); opacity: 0; }
+}
+
+@keyframes slideUpProfile {
+  from { transform: translate(-50%, 100%); opacity: 0; }
+  to { transform: translate(-50%, 0%); opacity: 1; }
+}
+@keyframes slideDownProfile {
+  from { transform: translate(-50%, 0%); opacity: 1; }
+  to { transform: translate(-50%, 100%); opacity: 0; }
 }
 
 @keyframes slide-from-right {

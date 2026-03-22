@@ -1,5 +1,4 @@
 "use client";
-import { palette } from "@/styles/palette";
 import React from "react";
 
 interface NavCommunityIconProps {
@@ -10,7 +9,7 @@ interface NavCommunityIconProps {
 
 const NavCommunityIcon = ({
   size = 20,
-  stroke = palette.비강조3,
+  stroke = "var(--color-muted3)",
   fill = "none",
 }: NavCommunityIconProps) => {
   return !fill || fill === "none" ? (

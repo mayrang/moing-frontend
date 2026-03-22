@@ -5,7 +5,6 @@ import InfoText from "@/components/designSystem/text/InfoText";
 import Spacing from "@/components/Spacing";
 import Terms from "@/components/Terms";
 import { userStore } from "@/store/client/userStore";
-import styled from "@emotion/styled";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { checkEmail } from "@/api/user";
 import ButtonContainer from "@/components/ButtonContainer";
@@ -13,6 +12,7 @@ import { emailSchema, passwordSchema } from "@/utils/schema";
 import useViewTransition from "@/hooks/useViewTransition";
 import { useRouter } from "next/navigation";
 import ValidationInputField from "@/components/designSystem/input/ValidationInputField";
+
 interface ErrorProps {
   email: undefined | string;
   password: undefined | string;
@@ -177,9 +177,11 @@ const RegisterForm = () => {
   return (
     <>
       {showTerms && <Terms closeShowTerms={closeShowTerms} />}
-      <Container onSubmit={handleSubmit}>
-        <FieldContainer>
-          <Label htmlFor="email">이메일</Label>
+      <form className="px-6 pt-[7.1svh]" onSubmit={handleSubmit}>
+        <div className="flex w-full flex-col">
+          <label className="text-lg tracking-[-0.04em]" htmlFor="email">
+            이메일
+          </label>
           <Spacing size={16} />
           <ValidationInputField
             handleRemoveValue={() => handleRemoveValue("email")}
@@ -193,13 +195,15 @@ const RegisterForm = () => {
             shake={shake.email}
             message={error.email ?? ""}
           />
-        </FieldContainer>
+        </div>
 
         <Spacing size={"6svh"} />
         {isRegisterEmail && (
           <>
-            <FieldContainer>
-              <Label htmlFor="password">비밀번호</Label>
+            <div className="flex w-full flex-col">
+              <label className="text-lg tracking-[-0.04em]" htmlFor="password">
+                비밀번호
+              </label>
               <Spacing size={16} />
               <StateInputField
                 handleRemoveValue={() => handleRemoveValue("password")}
@@ -214,18 +218,18 @@ const RegisterForm = () => {
               />
               <Spacing size={10} />
               <div style={{ paddingLeft: 6 }}>
-              {error.password ? (
-                <InfoText hasError>{error.password}</InfoText>
-              ) : success.password ? (
-                <InfoText success>영문 대문자, 특수문자 포함 8~20자</InfoText>
-              ) : (
-                <InfoText>영문 대문자, 특수문자 포함 8~20자</InfoText>
-              )}
+                {error.password ? (
+                  <InfoText hasError>{error.password}</InfoText>
+                ) : success.password ? (
+                  <InfoText success>영문 대문자, 특수문자 포함 8~20자</InfoText>
+                ) : (
+                  <InfoText>영문 대문자, 특수문자 포함 8~20자</InfoText>
+                )}
               </div>
-            </FieldContainer>
+            </div>
 
             <Spacing size={14} />
-            <FieldContainer>
+            <div className="flex w-full flex-col">
               <ValidationInputField
                 shake={shake.confirmPassword}
                 handleRemoveValue={() => handleRemoveValue("confirmPassword")}
@@ -238,7 +242,7 @@ const RegisterForm = () => {
                 success={success.confirmPassword}
                 message={error.confirmPassword ?? ""}
               />
-            </FieldContainer>
+            </div>
           </>
         )}
         <ButtonContainer>
@@ -257,26 +261,9 @@ const RegisterForm = () => {
             />
           )}
         </ButtonContainer>
-      </Container>
+      </form>
     </>
   );
 };
 
-const Container = styled.form`
-  padding: 0 24px;
-
-  padding-top: 7.1svh;
-`;
-
-const FieldContainer = styled.div`
-  display: flex;
-  width: 100%;
-
-  flex-direction: column;
-`;
-
-const Label = styled.label`
-  font-size: 18px;
-  letter-spacing: -0.04;
-`;
 export default RegisterForm;

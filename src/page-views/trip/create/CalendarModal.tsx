@@ -4,9 +4,7 @@ import ButtonContainer from "@/components/ButtonContainer";
 import Button from "@/components/designSystem/Buttons/Button";
 import Spacing from "@/components/Spacing";
 import { createTripStore } from "@/store/client/createTripStore";
-import { palette } from "@/styles/palette";
 import { CalendarDay, Post, setCalendarArray } from "@/utils/calendar";
-import styled from "@emotion/styled";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import Calendar from "@/components/calendar/CalendarView";
@@ -184,13 +182,13 @@ const CalendarModal = ({ showModal, setShowModal, addDate, initDate }: CalendarM
       />
       {showModal && (
         <BottomModal initialHeight={75} closeModal={handleCloseModal}>
-          <ModalWrapper>
-            <ModalContainer>
-              <WeekDays>
+          <div className="flex flex-col h-full relative overflow-hidden">
+            <div className="grow overflow-y-auto px-5 mt-[45px] pb-[104px] no-scrollbar">
+              <div className="absolute flex w-[calc(100%-48px)] top-0 pb-4 border-b border-[#e7e7e7] text-sm leading-7 font-semibold text-[var(--color-text-muted)] text-center">
                 {["일", "월", "화", "수", "목", "금", "토"].map((day) => (
-                  <WeekDay key={day}>{day}</WeekDay>
+                  <div key={day} className="flex-1 h-7 text-center">{day}</div>
                 ))}
-              </WeekDays>
+              </div>
               <Spacing size={20} />
               {calendarDataArray.map((data, index) => (
                 <>
@@ -205,8 +203,8 @@ const CalendarModal = ({ showModal, setShowModal, addDate, initDate }: CalendarM
                   <Spacing size={28} />
                 </>
               ))}
-            </ModalContainer>
-          </ModalWrapper>
+            </div>
+          </div>
           <ButtonContainer>
             <Button
               onClick={handleDate}
@@ -229,65 +227,5 @@ const CalendarModal = ({ showModal, setShowModal, addDate, initDate }: CalendarM
   );
 };
 
-const ModalWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-`;
-
-const WeekDays = styled.div`
-  position: absolute;
-  display: flex;
-  width: calc(100% - 48px);
-  top: 0;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #e7e7e7;
-  font-size: 14px;
-  line-height: 28px;
-  font-weight: 600;
-  color: ${palette.비강조};
-  text-align: center;
-`;
-
-const ModalContainer = styled.div`
-  flex-grow: 1;
-  overflow-y: auto;
-  padding: 0 20px;
-  margin-top: 45px;
-  padding-bottom: 104px;
-
-  &::-webkit-scrollbar {
-    // scrollbar 자체의 설정
-    // 너비를 작게 설정
-    width: 0px;
-  }
-  &::-webkit-scrollbar-track {
-    // scrollbar의 배경부분 설정
-    // 부모와 동일하게 함(나중에 절전모드, 밤모드 추가되면 수정하기 번거로우니까... 미리 보이는 노동은 최소화)
-    background: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    // scrollbar의 bar 부분 설정
-    // 동글동글한 회색 바를 만든다.
-    border-radius: 1rem;
-
-    background: rgba(217, 217, 217, 1);
-  }
-  &::-webkit-scrollbar-button {
-    // scrollbar의 상하단 위/아래 이동 버튼
-    // 크기를 안줘서 안보이게 함.
-    width: 0;
-    height: 0;
-  }
-`;
-
-const WeekDay = styled.div`
-  flex: 1;
-
-  height: 28px;
-  text-align: center;
-`;
 
 export default CalendarModal;

@@ -2,10 +2,8 @@
 "use client";
 import ThirdStepIcon from "@/components/icons/step/trip/ThirdStepIcon";
 import Spacing from "@/components/Spacing";
-import styled from "@emotion/styled";
 import React, { ReactNode, useEffect } from "react";
 import RecruitingWrapper from "./CreateTripDetail/RecruitingWrapper";
-import { palette } from "@/styles/palette";
 import EveryBodyIcon from "@/components/icons/EveryBodyIcon";
 import OnlyMaleIcon from "@/components/icons/OnlyMaleIcon";
 import OnlyFemaleIcon from "@/components/icons/OnlyFemaleIcon";
@@ -50,28 +48,35 @@ const CreateTripInfo = () => {
   };
 
   return (
-    <Container>
-      <StepIconContainer>
+    <div className="px-6">
+      <div className="mt-2 mb-10">
         <ThirdStepIcon />
-      </StepIconContainer>
-      <Title>여행의 구성은 어떻게 될까요?</Title>
+      </div>
+      <h2 className="text-xl font-semibold leading-7 ml-[6px] text-left">여행의 구성은 어떻게 될까요?</h2>
       <Spacing size={20} />
       <RecruitingWrapper />
-      <Bar />
-      <GenderContainer>
-        <DetailTitle>성별 선택</DetailTitle>
-        <GenderList>
+      <div className="bg-[#e7e7e7] w-full h-[1px] my-8" />
+      <div>
+        <div className="text-base font-semibold leading-[22px] text-left text-[var(--color-text-muted)] px-[6px] gap-2">성별 선택</div>
+        <div className="flex gap-4 items-center mt-2">
           {selections.map((item) => (
-            <GenderItem
-              isSelected={genderType === item.gender}
+            <div
+              key={item.gender}
+              className="flex cursor-pointer flex-col items-center gap-1 justify-center rounded-[20px] w-[90px] h-[84px]"
+              style={{
+                backgroundColor: genderType === item.gender ? "var(--color-keycolor-bg)" : "var(--color-search-bg)",
+                border: genderType === item.gender ? "1px solid var(--color-keycolor)" : "0px",
+                color: genderType === item.gender ? "var(--color-keycolor)" : "var(--color-text-base)",
+                fontWeight: genderType === item.gender ? 600 : 400,
+              }}
               onClick={() => clickGender(item.gender)}
             >
               {item.icon(genderType === item.gender)}
-              <GenderText>{item.gender}</GenderText>
-            </GenderItem>
+              <div className="text-sm leading-5">{item.gender}</div>
+            </div>
           ))}
-        </GenderList>
-      </GenderContainer>
+        </div>
+      </div>
       <ButtonContainer>
         <Button
           onClick={handleNext}
@@ -88,75 +93,8 @@ const CreateTripInfo = () => {
           text={"다음"}
         />
       </ButtonContainer>
-    </Container>
+    </div>
   );
 };
-
-const StepIconContainer = styled.div`
-  margin-top: 8px;
-  margin-bottom: 40px;
-`;
-
-const Container = styled.div`
-  padding: 0 24px;
-`;
-
-const Bar = styled.div`
-  background-color: #e7e7e7;
-  width: 100%;
-  height: 1px;
-  margin: 32px 0;
-`;
-
-const GenderText = styled.div`
-  font-size: 14px;
-  line-height: 20px;
-`;
-
-const GenderList = styled.div`
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  margin-top: 8px;
-`;
-
-const GenderItem = styled.div<{ isSelected: boolean }>`
-  display: flex;
-  cursor: pointer;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  justify-content: center;
-  background-color: ${(props) =>
-    props.isSelected ? palette.keycolorBG : palette.검색창};
-  border: ${(props) =>
-    props.isSelected ? `1px solid ${palette.keycolor}` : "0px"};
-  border-radius: 20px;
-  width: 90px;
-  height: 84px;
-  color: ${(props) => (props.isSelected ? palette.keycolor : palette.기본)};
-  font-weight: ${(props) => (props.isSelected ? 600 : 400)};
-`;
-
-const GenderContainer = styled.div``;
-
-const DetailTitle = styled.div`
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 22px;
-  text-align: left;
-  color: ${palette.비강조};
-
-  padding: 0px 6px;
-  gap: 8px;
-`;
-
-const Title = styled.h2`
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 28px;
-  margin-left: 6px;
-  text-align: left;
-`;
 
 export default CreateTripInfo;

@@ -8,8 +8,6 @@ import RequestError from "@/context/ReqeustError";
 import { IContactCreate } from "@/model/contact";
 import { authStore } from "@/store/client/authStore";
 import { myPageStore } from "@/store/client/myPageStore";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import React, { FormEvent, useState } from "react";
@@ -47,15 +45,15 @@ const Explanation = () => {
     });
   };
   return (
-    <Container>
-      <Title>기타</Title>
+    <div className="px-6 pt-2 pb-[214px]">
+      <div className="text-lg leading-9 font-semibold pl-[6px] flex items-center">기타</div>
       <Spacing size={16} />
       <TextareaField
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="직접 입력 (최대 500자)"
         height="120px"
-        placeholderColor={palette.비강조}
+        placeholderColor="var(--color-text-muted)"
         padding={"12px 16px"}
         lineHeight="20px"
         fontSize="14px"
@@ -77,23 +75,8 @@ const Explanation = () => {
           text={"신고하기"}
         />
       </ButtonContainer>
-    </Container>
+    </div>
   );
 };
-
-const Container = styled.div`
-  padding: 0 24px;
-  padding-top: 8px;
-  padding-bottom: 214px;
-`;
-
-const Title = styled.div`
-  font-size: 18px;
-  line-height: 36px;
-  font-weight: 600;
-  padding-left: 6px;
-  display: flex;
-  align-items: center;
-`;
 
 export default Explanation;

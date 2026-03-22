@@ -2,8 +2,6 @@
 import { createTripStore } from "@/store/client/createTripStore";
 import { editTripStore } from "@/store/client/editTripStore";
 import { tripPlanStore } from "@/store/client/tripPlanStore";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { MouseEvent } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -36,7 +34,6 @@ const SearchItem = ({
   } = paramsType === "create" ? createTripStore() : editTripStore();
   const handlePlans = (e: MouseEvent) => {
     e.stopPropagation();
-    console.log("plan2", plans);
     if (!planOrder) return;
     const targetPlanIndex = plans.findIndex(
       (plan) =>
@@ -83,7 +80,6 @@ const SearchItem = ({
         },
       ];
     }
-    console.log("new plan", newPlans, targetPlanIndex, plans);
     addPlans(newPlans);
     addIsChange(true);
     if (paramsType === "create") {
@@ -93,7 +89,8 @@ const SearchItem = ({
     }
   };
   return (
-    <Container
+    <div
+      className="flex items-center h-[69px] w-full gap-1 cursor-pointer border-b border-[#e7e7e7]"
       onClick={() =>
         router.push(
           `/search/place/${planOrder}/${mapType === "google" ? id : title}?type=${paramsType}${paramsType === "edit" ? `&travelNumber=${travelNumber}` : ""}`
@@ -116,56 +113,21 @@ const SearchItem = ({
           fill="#FEFEFE"
         />
       </svg>
-      <MainContainer>
-        <Title>{title}</Title>
-        <SubTitle>
+      <div className="flex-1 flex flex-col gap-1">
+        <div className="leading-[19px] text-base font-semibold text-[var(--color-text-base)]">{title}</div>
+        <div className="leading-[14px] text-xs text-[var(--color-text-muted)] font-normal">
           {type}ㆍ{location}
-        </SubTitle>
-      </MainContainer>
-      <AddButton onClick={handlePlans}>추가</AddButton>
-    </Container>
+        </div>
+      </div>
+      <button
+        type="button"
+        className="bg-[var(--color-muted5)] text-[var(--color-text-base)] leading-[14px] cursor-pointer text-xs font-semibold px-[10px] py-[6px] rounded-[20px]"
+        onClick={handlePlans}
+      >
+        추가
+      </button>
+    </div>
   );
 };
-
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-  height: 69px;
-  width: 100%;
-  gap: 4px;
-  cursor: pointer;
-  border-bottom: 1px solid #e7e7e7;
-`;
-
-const MainContainer = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-const Title = styled.div`
-  line-height: 19px;
-  font-size: 16px;
-  font-weight: 600;
-  color: ${palette.기본};
-`;
-
-const SubTitle = styled.div`
-  line-height: 14px;
-  font-size: 12px;
-  color: ${palette.비강조};
-  font-weight: 400l;
-`;
-
-const AddButton = styled.button`
-  background-color: ${palette.비강조5};
-  color: ${palette.기본};
-  line-height: 14px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 6px 10px;
-  border-radius: 20px;
-`;
 
 export default SearchItem;

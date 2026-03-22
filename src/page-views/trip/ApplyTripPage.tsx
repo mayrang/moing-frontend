@@ -6,9 +6,7 @@ import TextareaField from '@/components/designSystem/input/TextareaField'
 import useEnrollment from '@/hooks/enrollment/useEnrollment'
 import { authStore } from '@/store/client/authStore'
 import { tripDetailStore } from '@/store/client/tripDetailStore'
-import { palette } from '@/styles/palette'
-import styled from '@emotion/styled'
-import { FormEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import useViewTransition from '@/hooks/useViewTransition'
 import { useParams, useRouter } from 'next/navigation'
 
@@ -37,7 +35,6 @@ const ApplyTrip = () => {
         throw new Error('메제지는 1,000자 미만이여야 합니다.')
       }
       await apply({ travelNumber: Number(travelNumber), message })
-      console.log(applyMutation, 'applyMutation')
     } catch (err) {
       console.error(err)
     }
@@ -52,7 +49,7 @@ const ApplyTrip = () => {
   }, [applyMutation.isSuccess, setApplySuccess, travelNumber])
 
   return (
-    <Container>
+    <div className="mt-[2.5svh] px-6 flex justify-center flex-col gap-[2.5svh]">
       <ApplyTripProfile />
       <TextareaField
         placeholder="참가 신청 메세지를 적어주세요.
@@ -68,25 +65,16 @@ const ApplyTrip = () => {
           addStyle={
             message === ''
               ? {
-                  backgroundColor: palette.비강조3,
-                  color: palette.비강조,
+                  backgroundColor: 'var(--color-muted3)',
+                  color: 'var(--color-text-muted)',
                   boxShadow: '-2px 4px 5px 0px rgba(170, 170, 170, 0.1)'
                 }
               : undefined
           }
         />
       </ButtonContainer>
-    </Container>
+    </div>
   )
 }
-
-const Container = styled.div`
-  margin-top: 2.5svh;
-  padding: 0 24px;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  gap: 2.5svh;
-`
 
 export default ApplyTrip

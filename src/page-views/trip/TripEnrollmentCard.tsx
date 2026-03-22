@@ -6,9 +6,7 @@ import RoundedImage from "@/components/designSystem/profile/RoundedImage";
 import ResultToast from "@/components/designSystem/toastMessage/resultToast";
 import useEnrollment from "@/hooks/enrollment/useEnrollment";
 
-import { palette } from "@/styles/palette";
 import { daysAgo } from "@/utils/time";
-import styled from "@emotion/styled";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -62,31 +60,31 @@ export default function TripEnrollmentCard({
   }, [isAcceptBtnClicked, isRejectBtnClicked]);
 
   return (
-    <Container>
-      <UserBox>
-        <Profile>
+    <div className="p-6 gap-4 rounded-[20px] bg-[var(--color-search-bg)] mb-4">
+      <div className="flex justify-between">
+        <div className="flex items-center">
           <RoundedImage src={profileUrl} size={36} />
-          <UserName>{userName}</UserName>
+          <div className="ml-2 mr-1 text-lg font-semibold leading-[21.48px] text-left text-[var(--color-text-base)]">{userName}</div>
           {/* 뱃지. */}
           <Badge
             isDueDate={false}
             text={ageGroup}
             height={"22px"}
-            color={palette.keycolor}
-            backgroundColor={palette.keycolorBG}
+            color="var(--color-keycolor)"
+            backgroundColor="var(--color-keycolor-bg)"
           />
-        </Profile>
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <TimeAgo>{daysAgo(enrolledAt)}</TimeAgo>
-          {/* 최신인가 아닌가 부분. */}
-          {isNew && <NewMark></NewMark>}
         </div>
-      </UserBox>
-      <Msg>{message}</Msg>
-      <BtnBox>
-        <RejectBtn onClick={() => setIsRejectModalOpen(true)}>거절</RejectBtn>
-        <AcceptBtn onClick={() => setIsAcceptModalOpen(true)}>수락</AcceptBtn>
-      </BtnBox>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <div className="text-sm font-normal leading-[16.71px] text-left text-[var(--color-text-muted2)]">{daysAgo(enrolledAt)}</div>
+          {/* 최신인가 아닌가 부분. */}
+          {isNew && <div className="ml-[3px] w-2 h-2 rounded-full bg-[var(--color-like)]"></div>}
+        </div>
+      </div>
+      <div className="mt-4 text-base font-normal leading-[22.4px] text-left text-[var(--color-text-base)]">{message}</div>
+      <div className="flex items-center mt-4 w-full">
+        <div className="mr-2 w-1/2 h-[42px] px-5 py-[10px] gap-[10px] rounded-[40px] bg-[#e7e7e7] text-[var(--color-text-muted)] flex items-center justify-center cursor-pointer" onClick={() => setIsRejectModalOpen(true)}>거절</div>
+        <div className="flex items-center justify-center w-1/2 h-[42px] px-5 py-[10px] gap-[10px] rounded-[40px] bg-[var(--color-keycolor)] text-[var(--color-muted4)] cursor-pointer" onClick={() => setIsAcceptModalOpen(true)}>수락</div>
+      </div>
       <CheckingModal
         isModalOpen={isAcceptModalOpen}
         modalMsg={`정말 ${userName}의\n여행 참가를 수락하시겠어요?`}
@@ -110,86 +108,6 @@ export default function TripEnrollmentCard({
         setModalOpen={setIsResultModalOpen}
       />
       <ResultToast isShow={isToastShow} setIsShow={setIsToastShow} text="여행 참가가 거절되었어요." />
-    </Container>
+    </div>
   );
 }
-const Msg = styled.div`
-  margin-top: 16px;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 22.4px;
-  text-align: left;
-  color: ${palette.기본};
-`;
-const BtnBox = styled.div`
-  display: flex;
-  align-items: center;
-  margin-top: 16px;
-  width: 100%;
-`;
-const RejectBtn = styled.div`
-  margin-right: 8px;
-  width: 50%;
-  height: 42px;
-  padding: 10px 20px;
-  gap: 10px;
-  border-radius: 40px;
-  opacity: 0px;
-  background-color: #e7e7e7;
-  color: ${palette.비강조};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-const AcceptBtn = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50%;
-  height: 42px;
-  padding: 10px 20px;
-  gap: 10px;
-  border-radius: 40px;
-  opacity: 0px;
-  background-color: ${palette.keycolor};
-  color: ${palette.비강조4};
-`;
-const NewMark = styled.div`
-  margin-left: 3px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: ${palette.like};
-`;
-const TimeAgo = styled.div`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 16.71px;
-  text-align: left;
-  color: ${palette.비강조2};
-`;
-const UserBox = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-const Container = styled.div`
-  padding: 24px;
-  gap: 16px;
-  border-radius: 20px;
-  opacity: 0px;
-  background-color: ${palette.검색창};
-  margin-bottom: 16px;
-`;
-const Profile = styled.div`
-  display: flex;
-  align-items: center;
-`;
-const UserName = styled.div`
-  margin-left: 8px;
-  margin-right: 4px;
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 21.48px;
-  text-align: left;
-  color: ${palette.기본};
-`;

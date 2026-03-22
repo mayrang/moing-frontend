@@ -6,13 +6,9 @@ import NavCommunityIcon from "@/components/icons/NavCommunityIcon";
 import NavPersonIcon from "@/components/icons/NavPersonIcon";
 import SearchIcon from "@/components/icons/SearchIcon";
 import { useClickTracking } from "@/hooks/useClickTracking";
-
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import path from "path";
-import React, { MouseEventHandler, useState } from "react";
+import React from "react";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -63,73 +59,38 @@ const Navbar = () => {
     track(`하단 네비게이션 ${page} 버튼 클릭`);
     router.push(page);
   };
+
   return condition() ? (
-    <Container>
-      <Box>
+    <div className="h-[92px] w-full left-0 max-[440px]:w-full min-[440px]:w-[390px] min-[440px]:left-1/2 min-[440px]:-translate-x-1/2 min-[440px]:overflow-x-hidden rounded-tl-[20px] rounded-tr-[20px] fixed bottom-0 border-t border-[var(--color-muted5)] bg-white z-[1000]">
+      <div className="flex mt-3 justify-evenly">
         {pages.map((page, idx) => {
           const Icon = icons[idx];
           const isLinkActive = getIsActive(page);
+          const activeColor = "var(--color-text-base)";
+          const inactiveColor = "var(--color-muted3)";
           const iconProps = {
-            stroke: isLinkActive ? `${palette.기본}` : `${palette.비강조3}`,
-            fill: isLinkActive ? `${palette.기본}` : "none",
+            stroke: isLinkActive ? activeColor : inactiveColor,
+            fill: isLinkActive ? activeColor : "none",
           };
           return (
             <button
               key={page}
+              type="button"
               onClick={() => handleNavClick(page)}
-              style={{
-                width: "49px",
-                height: "48px",
-                cursor: "pointer",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+              className="w-[49px] h-12 cursor-pointer flex flex-col items-center justify-center"
             >
               {React.cloneElement(Icon, iconProps)}
-              <PageName color={isLinkActive ? `${palette.기본}` : `${palette.비강조3}`}>{iconNames[idx]}</PageName>
+              <div
+                className="text-xs font-semibold leading-[16px] text-center w-full mt-[8.45px]"
+                style={{ color: isLinkActive ? activeColor : inactiveColor }}
+              >
+                {iconNames[idx]}
+              </div>
             </button>
           );
         })}
-      </Box>
-    </Container>
+      </div>
+    </div>
   ) : null;
 };
 export default Navbar;
-
-const Container = styled.div`
-  height: 92px;
-  @media (max-width: 440px) {
-    width: 100%;
-  }
-  @media (min-width: 440px) {
-    width: 390px;
-    left: 50%;
-    transform: translateX(-50%);
-    overflow-x: hidden;
-  }
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  position: fixed;
-  bottom: 0;
-  border-top: 1px solid ${palette.비강조5};
-  background-color: white;
-  z-index: 1000;
-  width: 100%;
-  left: 0;
-`;
-const PageName = styled.div<{ color: string }>`
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 16px;
-  text-align: center;
-  width: 100%;
-  margin-top: 8.45px;
-  color: ${(props) => props.color};
-`;
-const Box = styled.div`
-  display: flex;
-  margin-top: 12px;
-  justify-content: space-evenly;
-`;

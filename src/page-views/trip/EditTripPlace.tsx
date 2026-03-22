@@ -7,7 +7,6 @@ import RelationKeywordList from '@/components/relationKeyword/RelationKeywordLis
 import Spacing from '@/components/Spacing'
 
 import { tripDetailStore } from '@/store/client/tripDetailStore'
-import styled from '@emotion/styled'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -38,8 +37,8 @@ export default function EditTripPlace() {
   }
 
   return (
-    <Container>
-      <Title>어디로 떠나볼까요?</Title>
+    <div className="px-6">
+      <h2 className="text-2xl font-semibold leading-[33.6px] ml-[6px] text-left">어디로 떠나볼까요?</h2>
       <Spacing size={8} />
       <CreateTripInputField
         value={keyword}
@@ -76,23 +75,6 @@ export default function EditTripPlace() {
           text={'완료'}
         />
       </ButtonContainer>
-    </Container>
+    </div>
   )
 }
-
-const StepIconContainer = styled.div`
-  margin-top: 24px;
-  margin-bottom: 40px;
-`
-
-const Container = styled.div`
-  padding: 0 24px;
-`
-
-const Title = styled.h2`
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 33.6px;
-  margin-left: 6px;
-  text-align: left;
-`

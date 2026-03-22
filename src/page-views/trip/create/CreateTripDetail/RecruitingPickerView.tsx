@@ -4,8 +4,6 @@ import OnlyFemaleIcon from "@/components/icons/OnlyFemaleIcon";
 import OnlyMaleIcon from "@/components/icons/OnlyMaleIcon";
 import { createTripStore } from "@/store/client/createTripStore";
 import { tripDetailStore } from "@/store/client/tripDetailStore";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import { usePathname } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import Picker from "react-mobile-picker";
@@ -15,12 +13,10 @@ const year: number = date.getFullYear();
 const month: number = date.getMonth() + 1;
 const day = date.getDate();
 
-// 윤년을 확인하는 함수
 const isLeapYear = (year: number) => {
   return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
 };
 
-// 각 달의 최대 일수 계산 함수
 const getMaxDays = (year: number, month: number) => {
   if (month === 2) {
     return isLeapYear(year) ? 29 : 28;
@@ -58,8 +54,6 @@ const RecruitingPickerView = ({ count, setCount }: Props) => {
         }
   );
 
-  // 현재 날짜
-
   const selections: { [key: string]: number[] | string[] } = {
     gender: ["여자만", "모두", "남자만"],
     count: Array.from({ length: 20 }, (v, i) => i + 1),
@@ -76,15 +70,14 @@ const RecruitingPickerView = ({ count, setCount }: Props) => {
           div.style.background = "none";
           div.style.display = "flex";
           div.style.justifyContent = "space-evenly";
-          // 3개의 새로운 div를 만들고 추가
           const numDivs = 2;
           for (let i = 0; i < numDivs; i++) {
             const newDiv = document.createElement("div");
-            newDiv.style.width = "45%"; // 가로로 3등분
-            newDiv.style.height = "1px"; // 높이를 1px로 설정
-            newDiv.style.background = "black"; // 검은색 border 역할
-            newDiv.style.display = "inline-block"; // 가로로 배치
-            newDiv.style.margin = "0"; // 마진 제거
+            newDiv.style.width = "45%";
+            newDiv.style.height = "1px";
+            newDiv.style.background = "black";
+            newDiv.style.display = "inline-block";
+            newDiv.style.margin = "0";
 
             div.appendChild(newDiv);
           }
@@ -92,11 +85,9 @@ const RecruitingPickerView = ({ count, setCount }: Props) => {
       }
     }
   }, []);
-  // console.log(value, '!')
 
   useEffect(() => {
     setCount(value.count);
-    // zustand store 저장.
 
     addGenderType(value.gender || "모두");
     addGenderTypeEdit(value.gender || "모두");
@@ -112,8 +103,8 @@ const RecruitingPickerView = ({ count, setCount }: Props) => {
         onChange={setValue}
         wheelMode="normal"
         className="custom-picker"
-        itemHeight={50.3} // 각 항목의 높이 설정
-        height={160} // 3개의 항목만 보이도록 전체 높이 설정
+        itemHeight={50.3}
+        height={160}
       >
         {Object.keys(selections).map((col, idx) => {
           return (
@@ -123,19 +114,15 @@ const RecruitingPickerView = ({ count, setCount }: Props) => {
                   {({ selected }) => (
                     <div
                       style={{
-                        color: selected ? palette.기본 : palette.비강조3,
-                        //   backgroundColor: selected ? '#d9d9d9' : 'white',
+                        color: selected ? "var(--color-text-base)" : "var(--color-muted3)",
                         padding: "14px 16px",
                         height: "52px",
                         fontWeight: 500,
-
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
                         lineHeight: col === "gender" ? "22.4px" : "25.2px",
                         fontSize: col === "gender" ? "16px" : "18px",
-                        //   borderTop: selected ? '1px solid black' : 'none',
-                        //   borderBottom: selected ? '1px solid black' : 'none'
                       }}
                     >
                       {col === "gender" ? (
@@ -149,7 +136,7 @@ const RecruitingPickerView = ({ count, setCount }: Props) => {
                       ) : (
                         <></>
                       )}
-                      <Text>{option}</Text>
+                      <div className="ml-1 text-base font-semibold leading-[22.4px] text-left">{option}</div>
                     </div>
                   )}
                 </Picker.Item>
@@ -163,11 +150,3 @@ const RecruitingPickerView = ({ count, setCount }: Props) => {
 };
 
 export default RecruitingPickerView;
-const Text = styled.div`
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 22.4px;
-
-  text-align: left;
-  margin-left: 4px;
-`;

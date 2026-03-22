@@ -2,8 +2,6 @@
 import AddIcon from "@/components/icons/AddIcon";
 import useViewTransition from "@/hooks/useViewTransition";
 import { useBackPathStore } from "@/store/client/backPathStore";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import React, { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { isGuestUser } from "@/utils/user";
@@ -53,6 +51,8 @@ export default function CreateTripButton({
   }, []);
   //가로화면 길이가 좁아질 경우 right 조절.
   const newRightPosition = (24 + 390 - windowSize.width).toString() + "px";
+  const buttonRight =
+    windowSize.width > 0 && windowSize.width < 390 ? newRightPosition : "24px";
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -90,11 +90,17 @@ export default function CreateTripButton({
       navigateWithTransition("/create/trip/region");
     }
   };
+
   return (
-    <CreatedTripWrapper>
-      <CreateBtn
-        isClicked={isClicked}
-        right={newRightPosition}
+    <div className="h-svh w-[390px] pointer-events-none fixed top-0 z-[1001]">
+      {/* CreateBtn */}
+      <button
+        className="absolute bottom-[210px] pointer-events-auto h-12 py-[14px] px-6 rounded-[20px] cursor-pointer bg-white flex justify-center items-center text-base font-semibold leading-[19.09px] text-[var(--color-text-base)] z-[1003] transition-[transform,opacity] duration-200 ease-in-out"
+        style={{
+          right: buttonRight,
+          opacity: isClicked ? 1 : 0,
+          transform: isClicked ? "translateY(-5px)" : "translateY(35px)",
+        }}
         onClick={onClickCreate}
         ref={createButtonRef}
       >
@@ -108,96 +114,25 @@ export default function CreateTripButton({
           style={{ marginRight: "13px" }}
         />
         {type === "trip" ? "여행 만들기" : "글쓰기"}
-      </CreateBtn>
+      </button>
 
-      <IconContainer
+      {/* IconContainer */}
+      <button
+        type="button"
         ref={addRef}
         onClick={toggleRotation}
-        rotated={isClicked}
-        right={newRightPosition}
+        className="absolute pointer-events-auto bottom-[124px] cursor-pointer w-[70px] h-[70px] rounded-full flex justify-center items-center text-white bg-[var(--color-text-base)] z-[1003] text-[32px] transition-transform duration-300"
+        style={{
+          right: buttonRight,
+          transform: isClicked ? "rotate(45deg)" : "rotate(0deg)",
+        }}
       >
         <AddIcon />
-      </IconContainer>
-      {isClicked && <Hide></Hide>}
-    </CreatedTripWrapper>
+      </button>
+
+      {isClicked && (
+        <div className="absolute w-full h-svh z-[1001] top-0 bottom-0 bg-[rgba(26,26,26,0.3)] opacity-80 min-[440px]:w-[390px] min-[440px]:left-1/2 min-[440px]:-translate-x-1/2 min-[440px]:overflow-x-hidden" />
+      )}
+    </div>
   );
 }
-
-const Hide = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 100svh;
-  z-index: 1001;
-  top: 0;
-  bottom: 0;
-  background-color: rgba(26, 26, 26, 0.3);
-  opacity: 0.8;
-  @media (min-width: 440px) {
-    width: 390px;
-    left: 50%;
-    height: 100svh;
-    transform: translateX(-50%);
-    overflow-x: hidden;
-  }
-`;
-const CreatedTripWrapper = styled.div`
-  height: 100svh;
-  width: 390px;
-  pointer-events: none;
-  position: fixed;
-  top: 0;
-  z-index: 1001;
-`;
-const CreateBtn = styled.button<{ right: string; isClicked: boolean }>`
-  position: absolute;
-  bottom: 210px;
-  right: 24px;
-  pointer-events: auto;
-  height: 48px;
-  padding: 14px 24px;
-  border-radius: 20px;
-  cursor: pointer;
-  background-color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 19.09px;
-  color: ${palette.기본};
-  z-index: 1003;
-  opacity: ${(props) => (props.isClicked ? 1 : 0)};
-  transform: ${(props) =>
-    props.isClicked ? "translateY(-5px)" : "translateY(35px)"};
-
-  transition:
-    transform 0.2s ease,
-    opacity 0.2s ease;
-  @media (max-width: 390px) {
-    right: ${(props) => props.right};
-  }
-`;
-const IconContainer = styled.button<{ rotated: boolean; right: string }>`
-  position: absolute;
-  pointer-events: auto;
-  right: 24px;
-  bottom: 124px;
-  cursor: pointer;
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  background-color: ${palette.기본};
-  z-index: 1003;
-  font-size: 32px;
-  @media (max-width: 390px) {
-    right: ${(props) => props.right};
-  }
-  transition: transform 0.3s ease; /* 회전 애니메이션 */
-  transform: ${(props) => (props.rotated ? "rotate(45deg)" : "rotate(0deg)")};
-  /* left: calc(80% - 195px); 버튼의 가로 중앙 조정 (390px의 절반) */
-  /* transform: translateY(-50%); 버튼을 정확히 중앙에 위치시킴 */
-`;

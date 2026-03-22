@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { fn } from '@storybook/test'
 
 import ApplyListButton from '../components/designSystem/Buttons/ApplyListButton'
-import { palette } from '@/styles/palette'
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta = {

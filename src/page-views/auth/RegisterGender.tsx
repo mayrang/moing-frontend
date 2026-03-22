@@ -1,6 +1,4 @@
 "use client";
-import { keyframes } from "@emotion/react";
-import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 import { userStore } from "@/store/client/userStore";
 import { useRegisterAge } from "./RegisterAge";
@@ -80,14 +78,15 @@ const RegisterGender = () => {
     if (!maleClicked && !femaleClicked) setGenderCheck(false);
     else setGenderCheck(true);
   }, []);
+
   return (
     <div style={{ position: "relative" }}>
-      <GenderContainer>
-        <StepContent>성별을 선택해주세요.</StepContent>
-        <GenderImgContainer>
-          <MaleBox>
-            <Male
-              onClick={clickedMale}
+      <div className="h-[249px] mt-[54px] animate-[fadeIn_0.5s]">
+        <p className="text-2xl font-semibold text-left">성별을 선택해주세요.</p>
+        <div className="mt-8 flex justify-center">
+          <div className="mr-[54px] flex flex-col items-center font-medium cursor-pointer" onClick={clickedMale}>
+            <img
+              className="w-24 h-24"
               src={
                 maleClicked
                   ? "/images/activeMale.png"
@@ -96,6 +95,7 @@ const RegisterGender = () => {
               alt=""
             />
             <p
+              className="mt-2 text-lg"
               style={
                 maleClicked
                   ? { color: "black", fontWeight: 700 }
@@ -104,10 +104,10 @@ const RegisterGender = () => {
             >
               남자
             </p>
-          </MaleBox>
-          <FemaleBox>
-            <Female
-              onClick={clickedFemale}
+          </div>
+          <div className="flex flex-col items-center font-medium cursor-pointer" onClick={clickedFemale}>
+            <img
+              className="w-24 h-24"
               src={
                 femaleClicked
                   ? "/images/activeFemale.png"
@@ -116,6 +116,7 @@ const RegisterGender = () => {
               alt=""
             />
             <p
+              className="mt-2 text-lg"
               style={
                 femaleClicked
                   ? { color: "black", fontWeight: 700 }
@@ -124,70 +125,11 @@ const RegisterGender = () => {
             >
               여자
             </p>
-          </FemaleBox>
-        </GenderImgContainer>
-      </GenderContainer>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
 export default RegisterGender;
-
-const fadeIn = keyframes`
-  0% {
-      opacity: 0;
-      transform: translate3d(0, 20%, 0);
-  }
-  to {
-      opacity: 1;
-      transform: translateZ(10);
-  }
-`;
-const GenderContainer = styled.div`
-  height: 249px;
-  margin-top: 54px;
-  animation: ${fadeIn} 0.5s;
-`;
-const StepContent = styled.p`
-  font-size: 24px;
-  font-weight: 600;
-
-  text-align: left;
-`;
-const GenderImgContainer = styled.div`
-  margin-top: 32px;
-  display: flex;
-  justify-content: center;
-`;
-const MaleBox = styled.div`
-  margin-right: 54px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-weight: 500;
-  cursor: pointer;
-  p {
-    margin-top: 8px;
-    font-size: 18px;
-  }
-`;
-const FemaleBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-weight: 500;
-  cursor: pointer;
-  p {
-    margin-top: 8px;
-    font-size: 18px;
-  }
-`;
-
-const Male = styled.img`
-  width: 96px;
-  height: 96px;
-`;
-const Female = styled.img`
-  width: 96px;
-  height: 96px;
-`;

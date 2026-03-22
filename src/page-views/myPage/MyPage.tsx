@@ -8,9 +8,7 @@ import UserProfileDetail from "@/components/userProfile/UserProfileDetail";
 import useViewTransition from "@/hooks/useViewTransition";
 import { authStore } from "@/store/client/authStore";
 import { userProfileOverlayStore } from "@/store/client/userProfileOverlayStore";
-import { palette } from "@/styles/palette";
 import { isGuestUser } from "@/utils/user";
-import styled from "@emotion/styled";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -28,34 +26,34 @@ export default function MyPage() {
     setUserProfileUserId(userId!);
   }, []);
   return (
-    <Container>
+    <div className="px-6 mt-2">
       {!isGuestUser() ? (
         <UserProfileDetail isMyPage={true} />
       ) : (
-        <UserInfo>
-          <ProfileImg>
+        <div className="w-full bg-[var(--color-search-bg)] p-6 px-4 gap-4 rounded-[20px] flex">
+          <div>
             <RoundedImage src={"/images/defaultProfile.png"} size={80} />
-          </ProfileImg>
+          </div>
           <div style={{ width: "100%" }}>
-            <MoreBox onClick={() => setShowLoginModal(true)}>
-              <UserName>로그인 & 회원가입</UserName>
+            <div className="flex cursor-pointer items-center" onClick={() => setShowLoginModal(true)}>
+              <div className="text-xl font-semibold leading-4 text-[var(--color-text-base)] mr-1">로그인 & 회원가입</div>
               <div style={{ display: "flex", padding: "8px 5px" }}>
                 <RightVector />
               </div>
-            </MoreBox>
-            <LoginInfo>
+            </div>
+            <div className="text-sm font-normal leading-[16.8px] tracking-[-0.25px] text-left text-[var(--color-text-muted)]">
               로그인 후 모잉에서
               <br /> 설레는 여행을 떠나보세요.
-            </LoginInfo>
+            </div>
           </div>
-        </UserInfo>
+        </div>
       )}
 
-      {!isGuestUser() && <SpaceBox></SpaceBox>}
+      {!isGuestUser() && <div className="h-3 bg-[var(--color-search-bg)]"></div>}
 
-      <Menu>
-        <Box>
-          <Title>내 활동 현황</Title>
+      <div className="mt-6 w-full">
+        <div className="border-b border-[#e7e7e7] pt-[14px]">
+          <div className="text-sm font-semibold leading-4 text-[var(--color-text-base)] text-left mb-2">내 활동 현황</div>
 
           <TextButton
             onClick={() => {
@@ -80,10 +78,10 @@ export default function MyPage() {
             leftIconSrc="/images/createTripBtn.png"
           />
           <Spacing size={8} />
-        </Box>
+        </div>
 
-        <Box>
-          <Title>모잉 소식</Title>
+        <div className="border-b border-[#e7e7e7] pt-[14px]">
+          <div className="text-sm font-semibold leading-4 text-[var(--color-text-base)] text-left mb-2">모잉 소식</div>
           <Spacing size={8} />
           <TextButton
             isLeftVector
@@ -101,7 +99,7 @@ export default function MyPage() {
             isRightVector={false}
           />
           <Spacing size={8} />
-        </Box>
+        </div>
 
         <div style={{ marginTop: "16px" }}>
           <a href="/pdf/service_terms(241115).pdf" target="_blank">
@@ -113,7 +111,7 @@ export default function MyPage() {
 
           <Spacing size={150} />
         </div>
-      </Menu>
+      </div>
 
       <CheckingModal
         isModalOpen={showLoginModal}
@@ -123,66 +121,6 @@ export default function MyPage() {
         modalButtonText="로그인"
         setModalOpen={setShowLoginModal}
       />
-    </Container>
+    </div>
   );
 }
-const SpaceBox = styled.div`
-  height: 12px;
-  background-color: ${palette.검색창};
-`;
-const ProfileImg = styled.div``;
-
-const UserInfo = styled.div`
-  width: 100%;
-  background-color: ${palette.검색창};
-  padding: 24px 16px;
-  gap: 16px;
-  border-radius: 20px;
-  display: flex;
-`;
-const Container = styled.div`
-  padding: 0px 24px;
-  margin-top: 8px;
-`;
-const MoreBox = styled.div`
-  display: flex;
-  cursor: pointer;
-  align-items: center;
-`;
-const UserName = styled.div`
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 16px;
-  color: ${palette.기본};
-  margin-right: 4px;
-`;
-
-const LoginInfo = styled.div`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 16.8px;
-  letter-spacing: -0.25px;
-  text-align: left;
-  text-underline-position: from-font;
-  text-decoration-skip-ink: none;
-
-  color: ${palette.비강조};
-`;
-
-const Menu = styled.div`
-  margin-top: 24px;
-  width: 100%;
-`;
-const Title = styled.div`
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 16px;
-  color: ${palette.기본};
-  text-align: left;
-  margin-bottom: 8px;
-`;
-
-const Box = styled.div`
-  border-bottom: 1px solid #e7e7e7;
-  padding-top: 14px;
-`;

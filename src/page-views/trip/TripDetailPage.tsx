@@ -12,9 +12,6 @@ import Spacing from "@/components/Spacing";
 import { authStore } from "@/store/client/authStore";
 import useEnrollment from "@/hooks/enrollment/useEnrollment";
 import { tripDetailStore } from "@/store/client/tripDetailStore";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
-
 import React, { useEffect, useRef, useState } from "react";
 import CompanionsView from "./CompanionsView";
 import { daysAgo } from "@/utils/time";
@@ -280,7 +277,7 @@ export default function TripDetail() {
       try {
         await cancel(enrollmentNumber);
       } catch (err) {
-        console.log(err, "cancelMutation ERROR");
+        // cancelMutation ERROR
       }
     }
   };
@@ -362,68 +359,64 @@ export default function TripDetail() {
         setModalOpen={setShowCancelModal}
       />
 
-      <TripDetailWrapper ref={containerRef}>
+      <div
+        ref={containerRef}
+        className="px-6 overflow-y-auto relative h-[calc(100svh-116px)] no-scrollbar overscroll-none pb-[104px]"
+      >
         <TopModal
           isToastShow={false}
           containerRef={containerRef}
           setIsMapFull={setIsMapFull}
           onHeightChange={setTopModalHeight}
         >
-          <ModalContainer>
-            <MainContent>
-              <ProfileContainer onClick={() => moveToUserProfilePage(userNumber)}>
+          <div className="px-6">
+            <div>
+              <div className="mt-2 flex items-center cursor-pointer" onClick={() => moveToUserProfilePage(userNumber)}>
                 {/* 프로필 */}
                 <RoundedImage src={profileUrl} size={40} />
                 <div style={{ marginLeft: "8px" }}>
-                  <UserName>{userName}</UserName>
-                  <div
-                    style={{
-                      fontWeight: "400",
-                      fontSize: "14px",
-                      lineHeight: "16.71px",
-                      color: palette.비강조,
-                    }}
-                  >
+                  <div className="text-base font-semibold leading-[19.09px] text-left text-[var(--color-text-base)] mb-1">{userName}</div>
+                  <div className="font-normal text-sm leading-[16.71px] text-[var(--color-text-muted)]">
                     {daysAgo(createdAt)}
                   </div>
                 </div>
-              </ProfileContainer>
+              </div>
               {/* 제목  */}
-              <Title>{title}</Title>
+              <div className="mt-8 text-xl font-semibold text-left">{title}</div>
               {/* 내용 */}
-              <Details ref={detailRef}>{details}</Details>
+              <div ref={detailRef} className="mt-4 text-base max-h-[100px] overflow-y-auto whitespace-pre-line font-normal leading-[22.4px] text-left text-[var(--color-text-base)]">{details}</div>
               {/*태그   */}
-              <TagContainer>
+              <div className="mt-8 flex flex-wrap gap-2">
                 {tags.map((tag, idx) => (
                   <Badge
                     key={tag}
                     isDueDate={false}
                     text={tag}
                     height="22px"
-                    backgroundColor={palette.비강조4}
-                    color={palette.비강조}
+                    backgroundColor="var(--color-muted4)"
+                    color="var(--color-text-muted)"
                     fontWeight="500"
                   />
                 ))}
-              </TagContainer>
-            </MainContent>
-            <ViewsETC>
+              </div>
+            </div>
+            <div className="my-2 h-[38px] py-4 flex text-xs font-normal leading-[14.32px] text-left text-[var(--color-text-muted2)]">
               <div>신청 {enrollCount}</div>
               <div style={{ margin: "0px 4px" }}> · </div>
               <div>관심 {bookmarkCount}</div>
               <div style={{ margin: "0px 4px" }}> · </div>
               <div>조회수 {viewCount}</div>
-            </ViewsETC>
+            </div>
 
-            <Bar />
-            <CalendarContainer>
-              <CalendarTextContainer>
-                <TitleContainer>
+            <div className="bg-[#e7e7e7] w-full h-[1px]" />
+            <div className="py-[11px] pl-2 flex items-center h-[70px] justify-between">
+              <div className="flex items-center">
+                <div className="flex items-center w-[100px] gap-2 mr-3">
                   <PlaceIcon width={21} height={24} />
 
-                  <CalendarTitle>장소</CalendarTitle>
-                </TitleContainer>
-                <CalendarContent>
+                  <div className="text-sm leading-5 text-[var(--color-text-muted)] font-semibold">장소</div>
+                </div>
+                <div className="text-sm leading-5 text-[var(--color-text-base)] font-medium">
                   <RegionWrapper
                     locationName={locationName}
                     addInitGeometry={addInitGeometry}
@@ -431,27 +424,27 @@ export default function TripDetail() {
                     isDetail
                     location={location}
                   />
-                </CalendarContent>
-              </CalendarTextContainer>
-            </CalendarContainer>
-            <Bar />
+                </div>
+              </div>
+            </div>
+            <div className="bg-[#e7e7e7] w-full h-[1px]" />
 
-            <CalendarContainer>
-              <CalendarTextContainer>
-                <TitleContainer>
+            <div className="py-[11px] pl-2 flex items-center h-[70px] justify-between">
+              <div className="flex items-center">
+                <div className="flex items-center w-[100px] gap-2 mr-3">
                   <Calendar />
-                  <CalendarTitle>여행 날짜</CalendarTitle>
-                </TitleContainer>
-                <CalendarContent>
+                  <div className="text-sm leading-5 text-[var(--color-text-muted)] font-semibold">여행 날짜</div>
+                </div>
+                <div className="text-sm leading-5 text-[var(--color-text-base)] font-medium">
                   {startDate && endDate ? formatDateRange(startDate, endDate) : "날짜를 선택하세요."}
-                </CalendarContent>
-              </CalendarTextContainer>
-            </CalendarContainer>
-            <Bar />
+                </div>
+              </div>
+            </div>
+            <div className="bg-[#e7e7e7] w-full h-[1px]" />
 
-            <InfoContainer onClick={companionsViewHandler}>
-              <InfoTextContainer>
-                <TitleContainer>
+            <div className="py-[11px] pl-2 cursor-pointer flex items-center justify-between" onClick={companionsViewHandler}>
+              <div className="flex items-center">
+                <div className="flex items-center w-[100px] gap-2 mr-3">
                   {genderType === "모두" ? (
                     <EveryBodyIcon selected size={24} />
                   ) : genderType === "남자만" ? (
@@ -459,19 +452,22 @@ export default function TripDetail() {
                   ) : (
                     <OnlyFemaleIcon selected size={24} />
                   )}
-                  <InfoTitle>{genderType}</InfoTitle>
-                </TitleContainer>
-                <InfoContent>
+                  <div className="text-sm leading-5 text-[var(--color-text-muted)] font-semibold">{genderType}</div>
+                </div>
+                <div className="text-sm leading-5 text-[var(--color-text-base)] font-medium">
                   {nowPerson} / {maxPerson}
-                </InfoContent>
-              </InfoTextContainer>
-              <ArrowIconContainer>
+                </div>
+              </div>
+              <div className="flex items-center justify-center w-12 h-12">
                 <ArrowIcon />
-              </ArrowIconContainer>
-            </InfoContainer>
-          </ModalContainer>
+              </div>
+            </div>
+          </div>
         </TopModal>
-        <BottomContainer isMapFull={isMapFull} topModalHeight={topModalHeight}>
+        <div
+          className="min-h-svh transition-[padding-top] duration-300 ease-out overscroll-none"
+          style={{ paddingTop: isMapFull ? "32px" : `${topModalHeight + 32}px` }}
+        >
           <MapContainer
             plans={combinedPlans ?? []}
             locationName={locationName}
@@ -481,12 +477,12 @@ export default function TripDetail() {
             lng={initGeometry?.lng || 126.9816417}
             zoom={9}
           />
-          <ScheduleContainer>
-            <ScheduleTitle>여행 일정</ScheduleTitle>
+          <div className="mt-6">
+            <div className="text-lg font-medium text-black leading-[21px]">여행 일정</div>
             {combinedPlans?.length > 0 ? (
               <>
                 <Spacing size={16} />
-                <ScheduleList>
+                <div className="flex flex-col gap-4">
                   {!isLoading && startDate && data && (
                     <EmblaCarousel
                       startDate={startDate}
@@ -496,23 +492,23 @@ export default function TripDetail() {
                       slides={combinedPlans} // 모든 데이터를 하나의 슬라이드 컴포넌트에 전달
                     />
                   )}
-                </ScheduleList>
+                </div>
               </>
             ) : (
               <>
-                <NoDataContainer>
+                <div className="flex pt-[52px] flex-col items-center justify-center h-full">
                   <img alt="댓글이 없습니다" width={80} height={80} src={"/images/noData.png"} />
                   <Spacing size={16} />
-                  <NoDataTitle>등록된 일정이 없어요</NoDataTitle>
-                </NoDataContainer>
+                  <div className="text-sm font-normal leading-5 tracking-[-0.025em] text-center">등록된 일정이 없어요</div>
+                </div>
               </>
             )}
-          </ScheduleContainer>
-        </BottomContainer>
-      </TripDetailWrapper>
+          </div>
+        </div>
+      </div>
 
       <Spacing size={120} />
-      <ButtonContainer backgroundColor={palette.검색창}>
+      <ButtonContainer backgroundColor="var(--color-search-bg)">
         <ApplyListButton
           hostUserCheck={hostUserCheck}
           nowEnrollmentCount={nowEnrollmentCount}
@@ -527,23 +523,23 @@ export default function TripDetail() {
           }
           addStyle={{
             backgroundColor: isClosed
-              ? palette.비강조3
+              ? "var(--color-muted3)"
               : !verifyGenderType(genderType, gender) || isAccepted
-                ? palette.비강조3
+                ? "var(--color-muted3)"
                 : hostUserCheck
                   ? nowEnrollmentCount > 0
-                    ? palette.keycolor
-                    : palette.비강조3
-                  : palette.keycolor,
+                    ? "var(--color-keycolor)"
+                    : "var(--color-muted3)"
+                  : "var(--color-keycolor)",
             color: isClosed
-              ? palette.비강조4
+              ? "var(--color-muted4)"
               : !verifyGenderType(genderType, gender)
-                ? palette.비강조
+                ? "var(--color-text-muted)"
                 : hostUserCheck
                   ? nowEnrollmentCount > 0
-                    ? palette.비강조4
-                    : palette.비강조
-                  : palette.비강조4,
+                    ? "var(--color-muted4)"
+                    : "var(--color-text-muted)"
+                  : "var(--color-muted4)",
           }}
           text={
             hostUserCheck
@@ -558,8 +554,12 @@ export default function TripDetail() {
       </ButtonContainer>
       <CompanionsView isOpen={personViewClicked} setIsOpen={setPersonViewClicked} />
 
-      <CommentWrapper>
-        <IconContainer onClick={commentClickHandler}>
+      <div className="h-svh w-full pointer-events-none fixed top-0 min-[440px]:w-[390px] min-[440px]:left-1/2 min-[440px]:-translate-x-1/2 z-[1000]">
+        <button
+          type="button"
+          className="absolute pointer-events-auto right-6 bottom-[124px] w-[70px] h-[70px] rounded-full flex justify-center items-center text-white bg-[var(--color-text-base)] z-[1000] text-[32px]"
+          onClick={commentClickHandler}
+        >
           {isCommentUpdated ? (
             <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g clipPath="url(#clip0_5570_2993)">
@@ -625,237 +625,9 @@ export default function TripDetail() {
               />
             </svg>
           )}
-        </IconContainer>
-      </CommentWrapper>
+        </button>
+      </div>
     </>
   );
 }
 
-const NoDataContainer = styled.div`
-  display: flex;
-  padding-top: 52px;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-`;
-
-const NoDataTitle = styled.div`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  letter-spacing: -0.025em;
-  text-align: center;
-`;
-
-const ModalContainer = styled.div`
-  padding: 0 24px;
-`;
-
-const Bar = styled.div`
-  background-color: #e7e7e7;
-  width: 100%;
-  height: 1px;
-`;
-
-const BottomContainer = styled.div<{
-  topModalHeight: number;
-  isMapFull: boolean;
-}>`
-  padding-top: ${(props) => `${props.isMapFull ? 32 : props.topModalHeight + 32}px`};
-  min-height: 100svh;
-  transition: padding-top 0.3s ease-out;
-  overscroll-behavior: none;
-`;
-
-const ProfileContainer = styled.div`
-  margin-top: 8px;
-  display: flex;
-  align-items: center;
-`;
-const Title = styled.div`
-  margin-top: 32px;
-  font-size: 20px;
-  font-weight: 600;
-  text-align: left;
-`;
-const Details = styled.div`
-  margin-top: 16px;
-  font-size: 16px;
-  max-height: 100px;
-  overflow-y: auto;
-  white-space: pre-line;
-  font-weight: 400;
-  line-height: 22.4px;
-  text-align: left;
-  color: ${palette.기본};
-`;
-
-const TagContainer = styled.div`
-  margin-top: 32px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-`;
-const TripDetailWrapper = styled.div`
-  padding: 0px 24px;
-  overflow-y: auto;
-  position: relative;
-  height: calc(100svh - 116px);
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  overscroll-behavior: none;
-  padding-bottom: 104px;
-`;
-const UserName = styled.div`
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 19.09px;
-  text-align: left;
-  color: ${palette.기본};
-  margin-bottom: 4px;
-`;
-
-const MainContent = styled.div``;
-
-const ViewsETC = styled.div`
-  margin: 8px 0;
-  height: 38px;
-  padding: 16px 0;
-  display: flex;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 14.32px;
-  text-align: left;
-  color: ${palette.비강조2};
-`;
-
-const ScheduleContainer = styled.div`
-  margin-top: 24px;
-`;
-const ScheduleTitle = styled.div`
-  font-size: 18px;
-  font-weight: 500;
-  color: #000;
-  line-height: 21px;
-`;
-
-const TitleContainer = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100px;
-  gap: 8px;
-  margin-right: 12px;
-`;
-
-const ScheduleList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const CommentWrapper = styled.div`
-  height: 100svh;
-  width: 100%;
-  pointer-events: none;
-  position: fixed;
-  top: 0;
-  @media (min-width: 440px) {
-    width: 390px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  z-index: 1000;
-`;
-
-const IconContainer = styled.button<{ rotated: boolean; right: string }>`
-  position: absolute;
-  pointer-events: auto;
-  right: 24px;
-  bottom: 124px;
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  background-color: ${palette.기본};
-  z-index: 1000;
-  font-size: 32px;
-  @media (max-width: 390px) {
-    right: ${(props) => props.right};
-  }
-`;
-
-const CalendarContainer = styled.div`
-  padding: 11px 0;
-  padding-left: 8px;
-  display: flex;
-  align-items: center;
-  height: 70px;
-  justify-content: space-between;
-`;
-
-const CalendarTitle = styled.div`
-  font-size: 14px;
-  line-height: 20px;
-  color: ${palette.비강조};
-  font-weight: 600;
-`;
-
-const CalendarTextContainer = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const CalendarContent = styled.div`
-  font-size: 14px;
-  line-height: 20px;
-  color: ${palette.기본};
-  font-weight: 500;
-`;
-const PlaceIconContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 42px;
-`;
-
-const InfoContainer = styled.div`
-  padding: 11px 0;
-  padding-left: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const ArrowIconContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-`;
-
-const InfoTitle = styled.div`
-  font-size: 14px;
-  line-height: 20px;
-  color: ${palette.비강조};
-  font-weight: 600;
-`;
-
-const InfoTextContainer = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const InfoContent = styled.div`
-  font-size: 14px;
-  line-height: 20px;
-  color: ${palette.기본};
-  font-weight: 500;
-`;

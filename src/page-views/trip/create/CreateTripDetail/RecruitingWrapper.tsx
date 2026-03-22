@@ -2,39 +2,29 @@
 import BottomModal from "@/components/BottomModal";
 import PersonIcon from "@/components/icons/PersonIcon";
 import Vector from "@/components/icons/Vector";
-import Spacing from "@/components/Spacing";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
-import {
+import React, {
   ChangeEvent,
   FocusEventHandler,
-  FormEvent,
-  useEffect,
   useState,
 } from "react";
-import RecruitingPickerView from "./RecruitingPickerView";
 import Button from "@/components/designSystem/Buttons/Button";
-import { tripDetailStore } from "@/store/client/tripDetailStore";
-import { usePathname } from "next/navigation";
 import { createTripStore } from "@/store/client/createTripStore";
 import ButtonContainer from "@/components/ButtonContainer";
 
 export default function RecruitingWrapper() {
-  const pathname = usePathname();
-
   const { maxPerson: maxPersonForCreateTrip, addMaxPerson } = createTripStore();
   const [showModal, setShowModal] = useState(false);
   const [focused, setFocused] = useState(false);
   const [isCountSeleted, setIsCountSelected] = useState(false);
-  const bgColor = focused ? palette.keycolorBG : palette.검색창;
+  const bgColor = focused ? "var(--color-keycolor-bg)" : "var(--color-search-bg)";
+  const borderColor = focused ? "var(--color-keycolor)" : bgColor;
+  const color = focused ? "var(--color-keycolor)" : "#000";
 
-  const borderColor = focused ? palette.keycolor : bgColor;
-  const color = focused ? palette.keycolor : "#000";
-  const handleFocus: FocusEventHandler<HTMLInputElement> = (event) => {
+  const handleFocus: FocusEventHandler<HTMLInputElement> = () => {
     setFocused(true);
   };
 
-  const handleBlur: FocusEventHandler<HTMLInputElement> = (event) => {
+  const handleBlur: FocusEventHandler<HTMLInputElement> = () => {
     setFocused(false);
   };
 
@@ -42,7 +32,6 @@ export default function RecruitingWrapper() {
     if (e.target.value === "0") return;
     const value = Number(e.target.value);
     if (isNaN(value)) return;
-    console.log(value);
     e.target.value = value.toString();
     addMaxPerson(value);
     setIsCountSelected(true);
@@ -67,9 +56,13 @@ export default function RecruitingWrapper() {
 
   return (
     <>
-      <RecruitingContainer>
-        <DetailTitle>모집 인원</DetailTitle>
-        <RecruitingBtn onClick={(e) => setShowModal(true)}>
+      <div>
+        <div className="text-base font-semibold leading-[22px] text-left text-[var(--color-text-muted)] px-[6px] gap-2">모집 인원</div>
+        <button
+          type="button"
+          className="flex items-center justify-between mt-2 cursor-pointer h-12 px-4 py-3 rounded-[30px] border border-[var(--color-muted3)] w-full"
+          onClick={() => setShowModal(true)}
+        >
           <div
             style={{
               display: "flex",
@@ -78,34 +71,51 @@ export default function RecruitingWrapper() {
             }}
           >
             <div>
-              <PersonIcon stroke={palette.keycolor} width={24} height={20} />
+              <PersonIcon stroke="var(--color-keycolor)" width={24} height={20} />
             </div>
-            <Count isSelected={isCountSeleted}>{maxPersonForCreateTrip}</Count>
-
+            <div
+              className="text-base font-medium leading-5 text-center ml-1 mr-2"
+              style={{
+                color: isCountSeleted ? "var(--color-text-base)" : "var(--color-text-muted2)",
+              }}
+            >
+              {maxPersonForCreateTrip}
+            </div>
             <Vector />
           </div>
-        </RecruitingBtn>
-      </RecruitingContainer>
+        </button>
+      </div>
       {showModal && (
         <BottomModal initialHeight={"224px"} closeModal={handleCloseModal}>
-          <ModalWrapper>
-            <ModalContainer>
-              <CountContainer>
-                <MinusButton onClick={() => onClickButton("minus")} />
-                <CountInput
+          <div className="flex flex-col h-full relative overflow-hidden">
+            <div className="grow pb-[104px]">
+              <div className="flex gap-4 items-center justify-center mt-[6px]">
+                <button
+                  type="button"
+                  className="w-[42px] h-[42px] rounded-full relative bg-[var(--color-text-muted)] cursor-pointer before:content-[''] before:w-4 before:h-[3px] before:bg-white before:rounded-lg before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2"
+                  onClick={() => onClickButton("minus")}
+                />
+                <input
+                  className="rounded-[40px] h-12 text-center w-[120px] text-base leading-[22px] outline-none appearance-none"
+                  style={{
+                    backgroundColor: bgColor,
+                    color: color,
+                    border: `1px solid ${borderColor}`,
+                  }}
                   value={maxPersonForCreateTrip}
                   onChange={onChangeCount}
-                  color={color}
                   onFocus={handleFocus}
                   onBlur={handleBlur}
-                  borderColor={borderColor}
-                  bgColor={bgColor}
                   type="number"
                 />
-                <PlusButton onClick={() => onClickButton("plus")} />
-              </CountContainer>
-            </ModalContainer>
-          </ModalWrapper>
+                <button
+                  type="button"
+                  className="w-[42px] h-[42px] rounded-full cursor-pointer relative bg-[var(--color-text-muted)] before:content-[''] before:w-4 before:h-[3px] before:bg-white before:rounded-lg before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 after:content-[''] after:w-[3px] after:h-4 after:bg-white after:rounded-lg after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2"
+                  onClick={() => onClickButton("plus")}
+                />
+              </div>
+            </div>
+          </div>
           <ButtonContainer>
             <Button
               onClick={handleCloseModal}
@@ -127,156 +137,3 @@ export default function RecruitingWrapper() {
     </>
   );
 }
-const ModalWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-`;
-
-const CountContainer = styled.div`
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  justify-content: center;
-  margin-top: 6px;
-`;
-
-const PlusButton = styled.button`
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  cursor: pointer;
-  position: relative;
-  background-color: ${palette.비강조};
-  &::after {
-    content: "";
-    width: 3px;
-    height: 16px;
-    background-color: #fff;
-    border-radius: 8px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  &::before {
-    content: "";
-    width: 16px;
-    height: 3px;
-    background-color: #fff;
-    border-radius: 8px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-`;
-
-const MinusButton = styled.button`
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  position: relative;
-  background-color: ${palette.비강조};
-  cursor: pointer;
-  &::before {
-    content: "";
-    width: 16px;
-    height: 3px;
-    background-color: #fff;
-    border-radius: 8px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-`;
-
-const CountInput = styled.input<{
-  bgColor: string;
-  borderColor: string;
-  color: string;
-}>`
-  border-radius: 40px;
-  height: 48px;
-  text-align: center;
-  background-color: ${(props) => props.bgColor};
-  color: ${(props) => props.color};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 120px;
-  font-size: 16px;
-  line-height: 22px;
-  &::-webkit-outer-spin-button,
-  &::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  /* Firefox  */
-  &[type="number"] {
-    -moz-appearance: textfield;
-  }
-  outline: none;
-  border: 1px solid ${(props) => props.borderColor};
-`;
-
-const ModalContainer = styled.div`
-  flex-grow: 1;
-
-  padding-bottom: 104px;
-`;
-
-const DetailTitle = styled.div`
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 22px;
-  text-align: left;
-  color: ${palette.비강조};
-
-  padding: 0px 6px;
-  gap: 8px;
-`;
-const Count = styled.div<{ isSelected: boolean }>`
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 20px;
-  text-align: center;
-  margin-left: 4px;
-  color: ${(props) => (props.isSelected ? palette.기본 : palette.비강조2)};
-
-  margin-right: 8px;
-`;
-
-const RecruitingContainer = styled.div``;
-const RecruitingBtn = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 8px;
-  cursor: pointer;
-  height: 48px;
-  padding: 12px 16px;
-  gap: 0px;
-  border-radius: 30px;
-  border: 1px solid ${palette.비강조3};
-  opacity: 0px;
-`;
-const ButtonWrapper = styled.div<{ width: string; showModal: boolean }>`
-  width: 390px;
-  @media (max-width: 389px) {
-    width: ${(props) => props.width};
-  }
-  @media (max-width: 450px) {
-    width: ${(props) => props.width};
-  }
-
-  position: fixed;
-  bottom: 4.7svh;
-  padding: 0px 24px;
-  z-index: 10;
-`;

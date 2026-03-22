@@ -3,8 +3,6 @@ import BottomModal from "@/components/BottomModal";
 import ButtonContainer from "@/components/ButtonContainer";
 import Button from "@/components/designSystem/Buttons/Button";
 import BoxLayoutTag from "@/components/designSystem/tag/BoxLayoutTag";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import React, { useState } from "react";
 import TagList from "@/page-views/trip/create/component/TagList";
 import Spacing from "@/components/Spacing";
@@ -54,23 +52,27 @@ const TagListWrapper = ({ taggedArray, addTags }: TagListWrapperProps) => {
         setIsShow={setLimitCountToastShow}
         text="최대 5개까지 설정할 수 있어요"
       />
-      <Container>
+      <div className="flex items-center gap-2 w-full">
         {taggedArray.map((tag) => (
           <BoxLayoutTag
+            key={tag}
             text={tag}
             addStyle={{
-              backgroundColor: palette.비강조4,
+              backgroundColor: "var(--color-muted4)",
               borderRadius: "20px",
               padding: "4px 10px",
               fontSize: "12px",
               fontWeight: "500",
               height: "22px",
               margin: "0",
-              color: palette.비강조,
+              color: "var(--color-text-muted)",
             }}
           />
         ))}
-        <EditContainer onClick={() => setShowModal(true)}>
+        <div
+          className="flex items-center justify-center w-[34px] h-[22px] bg-[var(--color-text-muted)] rounded-[20px] cursor-pointer"
+          onClick={() => setShowModal(true)}
+        >
           <svg
             width="12"
             height="12"
@@ -83,23 +85,23 @@ const TagListWrapper = ({ taggedArray, addTags }: TagListWrapperProps) => {
               fill="white"
             />
           </svg>
-        </EditContainer>
-      </Container>
+        </div>
+      </div>
       {showModal && (
         <BottomModal
-          initialHeight={65} // height 비율이 짧아 진다면 58%로 맞추기.
+          initialHeight={65}
           backdropClick={handleBackdrop}
           closeModal={handleCloseModal}
         >
-          <ModalWrapper>
-            <ModalContainer>
-              <Title>
-                태그 수정 <Small>(최대 5개)</Small>
-              </Title>
+          <div className="flex flex-col h-full relative overflow-y-auto overflow-x-hidden">
+            <div className="grow px-6 pb-[104px]">
+              <h2 className="text-xl font-semibold leading-7 ml-[6px] text-left">
+                태그 수정 <span className="text-sm font-normal text-[var(--color-text-muted)]">(최대 5개)</span>
+              </h2>
               <Spacing size={16} />
               <TagList taggedArray={tempTaggedArray} clickTag={clickTag} />
-            </ModalContainer>
-          </ModalWrapper>
+            </div>
+          </div>
           <ButtonContainer>
             <Button
               onClick={handleCloseModal}
@@ -121,51 +123,5 @@ const TagListWrapper = ({ taggedArray, addTags }: TagListWrapperProps) => {
     </>
   );
 };
-
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-`;
-
-const Title = styled.h2`
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 28px;
-  margin-left: 6px;
-  text-align: left;
-`;
-
-const Small = styled.span`
-  font-size: 14px;
-  font-weight: 400;
-  color: ${palette.비강조};
-`;
-
-const EditContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 22px;
-  background-color: ${palette.비강조};
-  border-radius: 20px;
-`;
-
-const ModalWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
-`;
-
-const ModalContainer = styled.div`
-  flex-grow: 1;
-  padding: 0 24px;
-  padding-bottom: 104px;
-`;
 
 export default TagListWrapper;

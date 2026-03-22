@@ -8,7 +8,6 @@ import RelationKeywordList from "@/components/relationKeyword/RelationKeywordLis
 import Spacing from "@/components/Spacing";
 import useRelationKeyword from "@/hooks/search/useRelationKeyword";
 import { createTripStore } from "@/store/client/createTripStore";
-import styled from "@emotion/styled";
 import React, { useEffect, useMemo, useState } from "react";
 
 import useViewTransition from "@/hooks/useViewTransition";
@@ -47,28 +46,11 @@ export default function CreateTripRegion() {
     navigateWithTransition("/create/trip/date");
   };
   return (
-    <Container>
-      <StepIconContainer>
+    <div className="px-6">
+      <div className="mt-2 mb-10">
         <FirstStepIcon />
-      </StepIconContainer>
+      </div>
       <TripRegion addLocationName={addLocationName} initLocationName={locationName} nextFunc={handleNext} />
-    </Container>
+    </div>
   );
 }
-
-const StepIconContainer = styled.div`
-  margin-top: 8px;
-  margin-bottom: 40px;
-`;
-
-const Container = styled.div`
-  padding: 0 24px;
-`;
-
-const Title = styled.h2`
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 28px;
-  margin-left: 6px;
-  text-align: left;
-`;

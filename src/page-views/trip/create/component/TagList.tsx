@@ -1,8 +1,6 @@
 "use client";
 import SearchFilterTag from "@/components/designSystem/tag/SearchFilterTag";
 import { TAG_LIST } from "@/constants/tags";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import React from "react";
 
 interface TagListProps {
@@ -17,7 +15,7 @@ const TagList = ({ taggedArray, clickTag }: TagListProps) => {
 
   return (
     <>
-      <TagContainer>
+      <div className="flex items-center gap-4 flex-wrap">
         {TAG_LIST.tags?.map((tag, idx) => (
           <SearchFilterTag
             key={tag}
@@ -27,12 +25,12 @@ const TagList = ({ taggedArray, clickTag }: TagListProps) => {
                 ? "rgba(227, 239, 217, 1)"
                 : " rgba(240, 240, 240, 1)",
               color: isActive(idx)
-                ? `${palette.keycolor}`
+                ? "var(--color-keycolor)"
                 : "rgba(52, 52, 52, 1)",
 
               border: isActive(idx)
-                ? `1px solid ${palette.keycolor}`
-                : `1px solid ${palette.검색창}`,
+                ? "1px solid var(--color-keycolor)"
+                : "1px solid var(--color-search-bg)",
               borderRadius: "30px",
               padding: "10px 20px",
               fontWeight: isActive(idx) ? "600" : "400",
@@ -43,16 +41,9 @@ const TagList = ({ taggedArray, clickTag }: TagListProps) => {
             onClick={() => clickTag(idx)}
           />
         ))}
-      </TagContainer>
+      </div>
     </>
   );
 };
-
-const TagContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-`;
 
 export default TagList;

@@ -1,5 +1,4 @@
 "use client";
-import styled from "@emotion/styled";
 import React, { useEffect, useState } from "react";
 import InputField from "@/components/designSystem/input/InputField";
 import AlarmIcon from "@/components/icons/AlarmIcon";
@@ -7,13 +6,10 @@ import { BookmarkContainer, TripAvailable, TripRecommendation } from "@/widgets/
 import Spacing from "@/components/Spacing";
 import Footer from "@/page-views/home/Footer";
 import CreateTripButton from "@/page-views/home/CreateTripButton";
-import { palette } from "@/styles/palette";
 import { myPageStore } from "@/store/client/myPageStore";
 import { useBackPathStore } from "@/store/client/backPathStore";
 import { isGuestUser } from "@/utils/user";
-
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import { usePageTracking } from "@/hooks/usePageTracking";
 import { useClickTracking } from "@/hooks/useClickTracking";
 
@@ -23,19 +19,7 @@ const Home = () => {
   const { track } = useClickTracking();
   const { setSearchTravel, setNotification } = useBackPathStore();
   const router = useRouter();
-  console.log();
-  // console.log(`
-  //   ███╗   ███╗ ██████╗ ██╗███╗   ██╗ ██████╗     ██╗
-  //   ████╗ ████║██╔═══██╗██║████╗  ██║██╔════╝    ███║
-  //   ██╔████╔██║██║   ██║██║██╔██╗ ██║██║  ███╗   ╚██║
-  //   ██║╚██╔╝██║██║   ██║██║██║╚██╗██║██║   ██║    ██║
-  //   ██║ ╚═╝ ██║╚██████╔╝██║██║ ╚████║╚██████╔╝    ██║
-  //   ╚═╝     ╚═╝ ╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝     ╚═╝
 
-  //   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  //              🚀 Welcome to MOING! 🚀
-  //   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  //   `);
   const onFocusHandler = () => {
     setSearchTravel("/");
     router.push("/search/travel");
@@ -62,32 +46,39 @@ const Home = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-  return (
-    <HomeContainer>
-      <HomeHeader scrolled={scrolled}>
-        <HeaderTitle>
-          <img src={"/images/homeLogo.png"} width={96} height={24} alt="홈 모잉의 로고입니다" />
-          {isGuestUser() ? (
-            <Alarm></Alarm>
-          ) : (
-            <Alarm onClick={onClickAlarm}>
-              <AlarmIcon />
-            </Alarm>
-          )}
-        </HeaderTitle>
-      </HomeHeader>
 
-      {/* <CharacterBox>
-    <img
-      src="/images/homeCharacter.png"
-      alt=""
-    />
-  </CharacterBox> */}
-      <ContentWrapper>
-        <SearchBox>
-          <Greeting>
-            <span>{name === "" ? "모잉" : name}</span>님, 반가워요!
-          </Greeting>
+  return (
+    <div className="bg-[var(--color-search-bg)] w-full">
+      {/* HomeHeader */}
+      <div className="bg-[var(--color-search-bg)] transition-colors duration-300 h-[116px] fixed top-0 left-0 w-full max-[440px]:w-full min-[440px]:w-[390px] min-[440px]:left-1/2 min-[440px]:-translate-x-1/2 min-[440px]:overflow-x-hidden z-[1000] overflow-hidden pt-[52px] px-6 pb-4">
+        <div className="flex justify-between items-center h-12">
+          <img
+            src={"/images/homeLogo.png"}
+            width={96}
+            height={24}
+            alt="홈 모잉의 로고입니다"
+          />
+          {isGuestUser() ? (
+            <div className="w-12 h-12 flex cursor-pointer items-center justify-center" />
+          ) : (
+            <div
+              className="w-12 h-12 flex cursor-pointer items-center justify-center"
+              onClick={onClickAlarm}
+            >
+              <AlarmIcon />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="w-full px-6 mt-[116px]">
+        <div className="pt-4">
+          <div className="text-xl font-bold leading-[28px] tracking-[-0.025em] text-left mb-2">
+            <span style={{ color: "#3e8d01" }}>
+              {name === "" ? "모잉" : name}
+            </span>
+            님, 반가워요!
+          </div>
 
           <InputField
             isHome={true}
@@ -96,7 +87,7 @@ const Home = () => {
             onFocus={onFocusHandler}
             isRemove={false}
           />
-        </SearchBox>
+        </div>
         {/* 북마크 부분 */}
         <BookmarkContainer />
         {/* 참가 가능 여행 부분 */}
@@ -105,77 +96,10 @@ const Home = () => {
         <TripRecommendation />
         <Spacing size={62} />
         <Footer />
-      </ContentWrapper>
+      </div>
       <CreateTripButton />
-    </HomeContainer>
+    </div>
   );
 };
-const HomeContainer = styled.div`
-  background-color: ${palette.검색창};
-  width: 100%;
-`;
 
-const ContentWrapper = styled.div`
-  width: 100%;
-  padding: 0px 24px;
-
-  margin-top: calc(116px);
-`;
-const SearchBox = styled.div`
-  padding-top: 16px;
-`;
-const Greeting = styled.div`
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 28px;
-  letter-spacing: -0.025em;
-  text-align: left;
-  margin-bottom: 8px;
-  span {
-    color: #3e8d01;
-  }
-`;
-
-const HomeHeader = styled.div<{ scrolled: boolean }>`
-  background-color: ${palette.검색창};
-  transition: background-color 0.3s ease;
-
-  @media (max-width: 440px) {
-    width: 100%;
-  }
-  @media (min-width: 440px) {
-    width: 390px;
-    left: 50%;
-    transform: translateX(-50%);
-    overflow-x: hidden;
-  }
-  height: 116px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-  overflow: hidden;
-  padding: 52px 24px 16px 24px;
-`;
-
-const HeaderTitle = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 48px;
-`;
-const Text = styled.div`
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 28.64px;
-  text-align: left;
-`;
-const Alarm = styled.div`
-  width: 48px;
-  height: 48px;
-  display: flex;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-`;
 export default Home;

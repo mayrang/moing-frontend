@@ -5,8 +5,6 @@ import { passwordSchema } from "@/utils/schema";
 import Spacing from "@/components/Spacing";
 import useMyPage from "@/hooks/myPage/useMyPage";
 import { userStore } from "@/store/client/userStore";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ValidationInputField from "@/components/designSystem/input/ValidationInputField";
@@ -37,7 +35,6 @@ export default function EditMyPassword() {
   const allSuccess = Object.values(success).every((value) => value);
 
   const handleRemoveValue = () => {
-    console.log(name);
     setSuccess((prev) => ({ password: false }));
     setFormData((prev) => ({ password: "" }));
   };
@@ -50,7 +47,6 @@ export default function EditMyPassword() {
 
   const changeValue = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log(name, value);
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     if (name === "password") {
       const passwordValidation = passwordSchema.safeParse(value);
@@ -94,7 +90,6 @@ export default function EditMyPassword() {
         return;
       } catch (e) {
         // 틀리면 500에러
-        console.log(e);
         setShake((prev) => ({
           ...prev,
           password: true,
@@ -119,9 +114,9 @@ export default function EditMyPassword() {
 
   return (
     <>
-      <Container onSubmit={handleSubmit}>
-        <FieldContainer>
-          <Label htmlFor="password">현재 비밀번호를 입력해주세요</Label>
+      <form className="px-6 mt-6" onSubmit={handleSubmit}>
+        <div className="flex w-full flex-col">
+          <label htmlFor="password" className="text-base font-semibold leading-4 text-[var(--color-text-base)] text-left">현재 비밀번호를 입력해주세요</label>
           <Spacing size={16} />
           <ValidationInputField
             handleRemoveValue={handleRemoveValue}
@@ -135,7 +130,7 @@ export default function EditMyPassword() {
             success={success.password}
             message={error.password ?? ""}
           />
-        </FieldContainer>
+        </div>
 
         <ButtonContainer>
           {allSuccess ? (
@@ -152,27 +147,7 @@ export default function EditMyPassword() {
             />
           )}
         </ButtonContainer>
-      </Container>
+      </form>
     </>
   );
 }
-
-const Container = styled.form`
-  padding: 0 24px;
-  margin-top: 24px;
-`;
-
-const FieldContainer = styled.div`
-  display: flex;
-  width: 100%;
-
-  flex-direction: column;
-`;
-
-const Label = styled.label`
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 16px;
-  color: ${palette.기본};
-  text-align: left;
-`;

@@ -1,5 +1,4 @@
 'use client'
-import styled from '@emotion/styled'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import ThreeRowCarousel from '@/components/ThreeRowCarousel'
@@ -11,7 +10,6 @@ import { IMyTripList } from '@/model/myTrip'
 import OnBoardingOne from '@/components/icons/OnBoardingOne'
 import OnBoardingTwo from '@/components/icons/OnBoardingTwo'
 import OnBoardingThree from '@/components/icons/OnBoardingThree'
-import { palette } from '@/styles/palette'
 interface OnBoardingData {
   title: string
   description: string
@@ -44,7 +42,7 @@ export default function OnBoarding() {
   ]
 
   return (
-    <Container>
+    <div className="flex w-full h-svh">
       <ThreeRowCarousel
         needNextBtn={true}
         rowsProp={1}
@@ -53,49 +51,14 @@ export default function OnBoarding() {
           <div
             style={{ padding: '18px 16px' }}
             key={step.title}>
-            <TextBox>
-              <Title>{step.title}</Title>
-              <Description>{step.description}</Description>
-            </TextBox>
-            <Img>{step.svg}</Img>
+            <div>
+              <div className="whitespace-pre-line text-[26px] font-semibold leading-[36.4px] text-[var(--color-text-base)] text-center mb-4">{step.title}</div>
+              <div className="whitespace-pre-line text-base font-normal leading-[22.4px] tracking-[-0.25px] text-center text-[var(--color-text-muted)]">{step.description}</div>
+            </div>
+            <div className="flex justify-center">{step.svg}</div>
           </div>
         ))}
       </ThreeRowCarousel>
-    </Container>
+    </div>
   )
 }
-
-const Container = styled.div`
-  display: flex;
-  width: 100%;
-  height: 100svh;
-`
-const TextBox = styled.div`
-  /* margin-bottom: 72px; */
-`
-
-const Title = styled.div`
-  white-space: pre-line;
-  font-family: Pretendard;
-  font-size: 26px;
-  font-weight: 600;
-  line-height: 36.4px;
-  color: ${palette.기본};
-  text-align: center;
-  margin-bottom: 16px;
-`
-const Description = styled.div`
-  white-space: pre-line;
-  font-family: Pretendard;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 22.4px;
-  letter-spacing: -0.25px;
-  text-align: center;
-  color: ${palette.비강조};
-`
-
-const Img = styled.div`
-  display: flex;
-  justify-content: center;
-`

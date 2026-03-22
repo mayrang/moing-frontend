@@ -1,11 +1,9 @@
 "use client";
 import Button from "@/components/designSystem/Buttons/Button";
-import styled from "@emotion/styled";
 import { userStore } from "@/store/client/userStore";
 import { useEffect, useState } from "react";
 
 import { z } from "zod";
-import InfoText from "@/components/designSystem/text/InfoText";
 import Spacing from "@/components/Spacing";
 import ButtonContainer from "@/components/ButtonContainer";
 import useViewTransition from "@/hooks/useViewTransition";
@@ -59,14 +57,14 @@ const RegisterName = () => {
   };
   const [nameValidError, setNameValidError] = useState(false);
   return (
-    <RegisterNameWrapper>
-      <StepIconContainer>
+    <div className="px-6 min-h-[calc(100svh-68px-30px)] mt-[30px]">
+      <div className="mt-[30px]">
         <RegisterFirstStepIcon />
-      </StepIconContainer>
-      <StepContent>
+      </div>
+      <div className="mt-[40px] w-[343px] h-[68px] px-[6px] text-2xl font-semibold leading-[33.6px] tracking-[-0.025em] text-left">
         환영합니다! <br />
         이름을 설정해주세요.
-      </StepContent>
+      </div>
       <div style={{ marginTop: "14px" }}>
         <ValidationInputField
           type="text"
@@ -112,31 +110,8 @@ const RegisterName = () => {
           }
         />
       </ButtonContainer>
-    </RegisterNameWrapper>
+    </div>
   );
 };
 
 export default RegisterName;
-
-const RegisterNameWrapper = styled.div`
-  padding: 0px 24px;
-
-  min-height: calc(100svh - 68px - 30px); // TO DO: 헤더 68px, 30px은 헤더와 내용 사이 마진. 변수만들어사용.
-
-  margin-top: 30px;
-`;
-const StepIconContainer = styled.div`
-  margin-top: 30px;
-`;
-
-const StepContent = styled.div`
-  margin-top: 40px;
-  width: 343px;
-  height: 68px;
-  padding: 0px 6px 0px 6px;
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 33.6px;
-  letter-spacing: -0.025em;
-  text-align: left;
-`;

@@ -1,5 +1,4 @@
 'use client'
-import { palette } from '@/styles/palette'
 interface NavbarIconProps {
   width?: number
   height?: number
@@ -9,7 +8,7 @@ interface NavbarIconProps {
 const HomeIcon = ({
   width = 16,
   height = 15.67,
-  stroke = `${palette.비강조3}`,
+  stroke = "var(--color-muted3)",
   fill = 'white'
 }: NavbarIconProps) => {
   return (

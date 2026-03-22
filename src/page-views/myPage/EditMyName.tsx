@@ -1,13 +1,9 @@
 "use client";
 import Button from "@/components/designSystem/Buttons/Button";
 import ButtonContainer from "@/components/ButtonContainer";
-import StateInputField from "@/components/designSystem/input/StateInputField";
-import InfoText from "@/components/designSystem/text/InfoText";
 import Spacing from "@/components/Spacing";
 import useMyPage from "@/hooks/myPage/useMyPage";
 import { myPageStore } from "@/store/client/myPageStore";
-import { palette } from "@/styles/palette";
-import styled from "@emotion/styled";
 import React, { useEffect, useState } from "react";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
@@ -49,8 +45,8 @@ export default function EditMyName() {
   };
   const [nameValidError, setNameValidError] = useState(false);
   return (
-    <Wrapper>
-      <StepContent>새로운 이름을 입력해주세요</StepContent>
+    <div className="px-6 mt-6">
+      <div className="text-base font-semibold leading-4 tracking-[-0.025em] text-left text-[var(--color-text-base)]">새로운 이름을 입력해주세요</div>
       <div style={{ marginTop: "14px" }}>
         <ValidationInputField
           type={"text"}
@@ -96,19 +92,6 @@ export default function EditMyName() {
           }
         />
       </ButtonContainer>
-    </Wrapper>
+    </div>
   );
 }
-const Wrapper = styled.div`
-  padding: 0px 24px;
-  margin-top: 24px;
-`;
-const StepContent = styled.div`
-  font-family: Pretendard;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 16px;
-  letter-spacing: -0.025em;
-  text-align: left;
-  color: ${palette.기본};
-`;
