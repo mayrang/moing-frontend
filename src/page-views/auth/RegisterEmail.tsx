@@ -1,50 +1,31 @@
 "use client";
 import Button from "@/components/designSystem/Buttons/Button";
 import Spacing from "@/components/Spacing";
-import Terms from "@/components/Terms";
 import { userStore } from "@/store/client/userStore";
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { checkEmail } from "@/api/user";
 import ButtonContainer from "@/components/ButtonContainer";
-import { emailSchema } from "@/utils/schema";
 import useViewTransition from "@/hooks/useViewTransition";
 import { useRouter } from "next/navigation";
 import ValidationInputField from "@/components/designSystem/input/ValidationInputField";
 import useVerifyEmail from "@/hooks/useVerifyEmail";
-import { errorStore } from "@/store/client/errorStore";
-
-interface ErrorProps {
-  email: undefined | string;
-}
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@/shared/lib/zodResolver";
+import { sanitizeFormData } from "@/shared/lib/sanitize";
+import { registerEmailSchema, RegisterEmailFormData } from "@/utils/schema";
+import dynamic from "next/dynamic";
+const Terms = dynamic(() => import("@/features/auth/ui/Terms"), { ssr: false });
+import { registerDraft } from "@/shared/lib/registerDraft";
 
 const RegisterEmail = () => {
   const { addEmail, email, socialLogin, setSocialLogin } = userStore();
-  const { updateError, setIsMutationError } = errorStore();
   const [showTerms, setShowTerms] = useState(true);
   const { verifyEmailSend } = useVerifyEmail();
-  const [formData, setFormData] = useState({
-    email: email,
-  });
-  const [success, setSuccess] = useState({
-    email: false,
-  });
-  const [error, setError] = useState<ErrorProps>({
-    email: undefined,
-  });
-  const [shake, setShake] = useState({
-    email: false,
-  });
   const navigateWithTransition = useViewTransition();
   const router = useRouter();
-  const isSocialLoginGoogle = socialLogin === "google";
-  const isSocialLoginKakao = socialLogin === "kakao";
-  const isSocialLoginNaver = socialLogin === "naver";
-  const isRegisterEmail = socialLogin === null;
-  const allSuccess = isSocialLoginKakao ? success.email : Object.values(success).every((value) => value);
 
-  const closeShowTerms = () => {
-    setShowTerms(false);
-  };
+  const isSocialLoginGoogle = socialLogin === "google";
+  const isSocialLoginNaver = socialLogin === "naver";
 
   useEffect(() => {
     if (isSocialLoginGoogle || isSocialLoginNaver) {
@@ -53,80 +34,49 @@ const RegisterEmail = () => {
     }
   }, [socialLogin]);
 
-  const handleRemoveValue = (name: "email") => {
-    setSuccess((prev) => ({ ...prev, [name]: false }));
-    setFormData((prev) => ({ ...prev, [name]: "" }));
-  };
-
-  const changeValue = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    if (name === "email") {
-      const emailValidation = emailSchema.safeParse(value);
-      if (!emailValidation.success) {
-        setError((prev) => ({
-          ...prev,
-          email: emailValidation.error.flatten().formErrors[0],
-        }));
-      } else {
-        setError((prev) => ({
-          ...prev,
-          email: undefined,
-        }));
-      }
-
-      setSuccess((prev) => ({
-        ...prev,
-        email: emailValidation.success,
-      }));
-    }
-  };
-
   useEffect(() => {
-    // if (!verifyEmailSend.isPending && verifyEmailSend.isError) {
-    //   updateError(new Error("이메일 발송 과정에서 에러가 발생했어요"));
-    //   setIsMutationError(true);
-    // }
     if (verifyEmailSend.isSuccess) {
-      addEmail(formData.email);
       document.documentElement.style.viewTransitionName = "forward";
       navigateWithTransition("/verifyEmail");
     }
-  }, [verifyEmailSend.isPending, verifyEmailSend.isError, verifyEmailSend.isSuccess]);
+  }, [verifyEmailSend.isPending, verifyEmailSend.isSuccess]);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (allSuccess) {
-      const checkingEmail = await checkEmail(formData.email);
-      if (!checkingEmail) {
-        setShake((prev) => ({
-          ...prev,
-          email: true,
-        }));
-        setError((prev) => ({ ...prev, email: "이미 사용중인 이메일입니다." }));
-        setTimeout(() => {
-          setShake({ email: false });
-        }, 500);
-        return;
-      }
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    setError,
+    formState: { errors, isValid },
+  } = useForm<RegisterEmailFormData>({
+    resolver: zodResolver(registerEmailSchema),
+    mode: 'onChange',
+    // localStorage 임시 저장 이메일 복구 (Zustand store → localStorage 순으로 우선)
+    defaultValues: { email: email || registerDraft.load() || '' },
+  });
 
-      verifyEmailSend.mutate({ email: formData.email });
-    } else {
-      setShake({
-        email: Boolean(error.email),
-      });
+  const emailValue = watch('email');
 
-      setTimeout(() => {
-        setShake({ email: false });
-      }, 500);
+  // 이메일 입력 중 localStorage에 임시 저장 (1시간 TTL)
+  useEffect(() => {
+    if (emailValue) registerDraft.save(emailValue);
+  }, [emailValue]);
+
+  const onSubmit = async (data: RegisterEmailFormData) => {
+    const sanitized = sanitizeFormData(data);
+    const checkingEmail = await checkEmail(sanitized.email);
+    if (!checkingEmail) {
+      setError('email', { message: '이미 사용중인 이메일입니다.' });
+      return;
     }
+    addEmail(sanitized.email);
+    verifyEmailSend.mutate({ email: sanitized.email });
   };
 
   return (
     <>
-      {showTerms && <Terms closeShowTerms={closeShowTerms} />}
-      <form className="px-6 pt-[30px]" onSubmit={handleSubmit}>
+      {showTerms && <Terms closeShowTerms={() => setShowTerms(false)} />}
+      <form className="px-6 pt-[30px]" onSubmit={handleSubmit(onSubmit)}>
         <div className="flex w-full flex-col">
           <label
             className="text-2xl leading-[34px] font-semibold px-[6px] tracking-[-0.04em]"
@@ -136,24 +86,23 @@ const RegisterEmail = () => {
           </label>
           <Spacing size={16} />
           <ValidationInputField
-            handleRemoveValue={() => handleRemoveValue("email")}
+            handleRemoveValue={() => setValue('email', '', { shouldValidate: true })}
             type="email"
-            name="email"
-            onChange={changeValue}
-            value={formData.email}
-            hasError={Boolean(error.email)}
-            success={success.email}
+            value={emailValue}
+            hasError={!!errors.email}
+            success={!errors.email && (emailValue?.length ?? 0) > 0}
             placeholder="이메일 입력"
-            shake={shake.email}
-            message={error.email ?? ""}
+            shake={!!errors.email}
+            message={errors.email?.message ?? ""}
+            {...register('email')}
           />
         </div>
 
         <Spacing size={"6svh"} />
 
         <ButtonContainer>
-          {allSuccess ? (
-            <Button text="다음" />
+          {isValid ? (
+            <Button text="다음" type="submit" />
           ) : (
             <Button
               text="다음"

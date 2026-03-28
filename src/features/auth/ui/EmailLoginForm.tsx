@@ -1,12 +1,15 @@
 'use client';
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import Spacing from '@/shared/ui/layout/Spacing';
 import { Button } from '@/shared/ui';
 import { InfoText } from '@/shared/ui';
 import useAuth from '../hooks/useAuth';
 import { StateInputField } from '@/shared/ui';
-import { emailSchema, passwordSchema } from '@/utils/schema';
 import Link from 'next/link';
+import { zodResolver } from '@/shared/lib/zodResolver';
+import { sanitizeFormData } from '@/shared/lib/sanitize';
+import { loginSchema, LoginFormData } from '@/utils/schema';
 
 const EmailLoginForm = () => {
   const {
@@ -14,124 +17,71 @@ const EmailLoginForm = () => {
     loginEmailMutation: { isError, isPending, isSuccess },
   } = useAuth();
 
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    setError,
+    clearErrors,
+    watch,
+    formState: { errors, isValid },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    mode: 'onChange',
+    defaultValues: { email: '', password: '' },
   });
-  const [success, setSuccess] = useState({
-    email: false,
-    password: false,
-  });
-  const [error, setError] = useState<undefined | string>();
-  const [shake, setShake] = useState(false);
+
+  const emailValue = watch('email');
+  const passwordValue = watch('password');
 
   useEffect(() => {
-    if (isSuccess) {
-      setFormData({ email: '', password: '' });
-    }
-  }, [isSuccess]);
+    if (isSuccess) reset();
+  }, [isSuccess, reset]);
 
   useEffect(() => {
     if (!isPending && isError) {
-      setError('로그인 정보를 다시 확인해주세요.');
-      setShake((prev) => (prev ? prev : true));
-
-      setTimeout(() => {
-        setShake(false);
-      }, 500);
+      setError('root', { message: '로그인 정보를 다시 확인해주세요.' });
     }
-  }, [isError, isPending]);
+  }, [isError, isPending, setError]);
 
-  const handleRemoveValue = (name: 'email' | 'password') => {
-    if (name === 'email') {
-      setSuccess((prev) => ({ ...prev, email: false }));
-      setFormData((prev) => ({ ...prev, email: '' }));
-    } else {
-      setSuccess((prev) => ({ ...prev, password: false }));
-      setFormData((prev) => ({ ...prev, password: '' }));
-    }
-  };
-
-  const onSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    try {
-      loginEmail(formData);
-      return;
-    } catch {
-      setError('로그인 정보를 다시 확인해주세요.');
-      setShake((prev) => (prev ? prev : true));
-
-      setTimeout(() => {
-        setShake(false);
-      }, 500);
-      return;
-    }
-  };
-
-  const changeValue = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    if (name === 'email') {
-      const emailValidation = emailSchema.safeParse(value);
-      if (!emailValidation.success) {
-        setError(emailValidation.error.flatten().formErrors[0]);
-      } else {
-        setError(undefined);
-        setSuccess((prev) => ({
-          ...prev,
-          email: emailValidation.success,
-        }));
-      }
-    } else {
-      const passwordValidation = passwordSchema.safeParse(value);
-
-      if (!passwordValidation.success) {
-        setError(passwordValidation.error!.flatten().formErrors[0]);
-      } else {
-        setError(undefined);
-      }
-      setSuccess((prev) => ({
-        ...prev,
-        password: passwordValidation.success,
-      }));
-    }
+  const onSubmit = (data: LoginFormData) => {
+    clearErrors('root');
+    loginEmail(sanitizeFormData(data));
   };
 
   return (
     <form
       className="px-6 flex w-full text-sm flex-col leading-[16px] tracking-[-0.04px] justify-center"
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <StateInputField
-        handleRemoveValue={() => handleRemoveValue('email')}
+        handleRemoveValue={() => setValue('email', '', { shouldValidate: true })}
         type="email"
-        value={formData.email}
+        value={emailValue}
         placeholder="이메일 아이디"
-        name="email"
         height={54}
         showIcon={true}
-        success={false}
+        success={!errors.email && (emailValue?.length ?? 0) > 0}
         showSuccessIcon={false}
-        onChange={changeValue}
+        {...register('email')}
       />
       <Spacing size={16} />
       <StateInputField
         showSuccessIcon={false}
-        handleRemoveValue={() => handleRemoveValue('password')}
+        handleRemoveValue={() => setValue('password', '', { shouldValidate: true })}
         type="password"
         height={54}
         showIcon={true}
-        value={formData.password}
+        value={passwordValue}
         placeholder="패스워드"
-        name="password"
         success={false}
-        onChange={changeValue}
+        {...register('password')}
       />
       <Spacing size={14} />
-      {error ? (
-        <InfoText shake={shake} hasError>
-          {error}
+      {errors.root ? (
+        <InfoText shake hasError>
+          {errors.root.message}
         </InfoText>
       ) : (
         <Spacing size={16} />
@@ -146,10 +96,10 @@ const EmailLoginForm = () => {
       <Spacing size={26} />
       <Button
         text="로그인"
-        disabled={!(success.email && success.password)}
+        disabled={!isValid}
         type="submit"
         addStyle={
-          success.email && success.password
+          isValid
             ? undefined
             : {
                 backgroundColor: 'rgba(220, 220, 220, 1)',

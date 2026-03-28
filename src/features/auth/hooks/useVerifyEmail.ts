@@ -1,69 +1,54 @@
 "use client";
 import { useMutation } from "@tanstack/react-query";
-import { checkNetworkConnection } from "./useAuth";
-import { axiosInstance, handleApiResponse } from "@/shared/api";
-import RequestError from "@/context/ReqeustError";
-import { errorStore } from "@/store/client/errorStore";
+import { axiosInstance } from "@/shared/api";
+import { createMutationOptions } from "@/shared/lib/errors";
+import { AUTH_ERROR_POLICY } from "../lib/authErrorPolicy";
 
 const useVerifyEmail = () => {
-  const { updateError, setIsMutationError } = errorStore();
   const verifyEmailSend = useMutation({
-    mutationFn: async ({ email }: { email: string }) => {
-      if (!checkNetworkConnection()) return;
-
-      const response = await axiosInstance.post("/api/verify/email/send", {
-        email,
-      });
-      if (!response.data?.success) {
-        throw new Error(response.data?.error.reason);
-      }
-      return response?.data;
-    },
+    ...createMutationOptions({
+      mutationFn: async ({ email }: { email: string }) => {
+        const response = await axiosInstance.post("/api/verify/email/send", { email });
+        if (!response.data?.success) {
+          // business 에러: 이미 사용 중인 이메일 등
+          const reason = response.data?.error?.reason ?? "이메일 전송에 실패했습니다.";
+          throw Object.assign(new Error(reason), { response: { status: 400, data: response.data } });
+        }
+        return response.data;
+      },
+      policy: AUTH_ERROR_POLICY,
+      onBusinessError: (error) => {
+        // RegisterEmail 페이지의 onSubmit에서 checkEmail()로 선처리하므로
+        // 여기까지 오는 business 에러는 드뭄 → 상위 컴포넌트가 isError 감지 후 처리
+      },
+    }),
     onSuccess: (data: any) => {
-      if (data.success) {
+      if (data?.success?.sessionToken) {
         sessionStorage.setItem("sessionToken", data.success.sessionToken);
-      } else {
-        updateError(data.error.reason);
-        setIsMutationError(true);
       }
-    },
-    onError: (error: any) => {
-      console.error(error);
-      throw new RequestError(error);
     },
   });
 
   const verifyEmail = useMutation({
-    mutationFn: async ({ verifyCode }: { verifyCode: string }) => {
-      if (!checkNetworkConnection()) return;
-      const sessionToken = sessionStorage.getItem("sessionToken") ?? "";
-
-      const response = await axiosInstance.post("/api/verify/email", {
-        verifyCode,
-        sessionToken,
-      });
-      if (!response.data?.success) {
-        throw new RequestError(response.data?.error.reason);
-      }
-      return response?.data;
-    },
+    ...createMutationOptions({
+      mutationFn: async ({ verifyCode }: { verifyCode: string }) => {
+        const sessionToken = sessionStorage.getItem("sessionToken") ?? "";
+        const response = await axiosInstance.post("/api/verify/email", { verifyCode, sessionToken });
+        if (!response.data?.success) {
+          const reason = response.data?.error?.reason ?? "인증번호가 올바르지 않습니다.";
+          throw Object.assign(new Error(reason), { response: { status: 400, data: response.data } });
+        }
+        return response.data;
+      },
+      policy: AUTH_ERROR_POLICY,
+      onBusinessError: (_error) => {
+        // VerifyEmail 페이지에서 verifyEmail.isError 감지 후 인라인 에러 표시
+      },
+    }),
     mutationKey: ["verifyEmailCode"],
-    onSuccess: (data: any) => {
-      if (!data.success) {
-        console.error(data.error.reason);
-        updateError(data.error.reason);
-        setIsMutationError(true);
-      }
-    },
-    onError: (error: any) => {
-      console.error(error);
-    },
   });
 
-  return {
-    verifyEmailSend,
-    verifyEmail,
-  };
+  return { verifyEmailSend, verifyEmail };
 };
 
 export default useVerifyEmail;

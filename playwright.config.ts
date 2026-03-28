@@ -22,10 +22,20 @@ export default defineConfig({
       use: { ...devices['Pixel 5'] },
     },
   ],
-  webServer: {
-    command: 'yarn dev',
-    url: 'http://localhost:8080',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-  },
+  webServer: [
+    {
+      // 1) MSW HTTP mock 서버 (포트 9090) — Next.js보다 먼저 실행
+      command: 'node_modules/.bin/tsx src/mocks/http.ts',
+      url: 'http://localhost:9090',
+      reuseExistingServer: !process.env.CI,
+      timeout: 30 * 1000,
+    },
+    {
+      // 2) Next.js dev server — API_BASE_URL을 mock 서버로 지정
+      command: 'API_BASE_URL=http://localhost:9090 yarn dev',
+      url: 'http://localhost:8080',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120 * 1000,
+    },
+  ],
 });

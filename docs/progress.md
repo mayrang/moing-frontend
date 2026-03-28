@@ -11,6 +11,7 @@
 | Phase 3 | features 레이어 | ✅ 완료 | 2026-03-21 | 2026-03-21 |
 | Phase 4 | page-views / widgets 레이어 | ✅ 완료 | 2026-03-21 | 2026-03-21 |
 | Phase 5 | Tailwind CSS 전환 — Emotion 완전 제거 | ✅ 완료 | 2026-03-22 | 2026-03-22 |
+| Phase 6 | 유저 플로우 개선 — Auth | 🔄 진행 중 | 2026-03-28 | - |
 
 ---
 
@@ -179,3 +180,36 @@ _작업 완료 후 기록_
 ### 참조
 - [Phase 5 상세 문서](refactoring/phase-5.md)
 - [ADR 001: Tailwind 전환 결정](decisions/001-tailwind.md)
+
+---
+
+## Phase 6: 유저 플로우 개선 — Auth (진행 중 🔄)
+
+> **목표**: Auth 플로우를 기준으로 E2E 베이스라인 측정 → UX/접근성 개선 → 수치 비교
+
+### 현재 상태 (2026-03-28 기준)
+
+**완료**
+- [x] E2E auth 테스트 스펙 32개 작성 (`e2e/auth.spec.ts`)
+  - 이메일 로그인 7개, 로그아웃 1개, 이메일 회원가입 10개, OAuth 7개, axe 5개, 성능 2개
+- [x] Playwright MSW 연동 설정 (`playwright.config.ts` dual webServer)
+  - MSW Express 서버 (포트 9090) → Next.js rewrite (`API_BASE_URL`) → 프록시
+- [x] Auth MSW 핸들러 작성 (`src/test/msw/handlers/auth.ts`)
+- [x] `docs/baseline/auth-baseline.md` 작성
+  - `/login`, `/registerEmail` axe 측정 완료 (각 3건 위반)
+  - `/login`, `/registerEmail` 성능 측정 완료
+
+**블로킹 이슈 → 다음 세션 재개 포인트**
+- ❌ 백엔드 서버 다운 → `/api/*` 요청 실패 → E2E 플로우 중단
+- ❌ `/registerEmail` → `/verifyEmail` 네비게이션 미작동 (원인: API 응답 없음)
+- ❌ `/verifyEmail`, `/registerPassword` axe 미측정 (위 문제로 진입 불가)
+
+**다음 작업**
+1. **Stateful Mock 서버 구축** (`src/mocks/db/`) — 현재 세션에서 진행
+2. Mock 서버 완료 후 E2E 32개 전체 통과 확인
+3. `/verifyEmail`, `/registerPassword` axe 재측정 → baseline 완성
+4. Auth UX/접근성 개선 (`aria-label`, `<title>`, `alert()` → Toast 교체 등)
+
+### 참조
+- [Auth 베이스라인 문서](../baseline/auth-baseline.md)
+- [Phase 6 상세 문서](refactoring/phase-6.md)

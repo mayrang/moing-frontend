@@ -5,54 +5,41 @@ import InfoText from "@/components/designSystem/text/InfoText";
 import Spacing from "@/components/Spacing";
 import Terms from "@/components/Terms";
 import { userStore } from "@/store/client/userStore";
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { checkEmail } from "@/api/user";
 import ButtonContainer from "@/components/ButtonContainer";
-import { emailSchema, passwordSchema } from "@/utils/schema";
 import useViewTransition from "@/hooks/useViewTransition";
 import { useRouter } from "next/navigation";
 import ValidationInputField from "@/components/designSystem/input/ValidationInputField";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@/shared/lib/zodResolver";
+import { sanitizeFormData } from "@/shared/lib/sanitize";
+import { z } from "zod";
+import { emailSchema, passwordSchema } from "@/utils/schema";
 
-interface ErrorProps {
-  email: undefined | string;
-  password: undefined | string;
-  confirmPassword: undefined | string;
-}
+// RegisterForm은 email + password 한 페이지 구성 (카카오 소셜 포함)
+const registerFormSchema = z
+  .object({
+    email: emailSchema,
+    password: passwordSchema,
+    confirmPassword: z.string().min(1, '비밀번호를 다시 입력해주세요.'),
+  })
+  .refine((d) => d.password === d.confirmPassword, {
+    message: '비밀번호가 일치하지 않습니다.',
+    path: ['confirmPassword'],
+  });
+type RegisterFormData = z.infer<typeof registerFormSchema>;
 
 const RegisterForm = () => {
   const { addEmail, addPassword, email, password, socialLogin, setSocialLogin } = userStore();
   const [showTerms, setShowTerms] = useState(true);
-  const [formData, setFormData] = useState({
-    email: email,
-    password: password,
-    confirmPassword: password,
-  });
-  const [success, setSuccess] = useState({
-    email: false,
-    password: false,
-    confirmPassword: false,
-  });
-  const [error, setError] = useState<ErrorProps>({
-    email: undefined,
-    password: undefined,
-    confirmPassword: undefined,
-  });
-  const [shake, setShake] = useState({
-    email: false,
-    password: false,
-    confirmPassword: false,
-  });
   const navigateWithTransition = useViewTransition();
   const router = useRouter();
+
   const isSocialLoginGoogle = socialLogin === "google";
   const isSocialLoginKakao = socialLogin === "kakao";
   const isSocialLoginNaver = socialLogin === "naver";
   const isRegisterEmail = socialLogin === null;
-  const allSuccess = isSocialLoginKakao ? success.email : Object.values(success).every((value) => value);
-
-  const closeShowTerms = () => {
-    setShowTerms(false);
-  };
 
   useEffect(() => {
     if (isSocialLoginGoogle || isSocialLoginNaver) {
@@ -61,139 +48,74 @@ const RegisterForm = () => {
     }
   }, [socialLogin]);
 
-  const handleRemoveValue = (name: "email" | "password" | "confirmPassword") => {
-    setSuccess((prev) => ({ ...prev, [name]: false }));
-    setFormData((prev) => ({ ...prev, [name]: "" }));
-  };
-
-  const changeValue = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    if (name === "email") {
-      const emailValidation = emailSchema.safeParse(value);
-      if (!emailValidation.success) {
-        setError((prev) => ({
-          ...prev,
-          email: emailValidation.error.flatten().formErrors[0],
-        }));
-      } else {
-        setError((prev) => ({
-          ...prev,
-          email: undefined,
-        }));
-      }
-
-      setSuccess((prev) => ({
-        ...prev,
-        email: emailValidation.success,
-      }));
-    } else if (name === "password") {
-      const passwordValidation = passwordSchema.safeParse(value);
-      let passwordError = false;
-      const emailLocalPart = formData.email.split("@")[0];
-      if (value === formData.email || value === emailLocalPart) {
-        passwordError = true;
-      }
-      if (!passwordValidation.success || passwordError) {
-        if (passwordError) {
-          setError((prev) => ({
-            ...prev,
-            password: "이메일과 동일한 형식의 비밀번호는 사용할 수 없습니다.",
-          }));
-        } else {
-          setError((prev) => ({
-            ...prev,
-            password: passwordValidation.error!.flatten().formErrors[0],
-          }));
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    setError,
+    formState: { errors, isValid },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(
+      registerFormSchema.superRefine((data, ctx) => {
+        const emailLocalPart = data.email.split("@")[0];
+        if (data.password === data.email || data.password === emailLocalPart) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["password"],
+            message: "이메일과 동일한 형식의 비밀번호는 사용할 수 없습니다.",
+          });
         }
-      } else {
-        setError((prev) => ({
-          ...prev,
-          password: undefined,
-        }));
-      }
-      setSuccess((prev) => ({
-        ...prev,
-        password: passwordValidation.success && !passwordError,
-      }));
-    } else {
-      if (formData.password !== value) {
-        setError((prev) => ({
-          ...prev,
-          confirmPassword: "비밀번호가 일치하지 않습니다.",
-        }));
-      } else {
-        setError((prev) => ({
-          ...prev,
-          confirmPassword: undefined,
-        }));
-      }
-      setSuccess((prev) => ({
-        ...prev,
-        confirmPassword: formData.password === value,
-      }));
+      })
+    ),
+    mode: 'onChange',
+    defaultValues: { email: email || '', password: password || '', confirmPassword: password || '' },
+  });
+
+  const emailValue = watch('email');
+  const passwordValue = watch('password');
+  const confirmValue = watch('confirmPassword');
+
+  // 카카오는 email만 필요
+  const kakaoValid = isSocialLoginKakao ? !errors.email && (emailValue?.length ?? 0) > 0 : isValid;
+
+  const onSubmit = async (data: RegisterFormData) => {
+    const sanitized = sanitizeFormData(data);
+    const checkingEmail = await checkEmail(sanitized.email);
+    if (!checkingEmail) {
+      setError('email', { message: '이미 사용중인 이메일입니다.' });
+      return;
     }
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (allSuccess) {
-      const checkingEmail = await checkEmail(formData.email);
-      if (!checkingEmail) {
-        setShake((prev) => ({
-          ...prev,
-          email: true,
-        }));
-        setError((prev) => ({ ...prev, email: "이미 사용중인 이메일입니다." }));
-        setTimeout(() => {
-          setShake({ email: false, password: false, confirmPassword: false });
-        }, 500);
-        return;
-      }
-
-      addEmail(formData.email);
-      if (isSocialLoginKakao) {
-        document.documentElement.style.viewTransitionName = "forward";
-        navigateWithTransition("/registerAge");
-      } else {
-        addPassword(formData.password);
-        document.documentElement.style.viewTransitionName = "forward";
-        navigateWithTransition("/registerName");
-      }
+    addEmail(sanitized.email);
+    if (isSocialLoginKakao) {
+      document.documentElement.style.viewTransitionName = "forward";
+      navigateWithTransition("/registerAge");
     } else {
-      setShake({
-        email: Boolean(error.email),
-        password: Boolean(error.password),
-        confirmPassword: Boolean(error.confirmPassword),
-      });
-
-      setTimeout(() => {
-        setShake({ email: false, password: false, confirmPassword: false });
-      }, 500);
+      addPassword(sanitized.password);
+      document.documentElement.style.viewTransitionName = "forward";
+      navigateWithTransition("/registerName");
     }
   };
 
   return (
     <>
-      {showTerms && <Terms closeShowTerms={closeShowTerms} />}
-      <form className="px-6 pt-[7.1svh]" onSubmit={handleSubmit}>
+      {showTerms && <Terms closeShowTerms={() => setShowTerms(false)} />}
+      <form className="px-6 pt-[7.1svh]" onSubmit={handleSubmit(onSubmit)}>
         <div className="flex w-full flex-col">
           <label className="text-lg tracking-[-0.04em]" htmlFor="email">
             이메일
           </label>
           <Spacing size={16} />
           <ValidationInputField
-            handleRemoveValue={() => handleRemoveValue("email")}
+            handleRemoveValue={() => setValue('email', '', { shouldValidate: true })}
             type="email"
-            name="email"
-            onChange={changeValue}
-            value={formData.email}
-            hasError={Boolean(error.email)}
-            success={success.email}
+            value={emailValue}
+            hasError={!!errors.email}
+            success={!errors.email && (emailValue?.length ?? 0) > 0}
             placeholder="이메일 입력"
-            shake={shake.email}
-            message={error.email ?? ""}
+            shake={!!errors.email}
+            message={errors.email?.message ?? ""}
+            {...register('email')}
           />
         </div>
 
@@ -206,21 +128,20 @@ const RegisterForm = () => {
               </label>
               <Spacing size={16} />
               <StateInputField
-                handleRemoveValue={() => handleRemoveValue("password")}
+                handleRemoveValue={() => setValue('password', '', { shouldValidate: true })}
                 type="password"
-                onChange={changeValue}
-                shake={shake.password}
-                name="password"
+                shake={!!errors.password}
                 placeholder="비밀번호 입력"
-                hasError={Boolean(error.password)}
-                value={formData.password}
-                success={success.password}
+                hasError={!!errors.password}
+                value={passwordValue}
+                success={!errors.password && (passwordValue?.length ?? 0) > 0}
+                {...register('password')}
               />
               <Spacing size={10} />
               <div style={{ paddingLeft: 6 }}>
-                {error.password ? (
-                  <InfoText hasError>{error.password}</InfoText>
-                ) : success.password ? (
+                {errors.password ? (
+                  <InfoText hasError>{errors.password.message}</InfoText>
+                ) : !errors.password && (passwordValue?.length ?? 0) > 0 ? (
                   <InfoText success>영문 대문자, 특수문자 포함 8~20자</InfoText>
                 ) : (
                   <InfoText>영문 대문자, 특수문자 포함 8~20자</InfoText>
@@ -231,23 +152,22 @@ const RegisterForm = () => {
             <Spacing size={14} />
             <div className="flex w-full flex-col">
               <ValidationInputField
-                shake={shake.confirmPassword}
-                handleRemoveValue={() => handleRemoveValue("confirmPassword")}
+                shake={!!errors.confirmPassword}
+                handleRemoveValue={() => setValue('confirmPassword', '', { shouldValidate: true })}
                 type="password"
-                name="confirmPassword"
                 placeholder="비밀번호 재입력"
-                onChange={changeValue}
-                hasError={Boolean(error.confirmPassword)}
-                value={formData.confirmPassword}
-                success={success.confirmPassword}
-                message={error.confirmPassword ?? ""}
+                hasError={!!errors.confirmPassword}
+                value={confirmValue}
+                success={!errors.confirmPassword && (confirmValue?.length ?? 0) > 0}
+                message={errors.confirmPassword?.message ?? ""}
+                {...register('confirmPassword')}
               />
             </div>
           </>
         )}
         <ButtonContainer>
-          {allSuccess ? (
-            <Button text="다음" />
+          {kakaoValid ? (
+            <Button text="다음" type="submit" />
           ) : (
             <Button
               text="다음"

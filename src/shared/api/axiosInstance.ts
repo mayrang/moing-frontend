@@ -22,7 +22,9 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    // 로그인 엔드포인트의 401은 "잘못된 자격증명" — 토큰 갱신 불필요
+    const isLoginEndpoint = originalRequest?.url?.includes('/api/login');
+    if ((error.response?.status === 401 || error.response?.status === 403) && !isLoginEndpoint) {
       retryCount += 1;
 
       if (retryCount > MAX_RETRY_COUNT) {
