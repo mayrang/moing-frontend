@@ -13,8 +13,8 @@ export function zodResolver<T extends FieldValues>(schema: ZodSchema<T>): Resolv
     }
     const errors: Record<string, { type: string; message: string }> = {};
     for (const issue of result.error.issues) {
-      const path = issue.path.join('.');
-      if (path && !errors[path]) {
+      const path = issue.path.join('.') || 'root';
+      if (!errors[path]) {
         errors[path] = { type: issue.code, message: issue.message };
       }
     }

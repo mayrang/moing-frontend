@@ -20,7 +20,6 @@ export function createMutationOptions<TData, TError = unknown, TVariables = void
   mutationFn,
   policy,
   onBusinessError,
-  onSuccess,
 }: MutationPolicyOptions<TData, TError, TVariables>): PolicyMutationOptions<TData, TError, TVariables> {
   return {
     mutationFn,
@@ -69,7 +68,5 @@ export function createMutationOptions<TData, TError = unknown, TVariables = void
 
       // 'ignore': no-op
     },
-
-    onSuccess,
   };
 }

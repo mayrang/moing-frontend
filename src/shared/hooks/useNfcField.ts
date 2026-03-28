@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { UseFormTrigger, FieldPath, FieldValues } from 'react-hook-form';
 
 /**
@@ -21,6 +21,12 @@ export function useNfcField<T extends FieldValues>(
   debounceMs = 300
 ) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   const makeNfcOnChange = useCallback(
     (

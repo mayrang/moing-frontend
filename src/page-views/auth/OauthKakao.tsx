@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { getToken } from "@/api/user";
+import { getToken } from "@/entities/user";
 import { userStore } from "@/store/client/userStore";
-import useAuth from "@/hooks/user/useAuth";
+import { useAuth } from "@/features/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import WarningToast from "@/shared/ui/toast/WarningToast";
 

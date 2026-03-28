@@ -23,10 +23,10 @@ export interface MutationPolicyOptions<TData, TError, TVariables> {
    * - Toast: showToast(message)
    */
   onBusinessError?: (error: TError, variables: TVariables) => void;
-  onSuccess?: (data: TData, variables: TVariables) => void;
 }
 
+// onSuccess는 useMutation 호출부에서 직접 선언 (spread 이후 override 패턴으로 통일)
 export type PolicyMutationOptions<TData, TError, TVariables> = Pick<
   MutationOptions<TData, TError, TVariables>,
-  'mutationFn' | 'retry' | 'retryDelay' | 'onError' | 'onSuccess'
+  'mutationFn' | 'retry' | 'retryDelay' | 'onError'
 >;
