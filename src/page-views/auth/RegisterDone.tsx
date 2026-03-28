@@ -3,12 +3,14 @@ import useAuth from "@/hooks/user/useAuth";
 import { userStore } from "@/store/client/userStore";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
+import { registerDraft } from "@/shared/lib/registerDraft";
 
 export default function RegisterDone() {
   const router = useRouter();
   const { reset } = userStore();
   const { setSocialLogin } = userStore();
   useEffect(() => {
+    registerDraft.clear(); // 회원가입 완료 → 임시 저장 이메일 삭제
     setTimeout(() => {
       reset();
       setSocialLogin(null, null);

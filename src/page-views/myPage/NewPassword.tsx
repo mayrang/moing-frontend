@@ -3,153 +3,58 @@ import Button from "@/components/designSystem/Buttons/Button";
 import ButtonContainer from "@/components/ButtonContainer";
 import StateInputField from "@/components/designSystem/input/StateInputField";
 import InfoText from "@/components/designSystem/text/InfoText";
-import { emailSchema, passwordSchema } from "@/utils/schema";
 import Spacing from "@/components/Spacing";
 import useMyPage from "@/hooks/myPage/useMyPage";
 import { myPageStore } from "@/store/client/myPageStore";
 import { userStore } from "@/store/client/userStore";
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-
-interface ErrorProps {
-  password: undefined | string;
-  confirmPassword: undefined | string;
-}
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@/shared/lib/zodResolver";
+import { sanitizeFormData } from "@/shared/lib/sanitize";
+import { newPasswordSchema, NewPasswordFormData } from "@/utils/schema";
 
 export default function NewPassword() {
   const { addIsPasswordUpdated } = myPageStore();
-  const [formData, setFormData] = useState({
-    password: "",
-    confirmPassword: "",
-  });
   const { userSocialTF } = myPageStore();
-  const [success, setSuccess] = useState({
-    password: false,
-    confirmPassword: false,
-  });
-  const [error, setError] = useState<ErrorProps>({
-    password: undefined,
-    confirmPassword: undefined,
-  });
-  const [shake, setShake] = useState({
-    password: false,
-    confirmPassword: false,
-  });
   const { addPassword, email } = userStore();
   const { updatePasswordMutation, isUpatedPassword, isUpdatedPasswordError } = useMyPage();
   const router = useRouter();
 
-  const allSuccess = Object.values(success).every((value) => value);
-
   useEffect(() => {
-    if (userSocialTF) {
-      router.replace("/editMyInfo");
-    }
+    if (userSocialTF) router.replace("/editMyInfo");
   }, [userSocialTF]);
 
-  const handleRemoveValue = (name: "password" | "confirmPassword") => {
-    if (name === "password") {
-      setSuccess((prev) => ({ ...prev, password: false }));
-      setFormData((prev) => ({ ...prev, password: "" }));
-    } else {
-      setSuccess((prev) => ({ ...prev, confirmPassword: false }));
-      setFormData((prev) => ({ ...prev, confirmPassword: "" }));
-    }
-  };
-
-  const changeValue = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    if (name === "password") {
-      const passwordValidation = passwordSchema.safeParse(value);
-      let passwordError = false;
-      const emailLocalPart = email.split("@")[0];
-      if (value === email || value === emailLocalPart) {
-        passwordError = true;
-      }
-      if (!passwordValidation.success || passwordError) {
-        if (passwordError) {
-          setError((prev) => ({
-            ...prev,
-            password: "이메일과 동일한 형식의 비밀번호는 사용할 수 없습니다.",
-          }));
-        } else {
-          setError((prev) => ({
-            ...prev,
-            password: passwordValidation.error!.flatten().formErrors[0],
-          }));
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    setError,
+    formState: { errors, isValid },
+  } = useForm<NewPasswordFormData>({
+    resolver: zodResolver(
+      newPasswordSchema.superRefine((data, ctx) => {
+        const emailLocalPart = email.split("@")[0];
+        if (data.password === email || data.password === emailLocalPart) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["password"],
+            message: "이메일과 동일한 형식의 비밀번호는 사용할 수 없습니다.",
+          });
         }
-      } else {
-        setError((prev) => ({
-          ...prev,
-          password: undefined,
-        }));
-      }
-      setSuccess((prev) => ({
-        ...prev,
-        password: passwordValidation.success && !passwordError,
-      }));
-    } else {
-      if (formData.password !== value) {
-        setError((prev) => ({
-          ...prev,
-          confirmPassword: "비밀번호가 일치하지 않습니다.",
-        }));
-      } else {
-        setError((prev) => ({
-          ...prev,
-          confirmPassword: undefined,
-        }));
-      }
-      setSuccess((prev) => ({
-        ...prev,
-        confirmPassword: formData.password === value,
-      }));
-    }
-  };
+      })
+    ),
+    mode: 'onChange',
+    defaultValues: { password: '', confirmPassword: '' },
+  });
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-
-    if (allSuccess) {
-      try {
-        const res = await updatePasswordMutation({
-          newPassword: formData.password,
-          newPasswordConfirm: formData.confirmPassword,
-        });
-        if (res === undefined) {
-          throw new Error("비밀번호 업데이트 에러");
-        }
-      } catch (e) {
-        setShake((prev) => ({
-          ...prev,
-          email: true,
-        }));
-        setError((prev) => ({
-          ...prev,
-          password: "새 비밀번호가 일치하지 않습니다.",
-        }));
-        setTimeout(() => {
-          setShake({ password: false, confirmPassword: false });
-        }, 500);
-        return;
-      }
-    } else {
-      setShake({
-        password: Boolean(error.password),
-        confirmPassword: Boolean(error.confirmPassword),
-      });
-
-      setTimeout(() => {
-        setShake({ password: false, confirmPassword: false });
-      }, 500);
-    }
-  };
+  const passwordValue = watch('password');
+  const confirmValue = watch('confirmPassword');
 
   useEffect(() => {
     if (isUpatedPassword) {
-      addPassword(formData.password);
+      addPassword(passwordValue);
       addIsPasswordUpdated(true);
       router.push("/editMyInfo");
     }
@@ -157,40 +62,44 @@ export default function NewPassword() {
 
   useEffect(() => {
     if (isUpdatedPasswordError) {
-      setShake((prev) => ({
-        ...prev,
-        email: true,
-      }));
-      setError((prev) => ({
-        ...prev,
-        password: "새 비밀번호가 일치하지 않습니다.",
-      }));
-      setTimeout(() => {
-        setShake({ password: false, confirmPassword: false });
-      }, 500);
+      setError('password', { message: '새 비밀번호가 일치하지 않습니다.' });
     }
-  }, [isUpdatedPasswordError]);
+  }, [isUpdatedPasswordError, setError]);
+
+  const onSubmit = async (data: NewPasswordFormData) => {
+    const sanitized = sanitizeFormData(data);
+    try {
+      const res = await updatePasswordMutation({
+        newPassword: sanitized.password,
+        newPasswordConfirm: sanitized.confirmPassword,
+      });
+      if (res === undefined) throw new Error();
+    } catch {
+      setError('password', { message: '새 비밀번호가 일치하지 않습니다.' });
+    }
+  };
 
   return (
-    <form className="px-6 mt-6" onSubmit={handleSubmit}>
+    <form className="px-6 mt-6" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex w-full flex-col">
-        <label htmlFor="password" className="text-base font-semibold leading-4 text-[var(--color-text-base)] text-left">새로운 비밀번호를 입력해주세요</label>
+        <label htmlFor="password" className="text-base font-semibold leading-4 text-[var(--color-text-base)] text-left">
+          새로운 비밀번호를 입력해주세요
+        </label>
         <Spacing size={16} />
         <StateInputField
-          handleRemoveValue={() => handleRemoveValue("password")}
+          handleRemoveValue={() => setValue('password', '', { shouldValidate: true })}
           type="password"
-          onChange={changeValue}
-          shake={shake.password}
-          name="password"
+          shake={!!errors.password}
           placeholder="비밀번호 입력"
-          hasError={Boolean(error.password)}
-          value={formData.password}
-          success={success.password}
+          hasError={!!errors.password}
+          value={passwordValue}
+          success={!errors.password && (passwordValue?.length ?? 0) > 0}
+          {...register('password')}
         />
         <Spacing size={8} />
-        {error.password ? (
-          <InfoText hasError>{error.password}</InfoText>
-        ) : success.password ? (
+        {errors.password ? (
+          <InfoText hasError>{errors.password.message}</InfoText>
+        ) : !errors.password && (passwordValue?.length ?? 0) > 0 ? (
           <InfoText success>영문 대문자, 특수문자 포함 8~20자</InfoText>
         ) : (
           <InfoText>영문 대문자, 특수문자 포함 8~20자</InfoText>
@@ -200,22 +109,25 @@ export default function NewPassword() {
       <Spacing size={14} />
       <div className="flex w-full flex-col">
         <StateInputField
-          shake={shake.confirmPassword}
-          handleRemoveValue={() => handleRemoveValue("confirmPassword")}
+          shake={!!errors.confirmPassword}
+          handleRemoveValue={() => setValue('confirmPassword', '', { shouldValidate: true })}
           type="password"
-          name="confirmPassword"
           placeholder="비밀번호 재입력"
-          onChange={changeValue}
-          hasError={Boolean(error.confirmPassword)}
-          value={formData.confirmPassword}
-          success={success.confirmPassword}
+          hasError={!!errors.confirmPassword}
+          value={confirmValue}
+          success={!errors.confirmPassword && (confirmValue?.length ?? 0) > 0}
+          {...register('confirmPassword')}
         />
         <Spacing size={10} />
-        {error.confirmPassword ? <InfoText hasError>{error.confirmPassword}</InfoText> : <Spacing size={16} />}
+        {errors.confirmPassword ? (
+          <InfoText hasError>{errors.confirmPassword.message}</InfoText>
+        ) : (
+          <Spacing size={16} />
+        )}
       </div>
       <ButtonContainer>
-        {allSuccess ? (
-          <Button text="완료" />
+        {isValid ? (
+          <Button text="완료" type="submit" />
         ) : (
           <Button
             text="완료"

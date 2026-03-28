@@ -44,7 +44,13 @@ const Terms = ({ closeShowTerms }: TermsProps) => {
         </h2>
         <div className="h-px w-full my-[30px] bg-[rgba(205,205,205,1)]" />
         <div className="flex items-center justify-between gap-5">
-          <button type="button" className="cursor-pointer" onClick={() => handleCheck('service')}>
+          <button
+            type="button"
+            className="cursor-pointer"
+            aria-label={`서비스 이용 약관 동의 ${check.service ? '(동의함)' : '(동의 안함)'}`}
+            aria-pressed={check.service}
+            onClick={() => handleCheck('service')}
+          >
             {check.service ? <CheckIcon status="done" size={18} /> : <CheckIcon size={18} />}
           </button>
           <h4 className="text-base font-semibold flex-1 leading-[16px]">
@@ -58,7 +64,13 @@ const Terms = ({ closeShowTerms }: TermsProps) => {
         </div>
         <Spacing size={24} />
         <div className="flex items-center justify-between gap-5">
-          <button type="button" className="cursor-pointer" onClick={() => handleCheck('privacy')}>
+          <button
+            type="button"
+            className="cursor-pointer"
+            aria-label={`개인정보 수집 및 이용 동의 ${check.privacy ? '(동의함)' : '(동의 안함)'}`}
+            aria-pressed={check.privacy}
+            onClick={() => handleCheck('privacy')}
+          >
             {check.privacy ? <CheckIcon status="done" size={18} /> : <CheckIcon size={18} />}
           </button>
           <h4 className="text-base font-semibold flex-1 leading-[16px]">

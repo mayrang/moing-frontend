@@ -1,6 +1,6 @@
 'use client';
 import useKeyboardResizeEffect from '@/shared/hooks/useKeyboardResizeEffect';
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { commentStore } from '@/store/client/commentStore';
 import useComment from '@/features/comment/hooks/useComment';
 import ResultToast from '@/shared/ui/toast/ResultToast';
@@ -8,6 +8,12 @@ import { isGuestUser } from '@/utils/user';
 import { usePathname, useRouter } from 'next/navigation';
 import CommentInput from '@/shared/ui/input/CommentInput';
 import { useBackPathStore } from '@/store/client/backPathStore';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@/shared/lib/zodResolver';
+import { sanitizeFormData } from '@/shared/lib/sanitize';
+import { commentSchema, CommentFormData } from '@/utils/schema';
+import { useNfcField } from '@/shared/hooks/useNfcField';
+import { useState } from 'react';
 
 interface CommentFormProps {
   paddingBottom?: number;
@@ -27,52 +33,56 @@ const CommentForm = ({
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [focused, setFocused] = useState(false);
   const [isToastShow, setIsToastShow] = useState(false);
-  const [value, setValue] = useState('');
   const { post, postMutation, updateMutation, update } = useComment(relatedType, relatedNumber);
   const pathname = usePathname();
 
-  const handleInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    if (inputRef.current) {
-      inputRef.current.style.height = '32px';
-      inputRef.current.style.height = `${Math.min(inputRef.current.scrollHeight, 84)}px`;
-    }
-    setValue(e.target.value);
-  };
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+    trigger,
+    watch,
+    formState: { isValid },
+  } = useForm<CommentFormData>({
+    resolver: zodResolver(commentSchema),
+    mode: 'onChange',
+    defaultValues: { content: '' },
+  });
+
+  const { makeNfcOnChange } = useNfcField<CommentFormData>(trigger);
+  const contentValue = watch('content');
 
   useKeyboardResizeEffect();
 
   useEffect(() => {
     if (inputRef?.current) {
       if (isEdit && edit !== '') {
-        setValue(edit);
+        setValue('content', edit);
         inputRef.current.focus();
       }
       if (isReply) {
         inputRef.current.focus();
       }
     }
-  }, [isEdit, isReply]);
+  }, [isEdit, isReply, edit, setValue]);
 
   useEffect(() => {
-    if (!focused) {
-      if (value === '') {
-        setReset();
-      }
+    if (!focused && contentValue === '') {
+      setReset();
     }
-  }, [focused, value]);
+  }, [focused, contentValue, setReset]);
 
-  const submitComment = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (value === '') return;
-
+  const onSubmit = (data: CommentFormData) => {
+    const sanitized = sanitizeFormData(data);
     if (isEdit) {
       if (!commentNumber) return;
-      update({ content: value, commentNumber });
+      update({ content: sanitized.content, commentNumber });
       if (updateMutation.isSuccess) setIsToastShow(true);
     } else {
-      post({ content: value, parentNumber });
+      post({ content: sanitized.content, parentNumber });
     }
-    setValue('');
+    reset();
     setReset();
   };
 
@@ -101,16 +111,28 @@ const CommentForm = ({
     <form
       className="flex items-center fixed bottom-0 left-0 w-svw min-[440px]:w-[390px] min-[440px]:left-1/2 min-[440px]:-translate-x-1/2 px-6"
       style={containerStyle}
-      onSubmit={submitComment}
+      onSubmit={handleSubmit(onSubmit)}
     >
-      <CommentInput
-        setReset={setReset}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        ref={inputRef}
-        placeholder="댓글을 입력해주세요."
-        onChange={handleInput}
-        value={value}
+      <Controller
+        name="content"
+        control={control}
+        render={({ field }) => (
+          <CommentInput
+            setReset={setReset}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            ref={inputRef}
+            placeholder="댓글을 입력해주세요."
+            onChange={(e) => {
+              if (inputRef.current) {
+                inputRef.current.style.height = '32px';
+                inputRef.current.style.height = `${Math.min(inputRef.current.scrollHeight, 84)}px`;
+              }
+              makeNfcOnChange('content', field.onChange)(e);
+            }}
+            value={field.value}
+          />
+        )}
       />
       <ResultToast
         bottom="80px"

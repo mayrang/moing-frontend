@@ -4,44 +4,25 @@ import StateInputField from "@/components/designSystem/input/StateInputField";
 import InfoText from "@/components/designSystem/text/InfoText";
 import Spacing from "@/components/Spacing";
 import { userStore } from "@/store/client/userStore";
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { useEffect } from "react";
 import ButtonContainer from "@/components/ButtonContainer";
-import { passwordSchema } from "@/utils/schema";
 import useViewTransition from "@/hooks/useViewTransition";
 import { useRouter } from "next/navigation";
 import ValidationInputField from "@/components/designSystem/input/ValidationInputField";
-
-interface ErrorProps {
-  password: undefined | string;
-  confirmPassword: undefined | string;
-}
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@/shared/lib/zodResolver";
+import { sanitizeFormData } from "@/shared/lib/sanitize";
+import { registerPasswordSchema, RegisterPasswordFormData } from "@/utils/schema";
 
 const RegisterPassword = () => {
   const { addPassword, email, password, socialLogin, setSocialLogin } = userStore();
-
-  const [formData, setFormData] = useState({
-    password: password,
-    confirmPassword: password,
-  });
-  const [success, setSuccess] = useState({
-    password: false,
-    confirmPassword: false,
-  });
-  const [error, setError] = useState<ErrorProps>({
-    password: undefined,
-    confirmPassword: undefined,
-  });
-  const [shake, setShake] = useState({
-    password: false,
-    confirmPassword: false,
-  });
   const navigateWithTransition = useViewTransition();
   const router = useRouter();
+
   const isSocialLoginGoogle = socialLogin === "google";
   const isSocialLoginKakao = socialLogin === "kakao";
   const isSocialLoginNaver = socialLogin === "naver";
   const isRegisterEmail = socialLogin === null;
-  const allSuccess = Object.values(success).every((value) => value);
 
   useEffect(() => {
     if (isSocialLoginGoogle || isSocialLoginNaver || isSocialLoginKakao) {
@@ -50,158 +31,111 @@ const RegisterPassword = () => {
     }
   }, [socialLogin]);
 
-  const handleRemoveValue = (name: "password" | "confirmPassword") => {
-    setSuccess((prev) => ({ ...prev, [name]: false }));
-    setFormData((prev) => ({ ...prev, [name]: "" }));
-  };
-
-  const changeValue = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    if (name === "password") {
-      const passwordValidation = passwordSchema.safeParse(value);
-      let passwordError = false;
-      const emailLocalPart = email.split("@")[0];
-      if (value === email || value === emailLocalPart) {
-        passwordError = true;
-      }
-      if (!passwordValidation.success || passwordError) {
-        if (passwordError) {
-          setError((prev) => ({
-            ...prev,
-            password: "이메일과 동일한 형식의 비밀번호는 사용할 수 없습니다.",
-          }));
-        } else {
-          setError((prev) => ({
-            ...prev,
-            password: passwordValidation.error!.flatten().formErrors[0],
-          }));
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    setError,
+    formState: { errors, isValid },
+  } = useForm<RegisterPasswordFormData>({
+    resolver: zodResolver(
+      registerPasswordSchema.superRefine((data, ctx) => {
+        const emailLocalPart = email.split("@")[0];
+        if (data.password === email || data.password === emailLocalPart) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["password"],
+            message: "이메일과 동일한 형식의 비밀번호는 사용할 수 없습니다.",
+          });
         }
-      } else {
-        setError((prev) => ({
-          ...prev,
-          password: undefined,
-        }));
-      }
-      setSuccess((prev) => ({
-        ...prev,
-        password: passwordValidation.success && !passwordError,
-      }));
+      })
+    ),
+    mode: 'onChange',
+    defaultValues: { password: password || '', confirmPassword: password || '' },
+  });
+
+  const passwordValue = watch('password');
+  const confirmValue = watch('confirmPassword');
+
+  const onSubmit = (data: RegisterPasswordFormData) => {
+    const sanitized = sanitizeFormData(data);
+    addPassword(sanitized.password);
+    document.documentElement.style.viewTransitionName = "forward";
+    if (isSocialLoginKakao) {
+      navigateWithTransition("/registerAge");
     } else {
-      if (formData.password !== value) {
-        setError((prev) => ({
-          ...prev,
-          confirmPassword: "비밀번호가 일치하지 않습니다.",
-        }));
-      } else {
-        setError((prev) => ({
-          ...prev,
-          confirmPassword: undefined,
-        }));
-      }
-      setSuccess((prev) => ({
-        ...prev,
-        confirmPassword: formData.password === value,
-      }));
-    }
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (allSuccess) {
-      addPassword(formData.password);
-
-      if (isSocialLoginKakao) {
-        document.documentElement.style.viewTransitionName = "forward";
-        navigateWithTransition("/registerAge");
-      } else {
-        document.documentElement.style.viewTransitionName = "forward";
-        navigateWithTransition("/registerName");
-      }
-    } else {
-      setShake({
-        password: Boolean(error.password),
-        confirmPassword: Boolean(error.confirmPassword),
-      });
-
-      setTimeout(() => {
-        setShake({ password: false, confirmPassword: false });
-      }, 500);
+      navigateWithTransition("/registerName");
     }
   };
 
   return (
-    <>
-      <form className="px-6 pt-[30px]" onSubmit={handleSubmit}>
-        {isRegisterEmail && (
-          <>
-            <div className="flex w-full flex-col">
-              <label
-                className="text-2xl leading-[34px] font-semibold px-[6px] tracking-[-0.04em]"
-                htmlFor="password"
-              >
-                비밀번호를 입력해주세요
-              </label>
-              <Spacing size={16} />
-              <StateInputField
-                handleRemoveValue={() => handleRemoveValue("password")}
-                type="password"
-                onChange={changeValue}
-                shake={shake.password}
-                name="password"
-                placeholder="비밀번호 입력"
-                hasError={Boolean(error.password)}
-                value={formData.password}
-                success={success.password}
-              />
-              <Spacing size={16} />
-              <div style={{ paddingLeft: 6 }}>
-                {error.password ? (
-                  <InfoText hasError>{error.password}</InfoText>
-                ) : success.password ? (
-                  <InfoText success>영문 대문자, 특수문자 포함 8~20자</InfoText>
-                ) : (
-                  <InfoText>영문 대문자, 특수문자 포함 8~20자</InfoText>
-                )}
-              </div>
-            </div>
-
-            <Spacing size={14} />
-            <div className="flex w-full flex-col">
-              <ValidationInputField
-                shake={shake.confirmPassword}
-                handleRemoveValue={() => handleRemoveValue("confirmPassword")}
-                type="password"
-                name="confirmPassword"
-                placeholder="비밀번호 재입력"
-                onChange={changeValue}
-                hasError={Boolean(error.confirmPassword)}
-                value={formData.confirmPassword}
-                success={success.confirmPassword}
-                message={error.confirmPassword ?? ""}
-              />
-            </div>
-          </>
-        )}
-        <ButtonContainer>
-          {allSuccess ? (
-            <Button text="다음" />
-          ) : (
-            <Button
-              text="다음"
-              addStyle={{
-                backgroundColor: "rgba(220, 220, 220, 1)",
-                color: "rgba(132, 132, 132, 1)",
-                boxShadow: "-2px 4px 5px 0px rgba(170, 170, 170, 0.1)",
-              }}
-              type="submit"
-              disabled={true}
+    <form className="px-6 pt-[30px]" onSubmit={handleSubmit(onSubmit)}>
+      {isRegisterEmail && (
+        <>
+          <div className="flex w-full flex-col">
+            <label
+              className="text-2xl leading-[34px] font-semibold px-[6px] tracking-[-0.04em]"
+              htmlFor="password"
+            >
+              비밀번호를 입력해주세요
+            </label>
+            <Spacing size={16} />
+            <StateInputField
+              handleRemoveValue={() => setValue('password', '', { shouldValidate: true })}
+              type="password"
+              shake={!!errors.password}
+              placeholder="비밀번호 입력"
+              hasError={!!errors.password}
+              value={passwordValue}
+              success={!errors.password && (passwordValue?.length ?? 0) > 0}
+              {...register('password')}
             />
-          )}
-        </ButtonContainer>
-      </form>
-    </>
+            <Spacing size={16} />
+            <div style={{ paddingLeft: 6 }}>
+              {errors.password ? (
+                <InfoText hasError>{errors.password.message}</InfoText>
+              ) : !errors.password && (passwordValue?.length ?? 0) > 0 ? (
+                <InfoText success>영문 대문자, 특수문자 포함 8~20자</InfoText>
+              ) : (
+                <InfoText>영문 대문자, 특수문자 포함 8~20자</InfoText>
+              )}
+            </div>
+          </div>
+
+          <Spacing size={14} />
+          <div className="flex w-full flex-col">
+            <ValidationInputField
+              shake={!!errors.confirmPassword}
+              handleRemoveValue={() => setValue('confirmPassword', '', { shouldValidate: true })}
+              type="password"
+              placeholder="비밀번호 재입력"
+              hasError={!!errors.confirmPassword}
+              value={confirmValue}
+              success={!errors.confirmPassword && (confirmValue?.length ?? 0) > 0}
+              message={errors.confirmPassword?.message ?? ""}
+              {...register('confirmPassword')}
+            />
+          </div>
+        </>
+      )}
+      <ButtonContainer>
+        {isValid ? (
+          <Button text="다음" type="submit" />
+        ) : (
+          <Button
+            text="다음"
+            addStyle={{
+              backgroundColor: "rgba(220, 220, 220, 1)",
+              color: "rgba(132, 132, 132, 1)",
+              boxShadow: "-2px 4px 5px 0px rgba(170, 170, 170, 0.1)",
+            }}
+            type="submit"
+            disabled={true}
+          />
+        )}
+      </ButtonContainer>
+    </form>
   );
 };
 
