@@ -5,25 +5,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createElement } from 'react';
 import useVerifyEmail from './useVerifyEmail';
 
-vi.mock('./useAuth', () => ({
-  checkNetworkConnection: () => true,
-}));
-
-const mockUpdateError = vi.fn();
-const mockSetIsMutationError = vi.fn();
-vi.mock('@/store/client/errorStore', () => ({
-  errorStore: () => ({
-    updateError: mockUpdateError,
-    setIsMutationError: mockSetIsMutationError,
-  }),
-}));
-
-vi.mock('@/context/ReqeustError', () => ({
-  default: class RequestError extends Error {
-    constructor(message: any) {
-      super(String(message));
-    }
-  },
+// 네트워크/에러 스토어 mock (새 에러 정책 라이브러리)
+vi.mock('@/shared/lib/errors/errorToastStore', () => ({
+  errorToastStore: { getState: () => ({ show: vi.fn(), dismiss: vi.fn() }) },
 }));
 
 const createWrapper = () => {

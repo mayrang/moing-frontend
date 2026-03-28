@@ -1,38 +1,13 @@
 "use client";
 import { authStore } from "@/store/client/authStore";
-
 import { axiosInstance, handleApiResponse } from "@/shared/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import RequestError from "@/context/ReqeustError";
 import { IRegisterEmail, IRegisterGoogle, IRegisterKakao } from "@/entities/user";
 import { userStore } from "@/store/client/userStore";
 import { getJWTHeader } from "@/utils/user";
 import { usePathname, useRouter } from "next/navigation";
-import { useBackPathStore } from "@/store/client/backPathStore";
-
-const noNeedPages = [
-  "/login",
-  "/registerEmail",
-  "/registerName",
-  "/registerAge",
-  "/registerAge/registerGender",
-  "/registerTripStyle",
-  "/onBoarding",
-  "/",
-  "/trip/detail",
-  "/myTrip",
-];
-const isAccessTokenNoNeedpages = (path: string) => {
-  return noNeedPages.some((url) => path.startsWith(url));
-};
-
-export function checkNetworkConnection() {
-  if (!navigator.onLine) {
-    return false;
-  }
-  return true;
-}
+import { createMutationOptions, extractErrorMessage } from "@/shared/lib/errors";
+import { AUTH_ERROR_POLICY } from "../lib/authErrorPolicy";
 
 const useAuth = () => {
   const pathname = usePathname();
@@ -40,147 +15,120 @@ const useAuth = () => {
   const router = useRouter();
   const { setLoginData, clearLoginData, accessToken, resetData, setIsGuestUser } = authStore();
   const { setSocialLogin } = userStore();
-  const loginEmailMutation = useMutation({
-    mutationKey: ["emailLogin"],
-    mutationFn: async ({ email, password }: { email: string; password: string }) => {
-      if (!checkNetworkConnection()) return;
 
-      const response = await axiosInstance.post("/api/login", {
-        email,
-        password,
-      });
-      if (response.data.success.status === "BLOCK") {
-        window.location.href = response.data.success.redirectUrl;
-      }
-      return handleApiResponse(response) as any;
-    },
+  const loginEmailMutation = useMutation({
+    ...createMutationOptions({
+      mutationFn: async ({ email, password }: { email: string; password: string }) => {
+        const response = await axiosInstance.post("/api/login", { email, password });
+        if (response.data.success.status === "BLOCK") {
+          window.location.href = response.data.success.redirectUrl;
+        }
+        return handleApiResponse(response) as any;
+      },
+      policy: AUTH_ERROR_POLICY,
+      onBusinessError: (_err, _vars) => {
+        // EmailLoginForm의 setError로 처리 (폼 레벨에서 isError 감지 후 처리)
+      },
+    }),
+    mutationKey: ["emailLogin"],
     onSuccess: (data) => {
-      setLoginData({
-        userId: Number(data.userId),
-        accessToken: data.accessToken,
-      });
-      const loginPath = localStorage.getItem("loginPath");
-      router.push("/");
+      setLoginData({ userId: Number(data.userId), accessToken: data.accessToken });
       localStorage.removeItem("loginPath");
-    },
-    onError: (error: any) => {
-      console.error(error);
-      throw new RequestError(error);
+      router.push("/");
     },
   });
 
   const socialLoginMutation = useMutation({
-    mutationFn: async ({ socialLoginId, email }: { socialLoginId: string; email: string }) => {
-      if (!checkNetworkConnection()) return;
-
-      const response = await axiosInstance.post("/api/social/login", {
-        email,
-        socialLoginId,
-      });
-      return handleApiResponse(response) as any;
-    },
+    ...createMutationOptions({
+      mutationFn: async ({ socialLoginId, email }: { socialLoginId: string; email: string }) => {
+        const response = await axiosInstance.post("/api/social/login", { email, socialLoginId });
+        return handleApiResponse(response) as any;
+      },
+      policy: AUTH_ERROR_POLICY,
+      onBusinessError: (error) => {
+        const message = extractErrorMessage(error, "소셜 로그인 과정에서 문제가 발생했습니다.");
+        // OauthCallback 페이지에서 WarningToast로 표시 후 /login 리다이렉트
+        // → socialLoginMutation.isError 감지 후 처리
+        router.replace("/login");
+      },
+    }),
     onSuccess: (data) => {
-      setLoginData({
-        userId: Number(data.userId),
-        accessToken: data.accessToken,
-      });
-      const loginPath = localStorage.getItem("loginPath");
-      router.push("/");
+      setLoginData({ userId: Number(data.userId), accessToken: data.accessToken });
       localStorage.removeItem("loginPath");
-    },
-    onError: (error: any) => {
-      const errorMessage =
-        error?.response?.data?.error || error?.response?.data?.message || "소셜 로그인 과정에서 문제가 발생했습니다.";
-
-      console.error("Error:", errorMessage);
-      alert(errorMessage);
-      router.replace("/login");
-      throw new RequestError(errorMessage);
+      router.push("/");
     },
   });
 
   const registerEmailMutation = useMutation({
-    mutationFn: async (formData: IRegisterEmail) => {
-      if (!checkNetworkConnection()) return;
-
-      const response = await axiosInstance.post("/api/users/sign-up", formData);
-      return handleApiResponse(response) as any;
-    },
+    ...createMutationOptions({
+      mutationFn: async (formData: IRegisterEmail) => {
+        const response = await axiosInstance.post("/api/users/sign-up", formData);
+        return handleApiResponse(response) as any;
+      },
+      policy: AUTH_ERROR_POLICY,
+    }),
     onSuccess: (data) => {
-      setLoginData({
-        userId: Number(data.userNumber),
-        accessToken: data.accessToken,
-      });
-    },
-    onError: (error: any) => {
-      console.error(error);
-      throw new RequestError(error);
+      setLoginData({ userId: Number(data.userNumber), accessToken: data.accessToken });
     },
   });
 
   const registerSocialMutation = useMutation({
-    mutationFn: async (formData: IRegisterGoogle | IRegisterKakao) => {
-      if (!checkNetworkConnection()) return;
-      const { social, ...data } = formData;
-      const finalData = { ...data, ageGroup: data.agegroup };
-      const path =
-        formData.social === "google" ? "/api/social/google/complete-signup" : "/api/social/kakao/complete-signup";
-
-      const response = await axiosInstance.put(path, finalData);
-      return handleApiResponse(response) as any;
-    },
+    ...createMutationOptions({
+      mutationFn: async (formData: IRegisterGoogle | IRegisterKakao) => {
+        const { social, ...data } = formData;
+        const finalData = { ...data, ageGroup: data.agegroup };
+        const path =
+          formData.social === "google"
+            ? "/api/social/google/complete-signup"
+            : "/api/social/kakao/complete-signup";
+        const response = await axiosInstance.put(path, finalData);
+        return handleApiResponse(response) as any;
+      },
+      policy: AUTH_ERROR_POLICY,
+    }),
     onSuccess: (data) => {
-      setLoginData({
-        userId: Number(data.userNumber),
-        accessToken: data.accessToken,
-      });
-    },
-    onError: (error: any) => {
-      console.error(error);
-      throw new RequestError(error);
+      setLoginData({ userId: Number(data.userNumber), accessToken: data.accessToken });
     },
   });
 
   const logoutMutation = useMutation({
-    mutationFn: async () => {
-      if (!checkNetworkConnection()) return;
-
-      return await axiosInstance.post("/api/logout", {}, { headers: getJWTHeader(accessToken as string) });
-    },
+    ...createMutationOptions({
+      mutationFn: async () => {
+        return await axiosInstance.post("/api/logout", {}, { headers: getJWTHeader(accessToken as string) });
+      },
+      policy: { network: 'ignore', system: 'ignore' }, // 로그아웃은 에러 무시, 항상 로컬 상태 초기화
+    }),
     onSuccess: () => {
       clearLoginData();
       resetData();
-
       setSocialLogin(null, null);
-      if (typeof window === "undefined") {
-        router.replace("/");
-      } else {
-        window.location.href = "/";
-      }
-
       queryClient.clear();
+      window.location.href = "/";
     },
-    onError: (error: any) => {
-      console.error(error);
-      throw new RequestError(error);
+    onError: () => {
+      // 로그아웃 실패해도 로컬 상태는 초기화
+      clearLoginData();
+      resetData();
+      setSocialLogin(null, null);
+      queryClient.clear();
+      window.location.href = "/";
     },
   });
 
   const refreshTokenMutation = useMutation({
-    mutationFn: async () => {
-      const response = await axiosInstance.post("/api/token/refresh", {});
-      return handleApiResponse(response) as any;
-    },
-    onSuccess: (data) => {
-      setLoginData({
-        userId: Number(data.userId),
-        accessToken: data.accessToken,
-      });
-    },
+    ...createMutationOptions({
+      mutationFn: async () => {
+        const response = await axiosInstance.post("/api/token/refresh", {});
+        return handleApiResponse(response) as any;
+      },
+      policy: { network: 'ignore', system: 'ignore' }, // 토큰 갱신 실패는 게스트 전환
+    }),
     mutationKey: ["refresh"],
-    onError: (error: any) => {
+    onSuccess: (data) => {
+      setLoginData({ userId: Number(data.userId), accessToken: data.accessToken });
+    },
+    onError: () => {
       setIsGuestUser(true);
-      console.error(error);
     },
   });
 
