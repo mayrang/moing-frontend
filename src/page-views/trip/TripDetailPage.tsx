@@ -77,7 +77,7 @@ export default function TripDetail() {
   const [noticeModal, setNoticeModal] = useState(false);
 
   const [isAccepted, setIsAccepted] = useState(false);
-  const { userId, accessToken } = authStore();
+  const { userId, accessToken, isGuestUser: isGuestUserStore } = authStore();
   const { gender } = myPageStore();
   const [isCommentUpdated, setIsCommentUpdated] = useState(false);
   const [isKakaoMapLoad, setIsKakaooMapLoad] = useState(false);
@@ -126,10 +126,9 @@ export default function TripDetail() {
   // const isClosed = !Boolean(daysLeft(`${dueDate.year}-${dueDate.month}-${dueDate.day}`) > 0) || maxPerson === nowPerson;
   const isClosed = false;
   const { cancel, cancelMutation } = useEnrollment(parseInt(travelNumber));
-  const { tripEnrollmentCount } = useTripDetail(parseInt(travelNumber));
+  const { tripEnrollmentCount, companions } = useTripDetail(parseInt(travelNumber));
   const nowEnrollmentCount = tripEnrollmentCount.data as any;
   const { editToastShow, setEditToastShow } = editStore();
-  const { companions } = useTripDetail(parseInt(travelNumber));
   const allCompanions = (companions as any)?.data?.companions;
   const alreadyApplied = !!enrollmentNumber;
   const [ref, inView] = useInView();
@@ -138,7 +137,8 @@ export default function TripDetail() {
     queryFn: ({ pageParam }) => {
       return getPlans(Number(travelNumber), pageParam) as any;
     },
-    staleTime: 0,
+    staleTime: 5 * 60 * 1000,
+    enabled: !!travelNumber,
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
       if (!lastPage?.nextCursor) {
@@ -361,6 +361,9 @@ export default function TripDetail() {
 
       <div
         ref={containerRef}
+        role="region"
+        tabIndex={0}
+        aria-label="여행 상세 내용"
         className="px-6 overflow-y-auto relative h-[calc(100svh-116px)] no-scrollbar overscroll-none pb-[104px]"
       >
         <TopModal
@@ -384,7 +387,7 @@ export default function TripDetail() {
               {/* 제목  */}
               <div className="mt-8 text-xl font-semibold text-left">{title}</div>
               {/* 내용 */}
-              <div ref={detailRef} className="mt-4 text-base max-h-[100px] overflow-y-auto whitespace-pre-line font-normal leading-[22.4px] text-left text-[var(--color-text-base)]">{details}</div>
+              <div ref={detailRef} tabIndex={0} aria-label="여행 상세 설명" className="mt-4 text-base max-h-[100px] overflow-y-auto whitespace-pre-line font-normal leading-[22.4px] text-left text-[var(--color-text-base)]">{details}</div>
               {/*태그   */}
               <div className="mt-8 flex flex-wrap gap-2">
                 {tags.map((tag, idx) => (
@@ -442,7 +445,12 @@ export default function TripDetail() {
             </div>
             <div className="bg-[#e7e7e7] w-full h-[1px]" />
 
-            <div className="py-[11px] pl-2 cursor-pointer flex items-center justify-between" onClick={companionsViewHandler}>
+            <button
+              type="button"
+              aria-label="동행자 목록 보기"
+              className="py-[11px] pl-2 w-full flex items-center justify-between"
+              onClick={companionsViewHandler}
+            >
               <div className="flex items-center">
                 <div className="flex items-center w-[100px] gap-2 mr-3">
                   {genderType === "모두" ? (
@@ -461,7 +469,7 @@ export default function TripDetail() {
               <div className="flex items-center justify-center w-12 h-12">
                 <ArrowIcon />
               </div>
-            </div>
+            </button>
           </div>
         </TopModal>
         <div
@@ -509,54 +517,63 @@ export default function TripDetail() {
 
       <Spacing size={120} />
       <ButtonContainer backgroundColor="var(--color-search-bg)">
-        <ApplyListButton
-          hostUserCheck={hostUserCheck}
-          nowEnrollmentCount={nowEnrollmentCount}
-          bookmarkOnClick={bookmarkClickHandler}
-          bookmarked={bookmarked}
-          onClick={buttonClickHandler}
-          disabled={
-            (hostUserCheck && nowEnrollmentCount === 0) ||
-            (!hostUserCheck && !verifyGenderType(genderType, gender)) ||
-            isAccepted ||
-            isClosed
-          }
-          addStyle={{
-            backgroundColor: isClosed
-              ? "var(--color-muted3)"
-              : !verifyGenderType(genderType, gender) || isAccepted
+        {/* auth 복구 대기 중 (서버 프리페치 null토큰 → AppShell 토큰 복구 전) 스켈레톤 */}
+        {!(!!accessToken || isGuestUserStore) ? (
+          <div
+            className="h-[54px] w-full rounded-[12px] bg-[var(--color-muted3)] animate-pulse"
+            aria-hidden="true"
+          />
+        ) : (
+          <ApplyListButton
+            hostUserCheck={hostUserCheck}
+            nowEnrollmentCount={nowEnrollmentCount}
+            bookmarkOnClick={bookmarkClickHandler}
+            bookmarked={bookmarked}
+            onClick={buttonClickHandler}
+            disabled={
+              (hostUserCheck && nowEnrollmentCount === 0) ||
+              (!hostUserCheck && !verifyGenderType(genderType, gender)) ||
+              isAccepted ||
+              isClosed
+            }
+            addStyle={{
+              backgroundColor: isClosed
                 ? "var(--color-muted3)"
-                : hostUserCheck
-                  ? nowEnrollmentCount > 0
-                    ? "var(--color-keycolor)"
-                    : "var(--color-muted3)"
-                  : "var(--color-keycolor)",
-            color: isClosed
-              ? "var(--color-muted4)"
-              : !verifyGenderType(genderType, gender)
-                ? "var(--color-text-muted)"
-                : hostUserCheck
-                  ? nowEnrollmentCount > 0
-                    ? "var(--color-muted4)"
-                    : "var(--color-text-muted)"
-                  : "var(--color-muted4)",
-          }}
-          text={
-            hostUserCheck
-              ? "참가 신청 목록"
-              : isAccepted
-                ? "참가 중인 여행"
-                : alreadyApplied
-                  ? "참가 신청 취소"
-                  : "참가 신청 하기"
-          }
-        ></ApplyListButton>
+                : !verifyGenderType(genderType, gender) || isAccepted
+                  ? "var(--color-muted3)"
+                  : hostUserCheck
+                    ? nowEnrollmentCount > 0
+                      ? "var(--color-keycolor)"
+                      : "var(--color-muted3)"
+                    : "var(--color-keycolor)",
+              color: isClosed
+                ? "var(--color-muted4)"
+                : !verifyGenderType(genderType, gender)
+                  ? "var(--color-text-muted)"
+                  : hostUserCheck
+                    ? nowEnrollmentCount > 0
+                      ? "var(--color-muted4)"
+                      : "var(--color-text-muted)"
+                    : "var(--color-muted4)",
+            }}
+            text={
+              hostUserCheck
+                ? "참가 신청 목록"
+                : isAccepted
+                  ? "참가 중인 여행"
+                  : alreadyApplied
+                    ? "참가 신청 취소"
+                    : "참가 신청 하기"
+            }
+          />
+        )}
       </ButtonContainer>
       <CompanionsView isOpen={personViewClicked} setIsOpen={setPersonViewClicked} />
 
       <div className="h-svh w-full pointer-events-none fixed top-0 min-[440px]:w-[390px] min-[440px]:left-1/2 min-[440px]:-translate-x-1/2 z-[1000]">
         <button
           type="button"
+          aria-label={isCommentUpdated ? "새 댓글 보기" : "댓글 보기"}
           className="absolute pointer-events-auto right-6 bottom-[124px] w-[70px] h-[70px] rounded-full flex justify-center items-center text-white bg-[var(--color-text-base)] z-[1000] text-[32px]"
           onClick={commentClickHandler}
         >

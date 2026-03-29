@@ -167,31 +167,48 @@ jsdom engine 비호환 → `--ignore-engines` 플래그로 설치.
 
 ---
 
-## 6. 다음 작업 목록
+## 6. 작업 현황
 
-### 즉시 (Mock 서버 구축)
-- [ ] `src/mocks/db/` — in-memory store 구현 (users, trips, sessions...)
-- [ ] Auth stateful 핸들러 (실제 로그인/가입/토큰 발급)
-- [ ] 전체 64개 엔드포인트 stateful 처리
+### Phase 6-5: Stateful Mock 서버 구축 ✅
 
-### Mock 서버 완료 후
-- [ ] E2E 32개 전체 통과 확인
+**구현 완료** (`src/mocks/db/` + `src/mocks/routes/`)
+
+| 파일 | 라인 수 | 내용 |
+|------|--------|------|
+| `db/store.ts` | 272줄 | In-memory store — User, Session, EmailVerification, Trip, Enrollment, Community, Comment 타입 + CRUD 헬퍼 |
+| `routes/auth.ts` | 390줄 | 로그인/로그아웃/회원가입/이메일 인증/토큰 갱신/OAuth 콜백 등 auth 전체 |
+| `routes/trip.ts` | 244줄 | 여행 목록/상세/생성/수정/삭제/신청/북마크 |
+| `routes/community.ts` | 192줄 | 커뮤니티 CRUD + 좋아요/댓글 |
+| `routes/misc.ts` | 435줄 | 마이페이지/프로필/알림/차단/신고 등 |
+
+기존 Vitest용 MSW 핸들러(`src/test/msw/handlers/`)는 static 응답 유지.
+Express 서버(`src/mocks/http.ts`)만 stateful routes로 교체.
+
+### Phase 6-6: 코드 리뷰 반영 ✅
+
+**블로킹 수정 2건**
+- `axiosInstance.ts`: 401 인터셉터에서 `/api/login` 예외 처리 — 잘못된 비밀번호 입력 시 토큰 갱신 시도 → "서버 오류" Toast 표시되던 버그 수정
+- `OauthGoogle/Kakao/Naver.tsx`: 구 경로(`@/api/user`, `@/hooks/user/useAuth`) → FSD 경로(`@/entities/user`, `@/features/auth`) 정리
+
+**개선 3건**
+- `createMutationOptions.ts`: `MutationPolicyOptions`에서 `onSuccess` 제거 (useMutation 호출부 spread 후 직접 선언 패턴으로 통일)
+- `useNfcField.ts`: 언마운트 시 `setTimeout` cleanup 추가
+- `zodResolver.ts`: path 빈 배열 에러를 `'root'` 키로 저장 (silent fail 방지)
+
+### Auth UX/접근성 개선 ✅
+- [x] OAuth 버튼 3개 `aria-label` 추가 (`LoginActions.tsx` — "네이버로 로그인", "카카오로 로그인", "구글로 로그인")
+- [x] Terms 버튼 `aria-label` 추가 (`features/auth/ui/Terms.tsx` — `aria-label` + `aria-pressed`)
+- [x] `<title>` 추가 — `/login`, `/registerEmail`, `/verifyEmail`, `/registerPassword` 4개 페이지
+- [x] `alert()` → Toast 교체 (`RegisterTripStyle.tsx` — `WarningToast` + 1.5s 후 redirect)
+
+### 코드 품질 ✅
+- [x] `OAuthTokenResponse` 타입 정의 (`entities/user/model.ts`) → `getToken` 반환 타입 명시
+- [x] `any` 타입 제거 (`OauthGoogle/Kakao/Naver.tsx` — `.then((user: OAuthTokenResponse | null | undefined)`)
+
+### 잔여 TODO
+- [ ] `color-contrast` 위반 색상 수정 (axe 재측정 후 대상 확정)
 - [ ] `/verifyEmail`, `/registerPassword` axe 측정 → baseline 완성
-- [ ] 성능 재측정 (백엔드 연결 정상화 후)
-
-### Auth UX/접근성 개선
-- [ ] OAuth 버튼 3개 `aria-label` 추가 (`Login.tsx:45,52,59`)
-- [ ] Terms 버튼 `aria-label` 추가 (`Terms.tsx`)
-- [ ] 전 페이지 `<title>` 추가 (Next.js `metadata` export)
-- [ ] `color-contrast` 위반 색상 수정
-- [ ] `alert()` → Toast 교체 (OauthGoogle, OauthKakao, OauthNaver, RegisterTripStyle)
 - [ ] RegisterDone 자동 로그인 (백엔드 협의 필요)
-
-### 코드 품질
-- [ ] 구 경로 import 정리 (re-export 래퍼 거치는 import들)
-  - `Login.tsx`: `@/api/user` → `@/entities/user`
-  - `RegisterEmail.tsx`: `@/hooks/useVerifyEmail` → `@/features/auth/hooks/useVerifyEmail`
-- [ ] `any` 타입 정리 (OauthGoogle, OauthKakao, OauthNaver)
 
 ---
 

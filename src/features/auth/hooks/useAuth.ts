@@ -33,8 +33,9 @@ const useAuth = () => {
     mutationKey: ["emailLogin"],
     onSuccess: (data) => {
       setLoginData({ userId: Number(data.userId), accessToken: data.accessToken });
+      const redirectPath = localStorage.getItem("loginPath") || "/";
       localStorage.removeItem("loginPath");
-      router.push("/");
+      router.push(redirectPath);
     },
   });
 
@@ -54,8 +55,9 @@ const useAuth = () => {
     }),
     onSuccess: (data) => {
       setLoginData({ userId: Number(data.userId), accessToken: data.accessToken });
+      const redirectPath = localStorage.getItem("loginPath") || "/";
       localStorage.removeItem("loginPath");
-      router.push("/");
+      router.push(redirectPath);
     },
   });
 

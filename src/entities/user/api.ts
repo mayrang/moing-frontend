@@ -1,7 +1,7 @@
 import { axiosInstance, handleApiResponse } from '@/shared/api';
 import RequestError from '@/context/ReqeustError';
 import { getJWTHeader } from '@/utils/user';
-import { TravelLog } from './model';
+import { TravelLog, OAuthTokenResponse } from './model';
 
 export async function getUser(userId: number, accessToken: string) {
   try {
@@ -86,7 +86,7 @@ export const getToken = async (
       window.location.href = response.data.success.redirectUrl;
     }
 
-    return handleApiResponse(response);
+    return handleApiResponse<OAuthTokenResponse>(response);
   } catch (error) {
     console.error('토큰 요청 실패:', error);
   }

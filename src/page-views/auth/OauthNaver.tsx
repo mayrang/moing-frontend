@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
-import { getToken } from "@/entities/user";
+import { getToken, OAuthTokenResponse } from "@/entities/user";
 import { userStore } from "@/store/client/userStore";
 import { useAuth } from "@/features/auth";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -29,11 +29,11 @@ const OauthNaver = () => {
       // 네이버 인증 코드를 이용해 서버에서 토큰을 요청
 
       getToken("naver", code, state)
-        .then((user: any) => {
+        .then((user: OAuthTokenResponse | null | undefined) => {
           if (user?.userStatus === "ABLE") {
             socialLogin({
-              socialLoginId: user?.socialLoginId as string,
-              email: user?.email as string,
+              socialLoginId: user.socialLoginId!,
+              email: user.email!,
             });
           } else {
             showErrorToast("소셜 로그인 과정에서 문제가 발생했습니다.", "/login");

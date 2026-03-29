@@ -1,3 +1,16 @@
+// OAuth 토큰 콜백 응답 타입
+export interface OAuthTokenResponse {
+  userStatus: 'ABLE' | 'PENDING' | 'BLOCK';
+  userNumber?: number;
+  userName?: string;
+  /** Google/Kakao 응답 필드 */
+  userEmail?: string;
+  /** Naver 응답 필드 */
+  email?: string;
+  socialLoginId?: string;
+  redirectUrl?: string;
+}
+
 // 회원가입 타입 (model/auth.ts)
 export interface IRegisterEmail {
   email: string;

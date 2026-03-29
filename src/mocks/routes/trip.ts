@@ -14,36 +14,57 @@ const getBearerToken = (req: Request) => {
   return auth?.startsWith('Bearer ') ? auth.slice(7) : null;
 };
 
+const GENDER_TYPE_KO: Record<string, string> = {
+  ANY: '모두',
+  MALE: '남자만',
+  FEMALE: '여자만',
+};
+
 const formatTrip = (trip: Trip, userNumber?: number) => {
   const host = db.users.get(trip.userNumber);
-  const companions = db.getEnrollmentsByTravel(trip.travelNumber)
-    .filter((e) => e.status === 'ACCEPTED')
-    .map((e) => {
-      const u = db.users.get(e.userNumber);
-      return { userNumber: e.userNumber, name: u?.name || '', profileImageUrl: u?.profileImageUrl || null };
-    });
+  const acceptedEnrollments = db.getEnrollmentsByTravel(trip.travelNumber)
+    .filter((e) => e.status === 'ACCEPTED');
+  const enrollCount = db.getEnrollmentsByTravel(trip.travelNumber).length;
+  const bookmarkCount = [...db.bookmarks.values()]
+    .filter((b) => b.travelNumber === trip.travelNumber).length;
+
+  let loginMemberRelatedInfo = null;
+  if (userNumber) {
+    const isHost = trip.userNumber === userNumber;
+    const enrollment = [...db.enrollments.values()].find(
+      (e) => e.travelNumber === trip.travelNumber && e.userNumber === userNumber,
+    );
+    loginMemberRelatedInfo = {
+      hostUser: isHost,
+      enrollmentNumber: enrollment?.enrollmentNumber ?? null,
+      bookmarked: db.bookmarks.has(db.getBookmarkKey(userNumber, trip.travelNumber)),
+    };
+  }
 
   return {
     travelNumber: trip.travelNumber,
     userNumber: trip.userNumber,
-    hostName: host?.name || '',
-    hostAgeGroup: host?.ageGroup || '',
+    userName: host?.name || '',
+    userAgeGroup: host?.ageGroup || '',
+    profileUrl: host?.profileImageUrl || null,
     title: trip.title,
     details: trip.details,
-    locationName: trip.locationName,
+    location: trip.locationName,
     startDate: trip.startDate,
     endDate: trip.endDate,
+    registerDue: trip.endDate,
     maxPerson: trip.maxPerson,
-    currentPerson: companions.length + 1,
-    genderType: trip.genderType,
+    nowPerson: acceptedEnrollments.length + 1,
+    genderType: GENDER_TYPE_KO[trip.genderType] ?? trip.genderType,
     periodType: trip.periodType,
-    status: trip.status,
+    postStatus: trip.status,
     tags: trip.tags,
     viewCount: trip.viewCount,
+    enrollCount,
+    bookmarkCount,
     createdAt: trip.createdAt,
-    isBookmarked: userNumber
-      ? db.bookmarks.has(db.getBookmarkKey(userNumber, trip.travelNumber))
-      : false,
+    bookmarked: loginMemberRelatedInfo?.bookmarked ?? false,
+    loginMemberRelatedInfo,
   };
 };
 
@@ -105,11 +126,12 @@ router.get('/travels/recent', (req: Request, res: Response) => {
   const paginated = active.slice(page * size, (page + 1) * size);
   return ok(res, {
     content: paginated.map((t) => formatTrip(t, user?.userNumber)),
-    totalElements: active.length,
-    totalPages: Math.ceil(active.length / size),
-    number: page,
-    size,
-    last: (page + 1) * size >= active.length,
+    page: {
+      size,
+      number: page,
+      totalElements: active.length,
+      totalPages: Math.ceil(active.length / size),
+    },
   });
 });
 
@@ -128,11 +150,12 @@ router.get('/travels/recommend', (req: Request, res: Response) => {
   const paginated = active.slice(page * size, (page + 1) * size);
   return ok(res, {
     content: paginated.map((t) => formatTrip(t, user?.userNumber)),
-    totalElements: active.length,
-    totalPages: Math.ceil(active.length / size),
-    number: page,
-    size,
-    last: (page + 1) * size >= active.length,
+    page: {
+      size,
+      number: page,
+      totalElements: active.length,
+      totalPages: Math.ceil(active.length / size),
+    },
   });
 });
 
@@ -197,11 +220,12 @@ router.get('/travels/search', (req: Request, res: Response) => {
   const paginated = results.slice(page * size, (page + 1) * size);
   return ok(res, {
     content: paginated.map((t) => formatTrip(t, user?.userNumber)),
-    totalElements: results.length,
-    totalPages: Math.ceil(results.length / size),
-    number: page,
-    size,
-    last: (page + 1) * size >= results.length,
+    page: {
+      size,
+      number: page,
+      totalElements: results.length,
+      totalPages: Math.ceil(results.length / size),
+    },
   });
 });
 
@@ -227,10 +251,16 @@ router.get('/travel/:travelNumber/companions', (req: Request, res: Response) => 
     .filter((e) => e.status === 'ACCEPTED')
     .map((e) => {
       const u = db.users.get(e.userNumber);
-      return { userNumber: e.userNumber, name: u?.name || '', profileImageUrl: u?.profileImageUrl || null };
+      return { userNumber: e.userNumber, userName: u?.name || '', profileImageUrl: u?.profileImageUrl || null };
     });
 
-  return ok(res, companions);
+  return ok(res, { companions });
+});
+
+// ── 여행 계획 ────────────────────────────────────────────────────────────
+// GET /api/travel/:travelNumber/plans
+router.get('/travel/:travelNumber/plans', (req: Request, res: Response) => {
+  return ok(res, { plans: [], nextCursor: null });
 });
 
 // ── 참가 신청 수 ──────────────────────────────────────────────────────────

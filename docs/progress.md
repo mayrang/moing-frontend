@@ -176,6 +176,7 @@ _작업 완료 후 기록_
 - console.log 제거: 40개+ (각 단계에서 순차 제거)
 - TypeScript: 에러 0개
 - Vitest: **228개 통과** (52개 테스트 파일, 3 suite는 `next-view-transitions` 기존 이슈)
+- Phase 6 완료 시점: **273개 통과** (56개 테스트 파일, 에러 핸들링 45개 추가)
 
 ### 참조
 - [Phase 5 상세 문서](refactoring/phase-5.md)
@@ -198,17 +199,23 @@ _작업 완료 후 기록_
 - [x] `docs/baseline/auth-baseline.md` 작성
   - `/login`, `/registerEmail` axe 측정 완료 (각 3건 위반)
   - `/login`, `/registerEmail` 성능 측정 완료
+- [x] react-hook-form + zod 전환 (Auth 폼 9개, `zodResolver` 직접 구현)
+- [x] 성능 최적화 — FCP 4.7s → 0.8s (`next/font`, AppShell 분리, Maps/GTM 중복 제거)
+- [x] ErrorPolicy 기반 에러 핸들링 라이브러리 + TDD (45개 테스트)
+- [x] **Stateful Mock 서버 구축** (`src/mocks/db/store.ts` + `src/mocks/routes/` 4개 파일, 1533줄)
+- [x] OAuth 버튼 `aria-label` 추가 (네이버/카카오/구글로 로그인 — `LoginActions.tsx`)
+- [x] 로그인 인터셉터 버그 수정 (`axiosInstance` — 401 로그인 실패 시 refresh 시도하던 문제)
+- [x] OauthGoogle/Kakao/Naver FSD 경로 정리 + zodResolver/useNfcField/createMutationOptions 코드 리뷰 개선
 
-**블로킹 이슈 → 다음 세션 재개 포인트**
-- ❌ 백엔드 서버 다운 → `/api/*` 요청 실패 → E2E 플로우 중단
-- ❌ `/registerEmail` → `/verifyEmail` 네비게이션 미작동 (원인: API 응답 없음)
-- ❌ `/verifyEmail`, `/registerPassword` axe 미측정 (위 문제로 진입 불가)
+- [x] `alert()` → WarningToast 교체 (`RegisterTripStyle.tsx`)
+- [x] 페이지 `<title>` — `/login`, `/registerEmail`, `/verifyEmail`, `/registerPassword` metadata 추가
+- [x] `OAuthTokenResponse` 타입 정의 + `any` 제거 (OauthGoogle/Kakao/Naver)
+- [x] Terms 버튼 `aria-label` + `aria-pressed` (이미 완료 확인)
 
-**다음 작업**
-1. **Stateful Mock 서버 구축** (`src/mocks/db/`) — 현재 세션에서 진행
-2. Mock 서버 완료 후 E2E 32개 전체 통과 확인
-3. `/verifyEmail`, `/registerPassword` axe 재측정 → baseline 완성
-4. Auth UX/접근성 개선 (`aria-label`, `<title>`, `alert()` → Toast 교체 등)
+**잔여 TODO**
+- [ ] `color-contrast` 위반 색상 수정 (axe 재측정 후 대상 확정)
+- [ ] `/verifyEmail`, `/registerPassword` axe 측정 → baseline 완성
+- [ ] RegisterDone 자동 로그인 (백엔드 협의 필요)
 
 ### 참조
 - [Auth 베이스라인 문서](../baseline/auth-baseline.md)

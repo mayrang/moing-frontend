@@ -4,7 +4,10 @@ const nextConfig = {
 
   distDir: ".next",
   images: {
-    domains: [], // 필요한 외부 이미지 도메인 추가
+    remotePatterns: [
+      { protocol: 'http', hostname: '125.242.221.180', port: '8080', pathname: '/**' },
+      { protocol: 'https', hostname: '**', pathname: '/**' },
+    ],
   },
   experimental: {
     scrollRestoration: true,

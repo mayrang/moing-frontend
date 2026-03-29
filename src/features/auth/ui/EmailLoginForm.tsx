@@ -62,10 +62,14 @@ const EmailLoginForm = () => {
         placeholder="이메일 아이디"
         height={54}
         showIcon={true}
+        hasError={!!errors.email && (emailValue?.length ?? 0) > 0}
         success={!errors.email && (emailValue?.length ?? 0) > 0}
         showSuccessIcon={false}
         {...register('email')}
       />
+      {errors.email && (emailValue?.length ?? 0) > 0 && (
+        <InfoText hasError>{errors.email.message}</InfoText>
+      )}
       <Spacing size={16} />
       <StateInputField
         showSuccessIcon={false}

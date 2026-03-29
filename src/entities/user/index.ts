@@ -1,4 +1,4 @@
-export type { IRegisterEmail, IRegisterGoogle, IRegisterKakao, TravelLog } from './model';
+export type { IRegisterEmail, IRegisterGoogle, IRegisterKakao, TravelLog, OAuthTokenResponse } from './model';
 export {
   getUser,
   kakaoLogin,

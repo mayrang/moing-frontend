@@ -15,10 +15,10 @@ const useNotification = () => {
     initialPageParam: 0,
     staleTime: 0,
     getNextPageParam: (lastPage) => {
-      if (lastPage.page.number + 1 === lastPage.page.totalPages) {
+      if ((lastPage?.page?.number ?? 0) + 1 === lastPage?.page?.totalPages) {
         return undefined;
       } else {
-        return lastPage?.page.number + 1;
+        return (lastPage?.page?.number ?? 0) + 1;
       }
     },
     queryFn: ({ pageParam }) => getNotifications(pageParam as number, accessToken!) as any,
