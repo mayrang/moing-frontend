@@ -14,8 +14,8 @@
 
   /* 텍스트 색상 */
   --color-text-base: rgba(26, 26, 26, 1);
-  --color-text-muted: rgba(132, 132, 132, 1);
-  --color-text-muted2: rgba(171, 171, 171, 1);
+  --color-text-muted: rgba(107, 107, 107, 1);   /* #6b6b6b — #fdfdfd 배경 기준 5.24:1 */
+  --color-text-muted2: rgba(113, 113, 113, 1);  /* #717171 — #fdfdfd 배경 기준 4.80:1 */
 
   /* 배경 / 경계 색상 */
   --color-muted3: rgba(205, 205, 205, 1);

@@ -19,6 +19,63 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 // ────────────────────────────────────────────────────────────
+// 공통 헬퍼
+// ────────────────────────────────────────────────────────────
+
+/**
+ * Terms 모달("동의합니다" 버튼)을 클릭하고 이메일 폼이 보일 때까지 기다린다.
+ *
+ * 배경: Terms는 dynamic import + 슬라이드업 애니메이션으로 렌더됨.
+ * - Playwright 일반 click은 애니메이션 도중 "element not stable" 오류 발생
+ * - page.evaluate로 DOM 직접 클릭 → React onClick 정상 발화, setShowTerms(false) 호출
+ * - evaluate 후 즉시 fill하면 React 상태 업데이트 전에 실행되어 폼이 inactive 상태
+ *   → expect(getByText('이메일 주소를 입력해주세요')).toBeVisible() wait 필수
+ */
+const acceptTerms = async (page: any) => {
+  await page.goto('/registerEmail');
+  await page.waitForFunction(
+    () => !!Array.from(document.querySelectorAll('button')).find(
+      (b: any) => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled')
+    )
+  );
+  await page.evaluate(() => {
+    const btn = Array.from(document.querySelectorAll('button')).find(
+      (b: any) => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled')
+    ) as HTMLButtonElement | undefined;
+    btn?.click();
+  });
+  // React 상태 업데이트(setShowTerms→false) 완료 대기
+  await expect(page.getByText('이메일 주소를 입력해주세요')).toBeVisible();
+};
+
+/**
+ * ValidationInputField(forwardRef 수정 후)에 값을 입력한다.
+ * RHF ref가 DOM input까지 전달되므로 locator.fill()이 onChange를 정상 트리거한다.
+ */
+const fillReactInput = async (page: any, placeholder: string, value: string) => {
+  await page.locator(`[placeholder="${placeholder}"]`).fill(value);
+};
+
+/** RegisterEmail → VerifyEmail 진입 */
+const goToVerifyEmail = async (page: any) => {
+  await acceptTerms(page);
+  await fillReactInput(page, '이메일 입력', 'new@test.com');
+  await expect(page.getByRole('button', { name: '다음' })).toBeEnabled();
+  await page.getByRole('button', { name: '다음' }).click();
+  await expect(page).toHaveURL('/verifyEmail');
+};
+
+/** RegisterEmail → VerifyEmail → RegisterPassword 진입 */
+const goToRegisterPassword = async (page: any) => {
+  await goToVerifyEmail(page);
+  for (let i = 1; i <= 6; i++) {
+    await page.getByLabel(`${i}번째 숫자`).fill('1');
+  }
+  await page.getByRole('button', { name: '다음' }).click();
+  await expect(page).toHaveURL('/registerPassword');
+};
+
+// ────────────────────────────────────────────────────────────
 // 1. 이메일 로그인
 // ────────────────────────────────────────────────────────────
 
@@ -44,28 +101,25 @@ test.describe('이메일 로그인', () => {
   test('이메일과 패스워드가 모두 유효할 때만 로그인 버튼이 활성화된다', async ({ page }) => {
     await page.goto('/login');
 
-    const loginButton = page.getByRole('button', { name: '로그인' });
+    const loginButton = page.getByRole('button', { name: '로그인', exact: true });
     await expect(loginButton).toBeDisabled();
 
     // 이메일만 입력 → 여전히 비활성
     await page.fill('[placeholder="이메일 아이디"]', 'test@test.com');
     await expect(loginButton).toBeDisabled();
 
-    // 비밀번호까지 입력 → 활성화
+    // 패스워드 추가 → 활성화
     await page.fill('[placeholder="패스워드"]', 'Password123!');
     await expect(loginButton).toBeEnabled();
   });
 
-  test('잘못된 형식의 이메일을 입력하면 로그인 버튼이 비활성화된다', async ({ page }) => {
+  test('빈 필드로 로그인 시 유효성 검사가 동작한다', async ({ page }) => {
     await page.goto('/login');
-
-    await page.fill('[placeholder="이메일 아이디"]', 'not-an-email');
-    await page.fill('[placeholder="패스워드"]', 'Password123!');
-
-    await expect(page.getByRole('button', { name: '로그인' })).toBeDisabled();
+    await page.fill('[placeholder="이메일 아이디"]', 'invalid-email');
+    await expect(page.getByText('이메일 주소를 정확하게 입력해주세요.')).toBeVisible();
   });
 
-  test('둘러보기 버튼 클릭 시 홈으로 이동한다', async ({ page }) => {
+  test('비로그인 상태에서 둘러보기 버튼을 누르면 홈(/)으로 이동한다', async ({ page }) => {
     await page.goto('/login');
     await page.getByText('둘러보기').click();
     await expect(page).toHaveURL('/');
@@ -104,99 +158,30 @@ test.describe('이메일 회원가입', () => {
     });
 
     test('약관 동의 후 이메일 입력 폼이 표시된다', async ({ page }) => {
-      await page.goto('/registerEmail');
-      // Terms 모달은 슬라이드업 애니메이션으로 viewport 아래에서 올라오므로
-    // 애니메이션 완료 후 JS evaluate로 직접 클릭
-    await page.waitForFunction(
-      () => !!Array.from(document.querySelectorAll('button')).find(b => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled'))
-    );
-    await page.evaluate(() => {
-      const btn = Array.from(document.querySelectorAll('button')).find(
-        b => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled')
-      ) as HTMLButtonElement | undefined;
-      btn?.click();
-    });
-      await expect(page.getByText('이메일 주소를 입력해주세요')).toBeVisible();
+      await acceptTerms(page);
+      // acceptTerms 내부에서 이미 expect(getByText('이메일 주소를 입력해주세요')).toBeVisible() 확인됨
     });
 
     test('유효하지 않은 이메일 입력 시 다음 버튼이 비활성화된다', async ({ page }) => {
-      await page.goto('/registerEmail');
-      // Terms 모달은 슬라이드업 애니메이션으로 viewport 아래에서 올라오므로
-    // 애니메이션 완료 후 JS evaluate로 직접 클릭
-    await page.waitForFunction(
-      () => !!Array.from(document.querySelectorAll('button')).find(b => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled'))
-    );
-    await page.evaluate(() => {
-      const btn = Array.from(document.querySelectorAll('button')).find(
-        b => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled')
-      ) as HTMLButtonElement | undefined;
-      btn?.click();
-    });
-
-      await page.fill('[placeholder="이메일 입력"]', 'not-an-email');
+      await acceptTerms(page);
+      await fillReactInput(page, '이메일 입력', 'not-an-email');
       await expect(page.getByRole('button', { name: '다음' })).toBeDisabled();
     });
 
     test('이미 사용 중인 이메일 입력 시 에러 메시지가 표시된다', async ({ page }) => {
-      await page.goto('/registerEmail');
-      // Terms 모달은 슬라이드업 애니메이션으로 viewport 아래에서 올라오므로
-    // 애니메이션 완료 후 JS evaluate로 직접 클릭
-    await page.waitForFunction(
-      () => !!Array.from(document.querySelectorAll('button')).find(b => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled'))
-    );
-    await page.evaluate(() => {
-      const btn = Array.from(document.querySelectorAll('button')).find(
-        b => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled')
-      ) as HTMLButtonElement | undefined;
-      btn?.click();
-    });
-
-      await page.fill('[placeholder="이메일 입력"]', 'duplicate@test.com');
+      await acceptTerms(page);
+      await fillReactInput(page, '이메일 입력', 'duplicate@test.com');
       await page.getByRole('button', { name: '다음' }).click();
 
       await expect(page.getByText('이미 사용중인 이메일입니다.')).toBeVisible();
     });
 
     test('사용 가능한 이메일 입력 후 인증 페이지로 이동한다', async ({ page }) => {
-      await page.goto('/registerEmail');
-      // Terms 모달은 슬라이드업 애니메이션으로 viewport 아래에서 올라오므로
-    // 애니메이션 완료 후 JS evaluate로 직접 클릭
-    await page.waitForFunction(
-      () => !!Array.from(document.querySelectorAll('button')).find(b => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled'))
-    );
-    await page.evaluate(() => {
-      const btn = Array.from(document.querySelectorAll('button')).find(
-        b => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled')
-      ) as HTMLButtonElement | undefined;
-      btn?.click();
-    });
-      await page.fill('[placeholder="이메일 입력"]', 'new@test.com');
-      await page.getByRole('button', { name: '다음' }).click();
-
-      await expect(page).toHaveURL('/verifyEmail');
+      await goToVerifyEmail(page);
     });
   });
 
   test.describe('Step 2: 이메일 인증 코드 (VerifyEmail)', () => {
-    // verifyEmail 진입 헬퍼
-    const goToVerifyEmail = async (page: any) => {
-      await page.goto('/registerEmail');
-      // Terms 모달은 슬라이드업 애니메이션으로 viewport 아래에서 올라오므로
-    // 애니메이션 완료 후 JS evaluate로 직접 클릭
-    await page.waitForFunction(
-      () => !!Array.from(document.querySelectorAll('button')).find(b => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled'))
-    );
-    await page.evaluate(() => {
-      const btn = Array.from(document.querySelectorAll('button')).find(
-        b => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled')
-      ) as HTMLButtonElement | undefined;
-      btn?.click();
-    });
-      await page.fill('[placeholder="이메일 입력"]', 'new@test.com');
-      await page.getByRole('button', { name: '다음' }).click();
-      await expect(page).toHaveURL('/verifyEmail');
-    };
-
     test('6자리 코드 입력 전에는 다음 버튼이 비활성화된다', async ({ page }) => {
       await goToVerifyEmail(page);
       await expect(page.getByRole('button', { name: '다음' })).toBeDisabled();
@@ -224,42 +209,11 @@ test.describe('이메일 회원가입', () => {
     });
 
     test('올바른 인증 코드 입력 시 비밀번호 등록 페이지로 이동한다', async ({ page }) => {
-      await goToVerifyEmail(page);
-
-      for (let i = 1; i <= 6; i++) {
-        await page.getByLabel(`${i}번째 숫자`).fill('1');
-      }
-      await page.getByRole('button', { name: '다음' }).click();
-
-      await expect(page).toHaveURL('/registerPassword');
+      await goToRegisterPassword(page);
     });
   });
 
   test.describe('Step 3: 비밀번호 등록 (RegisterPassword)', () => {
-    const goToRegisterPassword = async (page: any) => {
-      await page.goto('/registerEmail');
-      // Terms 모달은 슬라이드업 애니메이션으로 viewport 아래에서 올라오므로
-    // 애니메이션 완료 후 JS evaluate로 직접 클릭
-    await page.waitForFunction(
-      () => !!Array.from(document.querySelectorAll('button')).find(b => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled'))
-    );
-    await page.evaluate(() => {
-      const btn = Array.from(document.querySelectorAll('button')).find(
-        b => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled')
-      ) as HTMLButtonElement | undefined;
-      btn?.click();
-    });
-      await page.fill('[placeholder="이메일 입력"]', 'new@test.com');
-      await page.getByRole('button', { name: '다음' }).click();
-      await expect(page).toHaveURL('/verifyEmail');
-
-      for (let i = 1; i <= 6; i++) {
-        await page.getByLabel(`${i}번째 숫자`).fill('1');
-      }
-      await page.getByRole('button', { name: '다음' }).click();
-      await expect(page).toHaveURL('/registerPassword');
-    };
-
     test('비밀번호 규칙 위반 시 에러 메시지가 표시된다', async ({ page }) => {
       await goToRegisterPassword(page);
 
@@ -366,6 +320,7 @@ test.describe('접근성 (axe 베이스라인)', () => {
     await page.goto('/login');
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .exclude('nextjs-portal')
       .analyze();
 
     logAxeResults(results, '/login');
@@ -376,6 +331,7 @@ test.describe('접근성 (axe 베이스라인)', () => {
     await page.goto('/registerEmail');
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .exclude('nextjs-portal')
       .analyze();
 
     logAxeResults(results, '/registerEmail (약관 모달)');
@@ -383,22 +339,11 @@ test.describe('접근성 (axe 베이스라인)', () => {
   });
 
   test('이메일 입력 페이지 접근성 검사 — 폼', async ({ page }) => {
-    await page.goto('/registerEmail');
-    // Terms 모달은 슬라이드업 애니메이션으로 viewport 아래에서 올라오므로
-    // 애니메이션 완료 후 JS evaluate로 직접 클릭
-    await page.waitForFunction(
-      () => !!Array.from(document.querySelectorAll('button')).find(b => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled'))
-    );
-    await page.evaluate(() => {
-      const btn = Array.from(document.querySelectorAll('button')).find(
-        b => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled')
-      ) as HTMLButtonElement | undefined;
-      btn?.click();
-    });
-    await expect(page.getByText('이메일 주소를 입력해주세요')).toBeVisible();
+    await acceptTerms(page);
 
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .exclude('nextjs-portal')
       .analyze();
 
     logAxeResults(results, '/registerEmail (이메일 폼)');
@@ -406,24 +351,11 @@ test.describe('접근성 (axe 베이스라인)', () => {
   });
 
   test('이메일 인증 페이지 접근성 검사', async ({ page }) => {
-    await page.goto('/registerEmail');
-    // Terms 모달은 슬라이드업 애니메이션으로 viewport 아래에서 올라오므로
-    // 애니메이션 완료 후 JS evaluate로 직접 클릭
-    await page.waitForFunction(
-      () => !!Array.from(document.querySelectorAll('button')).find(b => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled'))
-    );
-    await page.evaluate(() => {
-      const btn = Array.from(document.querySelectorAll('button')).find(
-        b => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled')
-      ) as HTMLButtonElement | undefined;
-      btn?.click();
-    });
-    await page.fill('[placeholder="이메일 입력"]', 'new@test.com');
-    await page.getByRole('button', { name: '다음' }).click();
-    await expect(page).toHaveURL('/verifyEmail');
+    await goToVerifyEmail(page);
 
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .exclude('nextjs-portal')
       .analyze();
 
     logAxeResults(results, '/verifyEmail');
@@ -431,30 +363,11 @@ test.describe('접근성 (axe 베이스라인)', () => {
   });
 
   test('비밀번호 등록 페이지 접근성 검사', async ({ page }) => {
-    await page.goto('/registerEmail');
-    // Terms 모달은 슬라이드업 애니메이션으로 viewport 아래에서 올라오므로
-    // 애니메이션 완료 후 JS evaluate로 직접 클릭
-    await page.waitForFunction(
-      () => !!Array.from(document.querySelectorAll('button')).find(b => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled'))
-    );
-    await page.evaluate(() => {
-      const btn = Array.from(document.querySelectorAll('button')).find(
-        b => b.textContent?.trim() === '동의합니다' && !b.hasAttribute('disabled')
-      ) as HTMLButtonElement | undefined;
-      btn?.click();
-    });
-    await page.fill('[placeholder="이메일 입력"]', 'new@test.com');
-    await page.getByRole('button', { name: '다음' }).click();
-    await expect(page).toHaveURL('/verifyEmail');
-
-    for (let i = 1; i <= 6; i++) {
-      await page.getByLabel(`${i}번째 숫자`).fill('1');
-    }
-    await page.getByRole('button', { name: '다음' }).click();
-    await expect(page).toHaveURL('/registerPassword');
+    await goToRegisterPassword(page);
 
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .exclude('nextjs-portal')
       .analyze();
 
     logAxeResults(results, '/registerPassword');

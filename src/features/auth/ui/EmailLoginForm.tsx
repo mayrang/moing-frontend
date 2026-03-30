@@ -92,7 +92,7 @@ const EmailLoginForm = () => {
       )}
       <Spacing size={24} />
       <div className="flex justify-center gap-[6px] items-center">
-        <span style={{ color: '#848484' }}>처음 오셨나요?</span>
+        <span className="text-[var(--color-text-muted)]">처음 오셨나요?</span>
         <Link href="/registerEmail" style={{ textDecoration: 'underline' }}>
           회원가입
         </Link>
