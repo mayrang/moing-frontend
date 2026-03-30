@@ -67,7 +67,7 @@ const Navbar = () => {
           const Icon = icons[idx];
           const isLinkActive = getIsActive(page);
           const activeColor = "var(--color-text-base)";
-          const inactiveColor = "var(--color-muted3)";
+          const inactiveColor = "var(--color-text-muted)";
           const iconProps = {
             stroke: isLinkActive ? activeColor : inactiveColor,
             fill: isLinkActive ? activeColor : "none",

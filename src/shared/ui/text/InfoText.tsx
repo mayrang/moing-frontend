@@ -34,7 +34,7 @@ const InfoText = ({
   children,
   shake = false,
 }: InfoTextProps) => {
-  const color = hasError ? '#ED1E1E' : success ? '#5DB21B' : '#ABABAB';
+  const color = hasError ? '#ED1E1E' : success ? '#5DB21B' : 'var(--color-text-muted2)';
 
   return (
     <div

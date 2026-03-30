@@ -14,7 +14,7 @@ export default function RegisterDone() {
     setTimeout(() => {
       reset();
       setSocialLogin(null, null);
-      router.replace("/login"); // refresh 토큰 받을려면 로그인으로 접속해야함. // qa 요청 들어옴 백엔드와 협의 필요
+      router.replace("/"); // 회원가입 완료 → 이미 로그인 상태(accessToken set in authStore), 홈으로 이동
     }, 2000);
   }, []);
   return (

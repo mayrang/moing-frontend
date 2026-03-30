@@ -5,6 +5,7 @@ import authRouter from './routes/auth';
 import tripRouter from './routes/trip';
 import communityRouter from './routes/community';
 import miscRouter from './routes/misc';
+import db from './db/store';
 
 const app = express();
 const port = 9090;
@@ -19,6 +20,12 @@ app.use(cookieParser());
 
 // Playwright webServer health check
 app.get('/', (_req, res) => res.status(200).send('ok'));
+
+// E2E 테스트 격리용 db 리셋 (테스트 환경 전용)
+app.post('/api/test/reset', (_req, res) => {
+  db.reset();
+  res.json({ ok: true });
+});
 
 // API 라우트
 app.use('/api', authRouter);

@@ -20,7 +20,7 @@ import React, { useEffect, useState } from "react";
 
 // 헤더부터 주최자인지에 따라 화면이 달라서, 헤더에서 여행 정보를 들고 오기.
 export default function TripDetailHeader() {
-  const { userId, accessToken } = authStore();
+  const { userId, accessToken, isGuestUser: isGuestUserStore } = authStore();
   const params = useParams();
   const pathname = usePathname();
   const travelNumber = params?.travelNumber as string;
@@ -98,14 +98,21 @@ export default function TripDetailHeader() {
       //   month,
       //   day,
       // };
-      if (!loginMemberRelatedInfo) {
-        addHostUserCheck(false);
-        addEnrollmentNumber(null);
-        addBookmarked(false);
-      } else {
-        addHostUserCheck(loginMemberRelatedInfo.hostUser);
-        addEnrollmentNumber(loginMemberRelatedInfo.enrollmentNumber);
-        addBookmarked(loginMemberRelatedInfo.bookmarked);
+      // 서버 프리페치는 null 토큰으로 실행 → loginMemberRelatedInfo: null
+      // AppShell이 토큰을 복구하기 전에 이 값으로 hostUserCheck를 덮어쓰면
+      // 호스트도 "참가 신청 하기" 버튼이 표시되는 문제 발생.
+      // accessToken이 확정되거나 명시적 게스트일 때만 인증 관련 필드를 업데이트.
+      const isAuthResolved = !!accessToken || isGuestUserStore;
+      if (isAuthResolved) {
+        if (!loginMemberRelatedInfo) {
+          addHostUserCheck(false);
+          addEnrollmentNumber(null);
+          addBookmarked(false);
+        } else {
+          addHostUserCheck(loginMemberRelatedInfo.hostUser);
+          addEnrollmentNumber(loginMemberRelatedInfo.enrollmentNumber);
+          addBookmarked(loginMemberRelatedInfo.bookmarked);
+        }
       }
       addProfileUrl(profileUrl);
       addTravelNumber(travelNumber);
@@ -199,22 +206,30 @@ export default function TripDetailHeader() {
       className="flex items-center justify-around"
       style={{
         display: isTripDetailEdit ? "none" : "flex",
-        width: hostUserCheck ? "136px" : "auto",
+        width: "auto",
       }}
     >
       {!isGuestUser() && (
-        <div className="w-12 h-12 flex items-center justify-center" onClick={handleNotification}>
+        <button
+          type="button"
+          aria-label="알림"
+          className="w-12 h-12 flex items-center justify-center"
+          onClick={handleNotification}
+        >
           <AlarmIcon size={23} stroke="var(--color-text-base)" />
-        </div>
+        </button>
       )}
-      <div className="w-12 h-12 flex items-center justify-center">
-        <ShareIcon />
-      </div>
+      <ShareIcon className="w-12 h-12 flex items-center justify-center" />
 
       {!isGuestUser() && (
-        <div className="w-12 h-12 flex items-center justify-center" onClick={onClickThreeDots}>
+        <button
+          type="button"
+          aria-label={hostUserCheck ? "여행 수정/삭제" : "더 보기"}
+          className="w-12 h-12 flex items-center justify-center"
+          onClick={onClickThreeDots}
+        >
           <MoreIcon />
-        </div>
+        </button>
       )}
 
       <EditAndDeleteModal
