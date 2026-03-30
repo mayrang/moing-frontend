@@ -11,7 +11,7 @@
 | Phase 3 | features 레이어 | ✅ 완료 | 2026-03-21 | 2026-03-21 |
 | Phase 4 | page-views / widgets 레이어 | ✅ 완료 | 2026-03-21 | 2026-03-21 |
 | Phase 5 | Tailwind CSS 전환 — Emotion 완전 제거 | ✅ 완료 | 2026-03-22 | 2026-03-22 |
-| Phase 6 | 유저 플로우 개선 — Auth | 🔄 진행 중 | 2026-03-28 | - |
+| Phase 6 | 유저 플로우 개선 — Auth | ✅ 완료 | 2026-03-28 | 2026-03-30 |
 
 ---
 
@@ -216,7 +216,7 @@ _작업 완료 후 기록_
 - [x] `color-contrast` 위반 색상 수정 — --color-text-muted/muted2 다크닝, InfoText/EmailLoginForm 하드코딩 제거
 - [x] `/verifyEmail`, `/registerPassword` axe 측정 → baseline 완성 (전 페이지 "위반 없음 ✓")
 - [x] ValidationInputField forwardRef 수정 — RHF ref 연결 버그 해소, E2E 테스트 안정화
-- [ ] RegisterDone 자동 로그인 (백엔드 협의 필요)
+- [x] RegisterDone 자동 로그인 — /api/users/sign-up이 accessToken 반환하므로 이미 로그인 상태, /login → / 수정
 
 ### 참조
 - [Auth 베이스라인 문서](../baseline/auth-baseline.md)
