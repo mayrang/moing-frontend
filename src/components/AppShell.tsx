@@ -116,6 +116,7 @@ const AppShell = ({ children }: { children: React.ReactNode }) => {
     >
       <Splash />
       <main
+        id="main-content"
         className="relative h-full overscroll-none no-scrollbar w-svw min-[440px]:w-[390px] min-[440px]:overflow-x-hidden"
         style={{ backgroundColor: bodyBgColor }}
       >
