@@ -189,6 +189,30 @@ export const db = {
     ),
 
   now: () => new Date().toISOString(),
+
+  /** E2E 테스트 격리용 — 모든 동적 데이터 삭제 후 시드 데이터 재등록 */
+  reset: () => {
+    db.users.clear();
+    db.sessions.clear();
+    db.refreshTokens.clear();
+    db.emailVerifications.clear();
+    db.trips.clear();
+    db.enrollments.clear();
+    db.bookmarks.clear();
+    db.communityPosts.clear();
+    db.communityLikes.clear();
+    db.comments.clear();
+    db.commentLikes.clear();
+    db.notifications.clear();
+    db.blockedEmails.clear();
+    counters.user.v = 10;
+    counters.trip.v = 100;
+    counters.enrollment.v = 1000;
+    counters.community.v = 200;
+    counters.comment.v = 500;
+    counters.notification.v = 300;
+    seedDatabase();
+  },
 };
 
 // ── Seed Data ──────────────────────────────────────────────────────────────

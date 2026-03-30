@@ -1,4 +1,4 @@
-import { getTripDetail, getTripEnrollmentCount } from "@/entities/tripDetail";
+import { getTripDetail, getTripEnrollmentCount, getCompanions } from "@/entities/tripDetail";
 import { TripDetailPage } from "@/page-views/trip";
 import {
   dehydrate,
@@ -52,6 +52,10 @@ const Page = async ({
     queryClient.prefetchQuery({
       queryKey: ["tripEnrollment", travelNumber],
       queryFn: () => getTripEnrollmentCount(travelNumber, null),
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ["companions", travelNumber],
+      queryFn: () => getCompanions(travelNumber, null),
     }),
   ]);
 

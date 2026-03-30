@@ -11,7 +11,7 @@
 | Phase 3 | features 레이어 | ✅ 완료 | 2026-03-21 | 2026-03-21 |
 | Phase 4 | page-views / widgets 레이어 | ✅ 완료 | 2026-03-21 | 2026-03-21 |
 | Phase 5 | Tailwind CSS 전환 — Emotion 완전 제거 | ✅ 완료 | 2026-03-22 | 2026-03-22 |
-| Phase 6 | 유저 플로우 개선 — Auth | 🔄 진행 중 | 2026-03-28 | - |
+| Phase 6 | 유저 플로우 개선 — Auth + Trip UX/접근성 | ✅ 완료 | 2026-03-28 | 2026-03-30 |
 
 ---
 
@@ -176,6 +176,7 @@ _작업 완료 후 기록_
 - console.log 제거: 40개+ (각 단계에서 순차 제거)
 - TypeScript: 에러 0개
 - Vitest: **228개 통과** (52개 테스트 파일, 3 suite는 `next-view-transitions` 기존 이슈)
+- Phase 6 완료 시점: **273개 통과** (56개 테스트 파일, 에러 핸들링 45개 추가)
 
 ### 참조
 - [Phase 5 상세 문서](refactoring/phase-5.md)
@@ -183,32 +184,44 @@ _작업 완료 후 기록_
 
 ---
 
-## Phase 6: 유저 플로우 개선 — Auth (진행 중 🔄)
+## Phase 6: 유저 플로우 개선 — Auth + Trip UX/접근성 ✅
 
-> **목표**: Auth 플로우를 기준으로 E2E 베이스라인 측정 → UX/접근성 개선 → 수치 비교
+> **목표**: Auth 플로우 E2E/UX 개선 → Trip UX 개선 → 전체 페이지 접근성 완성
 
-### 현재 상태 (2026-03-28 기준)
+### 완료 항목
 
-**완료**
-- [x] E2E auth 테스트 스펙 32개 작성 (`e2e/auth.spec.ts`)
-  - 이메일 로그인 7개, 로그아웃 1개, 이메일 회원가입 10개, OAuth 7개, axe 5개, 성능 2개
-- [x] Playwright MSW 연동 설정 (`playwright.config.ts` dual webServer)
-  - MSW Express 서버 (포트 9090) → Next.js rewrite (`API_BASE_URL`) → 프록시
-- [x] Auth MSW 핸들러 작성 (`src/test/msw/handlers/auth.ts`)
-- [x] `docs/baseline/auth-baseline.md` 작성
-  - `/login`, `/registerEmail` axe 측정 완료 (각 3건 위반)
-  - `/login`, `/registerEmail` 성능 측정 완료
+**Auth (6-1 ~ 6-6)**
+- [x] E2E auth 테스트 스펙 34개 (`e2e/auth.spec.ts` — 이메일 로그인/회원가입, OAuth, axe, 성능)
+- [x] Playwright MSW 연동 (`playwright.config.ts` dual webServer, 포트 9090)
+- [x] Stateful Mock 서버 (`src/mocks/db/store.ts` + routes/ 4개 파일, 1533줄)
+- [x] react-hook-form + zod 전환 (Auth 폼 9개, `zodResolver` 직접 구현)
+- [x] 성능 최적화 — FCP 4.7s → 0.8s (`next/font`, AppShell 분리, Maps/GTM 중복 제거)
+- [x] ErrorPolicy 기반 에러 핸들링 라이브러리 + TDD (45개 테스트)
+- [x] ValidationInputField forwardRef 수정 — RHF ref 연결 버그 해소
+- [x] RegisterDone 자동 로그인 (`/login` → `/` redirect 수정)
+- [x] Auth 전 페이지 axe 위반 0건 달성
 
-**블로킹 이슈 → 다음 세션 재개 포인트**
-- ❌ 백엔드 서버 다운 → `/api/*` 요청 실패 → E2E 플로우 중단
-- ❌ `/registerEmail` → `/verifyEmail` 네비게이션 미작동 (원인: API 응답 없음)
-- ❌ `/verifyEmail`, `/registerPassword` axe 미측정 (위 문제로 진입 불가)
+**Trip (6-5)**
+- [x] Auth Race Condition 수정 (`isAuthResolved` guard + 스켈레톤 UI)
+- [x] Trip/Enrollment mutation ErrorPolicy 적용
+- [x] useAuth loginPath 버그 수정 (removeItem 순서 오류)
+- [x] E2E trip/tripDetail/enrollment 스펙 19개
 
-**다음 작업**
-1. **Stateful Mock 서버 구축** (`src/mocks/db/`) — 현재 세션에서 진행
-2. Mock 서버 완료 후 E2E 32개 전체 통과 확인
-3. `/verifyEmail`, `/registerPassword` axe 재측정 → baseline 완성
-4. Auth UX/접근성 개선 (`aria-label`, `<title>`, `alert()` → Toast 교체 등)
+**전체 접근성 완성 (6-7)**
+- [x] Production Lighthouse 기준 측정 (A11y: 79/72/82 → 100/100/100)
+- [x] color-contrast 전수 수정 (`--color-keycolor`, BoxLayoutTag, Navbar, TripListPage)
+- [x] landmark-one-main — AppShell + Layout `<div>` → `<main>` 교체
+- [x] button-name/target-size — ShareIcon 중첩 버튼 구조 해소
+- [x] label-content-name-mismatch — 동행자 버튼 aria-label 제거
+- [x] document-title — `/trip/list`, `/trip/apply/[id]` metadata 추가
+
+### 최종 수치
+
+| 페이지 | Performance | Accessibility | FCP |
+|--------|:-----------:|:-------------:|-----|
+| `/` | 89 | **100** | 213ms |
+| `/trip/list` | 76 | **100** | 336ms |
+| `/trip/detail/1` | 89 | **100** | 213ms |
 
 ### 참조
 - [Auth 베이스라인 문서](../baseline/auth-baseline.md)

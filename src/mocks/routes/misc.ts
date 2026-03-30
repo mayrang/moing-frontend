@@ -96,11 +96,21 @@ router.delete('/enrollment/:enrollmentNumber', (req: Request, res: Response) => 
 // GET /api/travel/:travelNumber/enrollments
 router.get('/travel/:travelNumber/enrollments', (req: Request, res: Response) => {
   const travelNumber = parseInt(req.params.travelNumber);
-  const enrollments = db.getEnrollmentsByTravel(travelNumber).map((e) => {
-    const u = db.users.get(e.userNumber);
-    return { ...e, userName: u?.name || '', userProfileImage: u?.profileImageUrl || null };
-  });
-  return ok(res, enrollments);
+  const enrollments = db.getEnrollmentsByTravel(travelNumber)
+    .filter((e) => e.status === 'PENDING')
+    .map((e) => {
+      const u = db.users.get(e.userNumber);
+      return {
+        enrollmentNumber: e.enrollmentNumber,
+        userName: u?.name || '',
+        userAgeGroup: u?.ageGroup || '',
+        enrolledAt: e.createdAt,
+        message: '',
+        status: e.status,
+        profileUrl: u?.profileImageUrl || null,
+      };
+    });
+  return ok(res, { enrollments, totalCount: enrollments.length });
 });
 
 // GET /api/travel/:travelNumber/enrollments/last-viewed
@@ -236,7 +246,10 @@ router.get('/notifications', (req: Request, res: Response) => {
   const size = parseInt(req.query.size as string) || 10;
   const notifications = [...db.notifications.values()].filter((n) => n.userNumber === user.userNumber);
   const paginated = notifications.slice(page * size, (page + 1) * size);
-  return ok(res, { content: paginated, totalElements: notifications.length, number: page, size });
+  return ok(res, {
+    content: paginated,
+    page: { size, number: page, totalElements: notifications.length, totalPages: Math.ceil(notifications.length / size) || 1 },
+  });
 });
 
 // ── MyPage (Profile) ──────────────────────────────────────────────────────

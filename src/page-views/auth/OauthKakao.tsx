@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { getToken } from "@/entities/user";
+import { getToken, OAuthTokenResponse } from "@/entities/user";
 import { userStore } from "@/store/client/userStore";
 import { useAuth } from "@/features/auth";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -26,15 +26,15 @@ const OauthKakao = () => {
   useEffect(() => {
     if (code && state) {
       getToken("kakao", code, state)
-        .then((user: any) => {
+        .then((user: OAuthTokenResponse | null | undefined) => {
           if (user?.userStatus === "PENDING" && user?.userNumber && user?.userName) {
             setTempName(user.userName);
-            setSocialLogin("kakao", Number(user.userNumber) as number);
+            setSocialLogin("kakao", user.userNumber);
             router.push("/registerEmail");
           } else if (user?.userStatus === "ABLE") {
             socialLogin({
-              socialLoginId: user?.socialLoginId as string,
-              email: user?.userEmail as string,
+              socialLoginId: user.socialLoginId!,
+              email: user.userEmail!,
             });
           } else {
             showErrorToast("소셜 로그인 과정에서 문제가 발생했습니다.", "/login");

@@ -9,6 +9,7 @@ import { IRegisterGoogle, IRegisterKakao } from "@/model/auth";
 import { useRouter } from "next/navigation";
 import SearchFilterTag from "@/components/designSystem/tag/SearchFilterTag";
 import RegisterThirdStepIcon from "@/components/icons/step/register/RegisterThirdStepIcon";
+import WarningToast from "@/shared/ui/toast/WarningToast";
 
 const TAGCOUNT = 18;
 const categoryButtonTextArray = [
@@ -151,11 +152,13 @@ const RegisterTripStyle = () => {
       resetGender();
     }
     if (isSocialError) {
-      alert(isSocialError);
+      setErrorToast(true);
       setSocialLogin(null, null);
-      router.push("/login");
+      setTimeout(() => router.push("/login"), 1500);
     }
   }, [isSocialError, isSocialSuccess]);
+
+  const [errorToast, setErrorToast] = useState(false);
 
   // 버튼 활성화상태.
   const [activeStates, setActiveStates] = useState<boolean[]>(
@@ -288,6 +291,11 @@ const RegisterTripStyle = () => {
           }}
         />
       </div>
+      <WarningToast
+        isShow={errorToast}
+        setIsShow={setErrorToast}
+        text="소셜 로그인 과정에서 문제가 발생했습니다."
+      />
     </div>
   );
 };

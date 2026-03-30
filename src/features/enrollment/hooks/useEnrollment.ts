@@ -11,6 +11,7 @@ import {
 } from "@/entities/enrollment";
 import { authStore } from "@/store/client/authStore";
 import { tripDetailStore } from "@/store/client/tripDetailStore";
+import { createMutationOptions } from "@/shared/lib/errors";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const useEnrollment = (travelNumber: number) => {
@@ -106,7 +107,10 @@ const useEnrollment = (travelNumber: number) => {
   };
 
   const cancelMutation = useMutation({
-    mutationFn: (enrollmentNumber: number) => cancelEnrollment(enrollmentNumber, accessToken),
+    ...createMutationOptions({
+      mutationFn: (enrollmentNumber: number) => cancelEnrollment(enrollmentNumber, accessToken),
+      policy: { network: 'toast', system: 'toast' },
+    }),
   });
 
   const cancel = (enrollmentNumber: number) => {

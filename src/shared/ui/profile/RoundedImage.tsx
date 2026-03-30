@@ -1,8 +1,11 @@
 'use client';
 
+import Image from 'next/image';
+
 interface RoundedImageProps {
   size: number;
   src: string;
+  alt?: string;
 }
 
 /**
@@ -10,19 +13,30 @@ interface RoundedImageProps {
  * src가 빈 문자열이면 회색 배경(muted3) 표시.
  *
  * Refactoring notes:
- * - Emotion styled.div → Tailwind + inline style (동적 size/src)
- * - NOTE (Phase 1.5): div + background-image → img 태그 전환 시 접근성 개선 가능
+ * - Phase 1: Emotion styled.div → Tailwind + inline style
+ * - Phase 6: div + background-image → next/image (WebP 자동 변환, lazy loading, CLS 방지)
  */
-const RoundedImage = ({ size, src }: RoundedImageProps) => {
+const RoundedImage = ({ size, src, alt = '' }: RoundedImageProps) => {
+  if (!src) {
+    return (
+      <div
+        className="rounded-full flex-shrink-0"
+        style={{
+          width: `${size}px`,
+          height: `${size}px`,
+          backgroundColor: 'rgba(217, 217, 217, 1)',
+        }}
+      />
+    );
+  }
+
   return (
-    <div
-      className="rounded-full bg-cover"
-      style={{
-        width: `${size}px`,
-        height: `${size}px`,
-        backgroundImage: src ? `url(${src})` : undefined,
-        backgroundColor: src === '' ? 'rgba(217, 217, 217, 1)' : undefined,
-      }}
+    <Image
+      src={src}
+      alt={alt}
+      width={size}
+      height={size}
+      className="rounded-full object-cover flex-shrink-0"
     />
   );
 };

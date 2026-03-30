@@ -121,6 +121,8 @@ export default function CreateTripButton({
         type="button"
         ref={addRef}
         onClick={toggleRotation}
+        aria-label={isClicked ? "메뉴 닫기" : `${type === "community" ? "글쓰기" : "여행 만들기"} 메뉴 열기`}
+        aria-expanded={isClicked}
         className="absolute pointer-events-auto bottom-[124px] cursor-pointer w-[70px] h-[70px] rounded-full flex justify-center items-center text-white bg-[var(--color-text-base)] z-[1003] text-[32px] transition-transform duration-300"
         style={{
           right: buttonRight,

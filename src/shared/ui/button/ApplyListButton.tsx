@@ -41,6 +41,7 @@ const ApplyListButton = ({
       {!hostUserCheck && (
         <button
           type="button"
+          aria-label={bookmarked ? '즐겨찾기 해제' : '즐겨찾기 추가'}
           onClick={bookmarkOnClick}
           className="border-none bg-transparent"
         >

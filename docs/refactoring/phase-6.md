@@ -167,31 +167,48 @@ jsdom engine 비호환 → `--ignore-engines` 플래그로 설치.
 
 ---
 
-## 6. 다음 작업 목록
+## 6. 작업 현황
 
-### 즉시 (Mock 서버 구축)
-- [ ] `src/mocks/db/` — in-memory store 구현 (users, trips, sessions...)
-- [ ] Auth stateful 핸들러 (실제 로그인/가입/토큰 발급)
-- [ ] 전체 64개 엔드포인트 stateful 처리
+### Phase 6-5: Stateful Mock 서버 구축 ✅
 
-### Mock 서버 완료 후
-- [ ] E2E 32개 전체 통과 확인
+**구현 완료** (`src/mocks/db/` + `src/mocks/routes/`)
+
+| 파일 | 라인 수 | 내용 |
+|------|--------|------|
+| `db/store.ts` | 272줄 | In-memory store — User, Session, EmailVerification, Trip, Enrollment, Community, Comment 타입 + CRUD 헬퍼 |
+| `routes/auth.ts` | 390줄 | 로그인/로그아웃/회원가입/이메일 인증/토큰 갱신/OAuth 콜백 등 auth 전체 |
+| `routes/trip.ts` | 244줄 | 여행 목록/상세/생성/수정/삭제/신청/북마크 |
+| `routes/community.ts` | 192줄 | 커뮤니티 CRUD + 좋아요/댓글 |
+| `routes/misc.ts` | 435줄 | 마이페이지/프로필/알림/차단/신고 등 |
+
+기존 Vitest용 MSW 핸들러(`src/test/msw/handlers/`)는 static 응답 유지.
+Express 서버(`src/mocks/http.ts`)만 stateful routes로 교체.
+
+### Phase 6-6: 코드 리뷰 반영 ✅
+
+**블로킹 수정 2건**
+- `axiosInstance.ts`: 401 인터셉터에서 `/api/login` 예외 처리 — 잘못된 비밀번호 입력 시 토큰 갱신 시도 → "서버 오류" Toast 표시되던 버그 수정
+- `OauthGoogle/Kakao/Naver.tsx`: 구 경로(`@/api/user`, `@/hooks/user/useAuth`) → FSD 경로(`@/entities/user`, `@/features/auth`) 정리
+
+**개선 3건**
+- `createMutationOptions.ts`: `MutationPolicyOptions`에서 `onSuccess` 제거 (useMutation 호출부 spread 후 직접 선언 패턴으로 통일)
+- `useNfcField.ts`: 언마운트 시 `setTimeout` cleanup 추가
+- `zodResolver.ts`: path 빈 배열 에러를 `'root'` 키로 저장 (silent fail 방지)
+
+### Auth UX/접근성 개선 ✅
+- [x] OAuth 버튼 3개 `aria-label` 추가 (`LoginActions.tsx` — "네이버로 로그인", "카카오로 로그인", "구글로 로그인")
+- [x] Terms 버튼 `aria-label` 추가 (`features/auth/ui/Terms.tsx` — `aria-label` + `aria-pressed`)
+- [x] `<title>` 추가 — `/login`, `/registerEmail`, `/verifyEmail`, `/registerPassword` 4개 페이지
+- [x] `alert()` → Toast 교체 (`RegisterTripStyle.tsx` — `WarningToast` + 1.5s 후 redirect)
+
+### 코드 품질 ✅
+- [x] `OAuthTokenResponse` 타입 정의 (`entities/user/model.ts`) → `getToken` 반환 타입 명시
+- [x] `any` 타입 제거 (`OauthGoogle/Kakao/Naver.tsx` — `.then((user: OAuthTokenResponse | null | undefined)`)
+
+### 잔여 TODO
+- [ ] `color-contrast` 위반 색상 수정 (axe 재측정 후 대상 확정)
 - [ ] `/verifyEmail`, `/registerPassword` axe 측정 → baseline 완성
-- [ ] 성능 재측정 (백엔드 연결 정상화 후)
-
-### Auth UX/접근성 개선
-- [ ] OAuth 버튼 3개 `aria-label` 추가 (`Login.tsx:45,52,59`)
-- [ ] Terms 버튼 `aria-label` 추가 (`Terms.tsx`)
-- [ ] 전 페이지 `<title>` 추가 (Next.js `metadata` export)
-- [ ] `color-contrast` 위반 색상 수정
-- [ ] `alert()` → Toast 교체 (OauthGoogle, OauthKakao, OauthNaver, RegisterTripStyle)
 - [ ] RegisterDone 자동 로그인 (백엔드 협의 필요)
-
-### 코드 품질
-- [ ] 구 경로 import 정리 (re-export 래퍼 거치는 import들)
-  - `Login.tsx`: `@/api/user` → `@/entities/user`
-  - `RegisterEmail.tsx`: `@/hooks/useVerifyEmail` → `@/features/auth/hooks/useVerifyEmail`
-- [ ] `any` 타입 정리 (OauthGoogle, OauthKakao, OauthNaver)
 
 ---
 
@@ -709,3 +726,413 @@ const verifyEmailSend = useMutation({
 **business 에러는 반드시 콜백 위임이 정답이다.** 동일한 401도 로그인 실패인지 권한 부족인지 컨텍스트마다 의미가 다르다. 공통 라이브러리 수준에서 처리하려 하면 과적합이 생긴다.
 
 **테스트 작성 전 의존성 파악이 중요하다.** `useAuth.ts`는 `axiosInstance`의 인터셉터를 통해 동작하므로, 단순히 MSW를 오버라이드하는 것만으로는 예상한 에러 흐름이 나오지 않는다. 인터셉터 존재를 미리 인지하고 테스트를 설계해야 했다.
+
+---
+
+## 11. Phase 6-5: Trip Detail UX 개선
+
+> 작업 일자: 2026-03-30
+> 커밋: `3a38f618` (35 파일, +1097 / -403)
+
+### 배경 / 문제 정의
+
+Auth 작업 중 Trip Detail 페이지에서 세 가지 독립적인 문제가 발견됐다.
+
+**1. 호스트 버튼 깜빡임 (Auth Race Condition)**
+
+`/trip/detail/[id]`는 서버사이드 `HydrationBoundary`로 프리페치한다. 서버 렌더링 시 `accessToken=null` → `loginMemberRelatedInfo: null` → `hostUserCheck: false`. AppShell이 마운트되면서 `/api/token/refresh`로 토큰을 복구하는데, 복구 완료 전에 클라이언트 쿼리가 `hostUserCheck=false`로 덮어쓰는 문제가 있었다.
+
+증상: 호스트가 직접 URL로 접근하면 "참가 신청 하기" 버튼이 잠깐 보이다가 "참가 신청 목록" 버튼으로 교체됨.
+
+**2. 접근성 위반 (axe baseline 3건)**
+
+`trip-baseline.md`에서 측정된 위반:
+- `button-name` (critical): 알림/공유/더보기 버튼, 북마크 버튼에 접근 가능한 텍스트 없음
+- `scrollable-region-focusable` (serious): 태그/동행자 영역 스크롤 컨테이너에 `tabindex` 없음
+
+**3. Trip/Enrollment mutation 에러 처리 미적용**
+
+`createMutationOptions` 도입 후 Auth 계열만 적용됐고, Trip 관련 mutation은 기존 파편화 패턴 유지 중.
+
+---
+
+### 해결 방안 및 구현
+
+#### 1. Auth Race Condition — `isAuthResolved` guard
+
+```ts
+// TripDetailHeader.tsx — 변경 전
+const { hostUser } = loginMemberRelatedInfo ?? {};
+
+// 변경 후: 토큰 복구 완료 전까지 렌더링 보류
+const isGuestUserStore = useGuestUserStore();
+const isAuthResolved = !!accessToken || isGuestUserStore;
+
+if (!isAuthResolved) {
+  return <TripDetailHeaderSkeleton />;
+}
+```
+
+추가로 `isGuestUser` 변수 섀도잉 버그도 수정. `const { isGuestUser } = useTripDetail(...)` 구조분해가 `useGuestUserStore()`의 `isGuestUser`를 덮어쓰는 문제였다.
+
+**스켈레톤 UI 추가**: 토큰 복구 대기 중 `animate-pulse` 스켈레톤 블록 표시 → 레이아웃 시프트 없음.
+
+#### 2. 접근성 수정
+
+| 위반 | 수정 내용 |
+|------|-----------|
+| `button-name` — 알림/공유/더보기 | `div` → `<button>` 전환 + `aria-label="알림"`, `"공유"`, `"더보기"` 추가 |
+| `button-name` — 북마크 | `ApplyListButton`에 `aria-label="북마크"` 추가 |
+| `button-name` — 댓글 FAB | `div` → `<button>` 전환 + `aria-label="댓글 작성"` |
+| `button-name` — 동행자 행 | `div` → `<button>` 전환 + `aria-label="{userName} 프로필 보기"` |
+| `scrollable-region-focusable` | 스크롤 컨테이너에 `role="region"` + `tabIndex={0}` 추가 |
+
+#### 3. Mutation 에러 처리 적용
+
+```ts
+// useTripDetail.ts — updateMutation, deleteMutation
+const deleteMutation = useMutation({
+  ...createMutationOptions({
+    mutationFn: async (travelNumber: number) => { ... },
+    policy: TRIP_ERROR_POLICY, // { network: 'retry', system: 'toast' }
+  }),
+  onSuccess: () => { router.push('/'); },
+});
+```
+
+`useEnrollment.cancelMutation`도 동일 패턴 적용.
+
+#### 4. useAuth loginPath 버그 수정
+
+```ts
+// 변경 전: removeItem 먼저 → getItem은 항상 null
+localStorage.removeItem('loginPath');
+const path = localStorage.getItem('loginPath'); // null!
+router.replace(path ?? '/');
+
+// 변경 후
+const path = localStorage.getItem('loginPath');
+localStorage.removeItem('loginPath');
+router.replace(path ?? '/');
+```
+
+---
+
+### E2E 테스트 (`e2e/tripDetail.spec.ts`, `e2e/enrollment.spec.ts`)
+
+#### 설계상 핵심 제약
+
+`/trip/detail/[id]` 서버사이드 프리페치 때문에 직접 `page.goto(DETAIL_URL)`로는 호스트 버튼이 절대 나타나지 않는다. (`accessToken=null` 서버 렌더링 → `loginMemberRelatedInfo: null`). 호스트 뷰를 테스트하려면 반드시:
+
+```
+1. /login → 로그인 성공 → /(홈)
+2. 홈에서 trip 카드 클릭 → client-side 이동 (Zustand 유지)
+3. /trip/detail/[id] → accessToken 있는 상태 → hostUserCheck: true
+```
+
+이 제약이 테스트 헬퍼 `loginAndNavigateToTripDetail()` 패턴의 이유다.
+
+#### 커버 범위
+
+| 파일 | 테스트 수 | 커버 내용 |
+|------|----------|-----------|
+| `e2e/trip.spec.ts` | 5개 | 목록 조회, 탭 전환, 클릭 → 상세 이동, axe, 성능 |
+| `e2e/tripDetail.spec.ts` | 7개 | 비로그인 조회, 호스트 버튼, 삭제 플로우, axe(비로그인/호스트) |
+| `e2e/enrollment.spec.ts` | 7개 | 신청 폼 비활성/활성, 신청 성공 후 리다이렉트, 신청 목록, 수락/거절 플로우, axe |
+
+#### 트러블슈팅: `page.goto()` 후 Zustand 초기화
+
+enrollment 신청 성공 후 상세 페이지 이동 테스트에서, 로그인 후 `page.goto(APPLY_URL)`로 직접 이동하면 Zustand가 초기화되면서 `accessToken=null` → AppShell이 `/api/token/refresh` 자동 호출. MSW가 `refreshToken` 쿠키를 읽어 새 `accessToken`을 반환하므로 이를 이용:
+
+```ts
+await page.goto(APPLY_URL);
+await page.waitForResponse('**/api/token/refresh'); // refresh 완료 대기
+await page.waitForLoadState('networkidle');
+// 이후 신청 진행
+```
+
+---
+
+### Before / After
+
+**접근성**
+
+| 페이지 | 수정 전 위반 수 | 수정 후 위반 수 |
+|--------|:-------------:|:-------------:|
+| `/trip/detail/1` (비로그인) | 3건 | **0건** |
+| `/trip/detail/1` (호스트) | 3건 | **0건** |
+| `/trip/apply/1` | 2건 | **0건** |
+
+**버그**
+- 호스트 직접 접근 시 버튼 깜빡임: **수정 완료**
+- 로그인 후 loginPath redirect 미동작: **수정 완료**
+
+---
+
+### 회고 / 배운 점
+
+**서버/클라이언트 하이브리드 렌더링에서 인증 상태 동기화가 가장 어렵다.** 서버는 항상 `accessToken=null`로 프리페치하고, 클라이언트 Zustand는 마운트 후 복구된다. 이 타이밍 차이를 `isAuthResolved` guard로 해결했지만, 근본 원인은 "토큰을 쿠키에 저장하면 서버에서도 읽을 수 있다"는 점이다. 미래에 `accessToken`을 httpOnly 쿠키로 전환하면 이 문제가 사라진다.
+
+**E2E 테스트 설계 시 서버/클라이언트 렌더링 차이를 명시적으로 문서화해야 한다.** `loginAndNavigateToTripDetail()`이 왜 필요한지 주석이 없었다면 나중에 이 코드를 `page.goto()`로 "단순화"하는 사람이 생겼을 것이다. 테스트 코드의 복잡함이 의도된 것임을 주석으로 명확히 했다.
+
+---
+
+## 12. Phase 6-6: Auth UX 마무리
+
+> 작업 일자: 2026-03-30
+> 커밋: `a6f6ca20`, `130d5d3a`
+
+### color-contrast 위반 해소
+
+axe baseline에서 `--color-text-muted` / `--color-text-muted2` CSS 변수가 WCAG 2.1 AA (4.5:1) 미충족으로 확인됐다.
+
+**측정 환경 주의사항**: 배경색이 순수 흰색 `#ffffff`가 아닌 `#fdfdfd` (253,253,253). 이 차이가 임계값에서 의미를 가진다.
+
+```
+#767676 on #ffffff = 4.54:1 ✅
+#767676 on #fdfdfd = 4.46:1 ❌ (0.08:1 차이로 미통과)
+```
+
+| 변수 | 변경 전 | 변경 후 | 대비비 |
+|------|---------|---------|--------|
+| `--color-text-muted` | `#848484` (3.95:1) | `#6b6b6b` | 5.24:1 ✅ |
+| `--color-text-muted2` | `#ababab` (2.33:1) | `#717171` | 4.80:1 ✅ |
+
+하드코딩된 색상 2곳도 CSS 변수로 교체:
+- `EmailLoginForm.tsx`: `style={{ color: '#848484' }}` → `className="text-[var(--color-text-muted)]"`
+- `InfoText.tsx`: `fill='#ABABAB'` → `fill='var(--color-text-muted2)'`
+
+### ValidationInputField forwardRef 수정
+
+react-hook-form의 `register()` 반환값에는 `ref` 콜백이 포함된다. `ValidationInputField`가 일반 함수 컴포넌트였기 때문에 `ref`가 silently drop되어 RHF 내부 `_fields` 맵에 필드가 등록되지 않는 문제.
+
+```
+register('email') → { name, onChange, onBlur, ref }
+                                               ↓
+                              ValidationInputField (non-forwardRef)
+                                               ↓
+                                    ref callback 무시됨
+                                               ↓
+                              getValues().email = undefined
+                                               ↓
+                         zod → invalid_type "Required" 에러
+```
+
+**수정**: `forwardRef<HTMLInputElement, ValidationInputFieldProps>` 적용 + `StateInputField`까지 ref 전달.
+
+**효과**: Playwright `locator.fill()`이 React synthetic onChange 체인을 정상 트리거 → E2E 테스트에서 `nativeInputValueSetter` workaround 제거 가능.
+
+### RegisterDone 자동 로그인
+
+기존 코드에 `// 백엔드와 협의 필요` 주석과 함께 `/login`으로 redirect하던 부분이 있었다. MSW Express 서버 확인 결과 `/api/users/sign-up`이 이미 `accessToken`을 반환하고 `useAuth.registerEmailMutation.onSuccess`에서 `setLoginData({ userId, accessToken })`를 호출 → 회원가입 완료 시점에 이미 로그인 상태.
+
+`router.replace('/login')` → `router.replace('/')` 한 줄 수정으로 해결.
+
+### E2E 테스트 안정화
+
+회원가입 전체 플로우 E2E (`RegisterEmail → VerifyEmail → RegisterPassword → RegisterName → RegisterAge → RegisterGender → RegisterTripStyle → RegisterDone → /`)를 추가하는 과정에서 두 가지 격리 문제 해결:
+
+**1. 병렬 실행 충돌**: `fullyParallel: true` 기본 설정 + 공유 MSW 인메모리 db → 한 테스트가 `new@test.com` 등록 후 다른 테스트 실패.
+
+```ts
+// e2e/auth.spec.ts 최상단
+test.describe.configure({ mode: 'serial' });
+```
+
+**2. db 상태 오염**: `reuseExistingServer: true` 환경에서 이전 테스트 데이터가 잔존.
+
+```ts
+// MSW 서버에 리셋 엔드포인트 추가
+app.post('/api/test/reset', (_req, res) => {
+  db.reset(); // 전체 초기화 + seed 재적용
+  res.json({ ok: true });
+});
+
+// auth.spec.ts beforeEach
+await fetch('http://localhost:9090/api/test/reset', { method: 'POST' });
+```
+
+**최종 결과: 34개 테스트 전부 통과.**
+
+---
+
+## 13. Phase 6-7: 전체 페이지 접근성 완성 — Production Lighthouse 기반
+
+> 작업 일자: 2026-03-30
+
+### 배경 / 문제 정의
+
+Auth + Trip 접근성 작업은 axe-core 단위 측정 기준이었다. 실제 production 빌드 기준 Lighthouse Accessibility 점수를 측정하자 여러 추가 위반이 발견됐다.
+
+**Production 빌드 베이스라인 (첫 측정)**
+
+| 페이지 | Performance | Accessibility | FCP |
+|--------|:-----------:|:-------------:|-----|
+| `/` | 89 | 79 | 213ms |
+| `/trip/list` | 76 | 72 | 336ms |
+| `/trip/detail/1` | 89 | 82 | 213ms |
+
+> dev 서버 측정은 FCP 9s 이상 등 노이즈가 심하다. `yarn build && yarn start` 기반 production 측정만 신뢰한다.
+
+### 발견된 위반 항목과 원인 분석
+
+#### color-contrast 위반 (복수 위치)
+
+**1. `--color-keycolor` (#3e8d00) — 대비비 4.11:1 (AA 미충족)**
+
+`globals.css`의 CSS 변수값이 4.5:1 기준 미달. Trip 목록의 "총 N건" 텍스트 등 keycolor가 쓰이는 모든 곳에 영향.
+
+→ `#3e8d00` (62,141,0) → `#2d7a00` (45,122,0)으로 다크닝.
+- white 기준: 5.41:1 ✅
+- `--color-keycolor-bg` (#E3EFD9) 기준: 4.57:1 ✅
+
+**2. `BoxLayoutTag` 하드코딩 색상 — `rgba(132,132,132,1)` (#848484) / 대비비 3.28:1**
+
+`src/shared/ui/tag/BoxLayoutTag.tsx`의 `DEFAULT_STYLE.color`가 `rgba(132,132,132,1)` (#f0f0f0 배경 위) → 3.28:1.
+
+→ `var(--color-text-muted)` (#6b6b6b)로 교체 → 4.67:1 ✅
+
+**3. Navbar 비활성 탭 색상 — `var(--color-muted3)` (#cdcdcd) / 대비비 1.58:1**
+
+`src/widgets/home/Navbar.tsx`의 `inactiveColor`가 `var(--color-muted3)` → 흰 배경 위 1.58:1. AA 기준 4.5:1 대비 완전 미충족.
+
+→ `var(--color-text-muted)` (#6b6b6b)로 교체 → 5.24:1 ✅
+
+**4. `TripListPage` 하드코딩 — `text-[#3e8d00]`**
+
+CSS 변수를 바꿔도 Tailwind arbitrary value `text-[#3e8d00]`은 그대로 유지됨 (CSS 변수와 독립적). 별도 교체 필요.
+
+→ `text-[var(--color-keycolor)]`로 수정.
+
+#### button-name 위반
+
+**TripDetailHeader 공유 버튼**: `ShareIcon`이 내부적으로 `<CopyToClipboard><button>SVG</button>`를 렌더링한다. TripDetailHeader가 이를 `<button aria-label="공유">`로 한 번 더 감싸는 구조 → **중첩 버튼 (invalid HTML)** → button-name + target-size 동시 위반.
+
+→ 수정: `ShareIcon`에 `className`, `ariaLabel` prop 추가. 내부 button에 직접 `aria-label` 적용. TripDetailHeader에서 외부 wrapper button 제거.
+
+#### label-content-name-mismatch 위반 (WCAG 2.5.3)
+
+`TripDetailPage.tsx` 동행자 버튼에 `aria-label="동행자 목록 보기: 모두 1/4명"`이 있었는데, 버튼의 visible text "1 / 4"가 aria-label에 정확히 포함되지 않음 (WCAG 2.5.3: 접근 가능한 이름이 visible text를 포함해야 함).
+
+→ `aria-label` 완전 제거. visible text "1 / 4" 자체가 스크린리더용으로 충분.
+
+#### target-size 위반 (공유 버튼 클릭 영역)
+
+`TripDetailHeader`가 3개 버튼 컨테이너에 `width: hostUserCheck ? "136px" : "auto"` 고정값 적용. 48px × 3 = 144px 필요한데 136px로 강제 → 공유 버튼의 실제 클릭 가능 영역이 16px로 줄어듦.
+
+→ `width: "auto"`로 변경.
+
+#### document-title 위반
+
+`/trip/list`, `/trip/apply/[travelNumber]` 페이지에 `<title>`이 없었음.
+
+→ `src/app/trip/list/page.tsx`와 `src/app/trip/apply/[travelNumber]/page.tsx`에 `export const metadata: Metadata` 추가.
+
+#### `landmark-one-main` 위반 (전 페이지 공통)
+
+WCAG 규칙: 각 페이지에 `<main>` 랜드마크 하나 필수. 앱 전체에 `<main>` 요소가 단 하나도 없었다.
+
+```
+app/layout.tsx
+  └─ <html><body>
+       └─ <Layout>                    ← div
+            ├─ [auth route] <div>     ← div  (Layout.tsx)
+            │    └─ <div>             ← div
+            └─ [non-auth] <AppShell>
+                 └─ <div>            ← div  (AppShell.tsx)
+                      └─ <div>       ← div
+```
+
+→ 수정 위치 2곳:
+- `AppShell.tsx` — 내부 컨텐츠 래퍼 `<div>` → `<main>`
+- `Layout.tsx` — auth route 내부 `<div>` → `<main>`
+
+두 경로 모두 이미 존재하는 CSS 클래스를 그대로 유지하며 태그명만 교체.
+
+#### AlarmIcon 버튼 (TripListPage)
+
+`<div onClick>` → `<button type="button" aria-label="알림">` 전환.
+
+#### Header 뒤로가기 버튼
+
+`aria-label="뒤로 가기"` 추가.
+
+#### CreateTripButton AddIcon
+
+`aria-label={isClicked ? "메뉴 닫기" : "여행 만들기 메뉴 열기"}` + `aria-expanded={isClicked}` 추가.
+
+---
+
+### 수정된 파일 목록
+
+| 파일 | 수정 내용 |
+|------|-----------|
+| `src/app/globals.css` | `--color-keycolor`: #3e8d00 → #2d7a00 |
+| `src/shared/ui/tag/BoxLayoutTag.tsx` | 하드코딩 #848484 → `var(--color-text-muted)` |
+| `src/widgets/home/Navbar.tsx` | `inactiveColor`: `var(--color-muted3)` → `var(--color-text-muted)` |
+| `src/page-views/trip/TripListPage.tsx` | `text-[#3e8d00]` → `text-[var(--color-keycolor)]`, AlarmIcon `div` → `button` |
+| `src/components/icons/ShareIcon.tsx` | `className`, `ariaLabel` prop 추가, inner button에 직접 적용 |
+| `src/page-views/trip/TripDetailHeader.tsx` | 공유 버튼 wrapper 제거, `width: "auto"` |
+| `src/page-views/trip/TripDetailPage.tsx` | 동행자 버튼 `aria-label` 제거 |
+| `src/shared/ui/layout/Header.tsx` | 뒤로가기 버튼 `aria-label="뒤로 가기"` |
+| `src/widgets/home/CreateTripButton.tsx` | AddIcon `aria-label`, `aria-expanded` |
+| `src/app/trip/list/page.tsx` | `metadata` 추가 (document-title) |
+| `src/app/trip/apply/[travelNumber]/page.tsx` | `metadata` 추가 (document-title) |
+| `src/components/AppShell.tsx` | 내부 `<div>` → `<main>` (landmark-one-main) |
+| `src/components/Layout.tsx` | auth route 내부 `<div>` → `<main>` (landmark-one-main) |
+
+---
+
+### Before / After
+
+**Production Lighthouse Accessibility (최종)**
+
+| 페이지 | 수정 전 | 수정 후 |
+|--------|:-------:|:-------:|
+| `/` | 79 | **100** |
+| `/trip/list` | 72 | **100** |
+| `/trip/detail/1` | 82 | **100** |
+
+> `landmark-one-main`까지 해소하면 잔여 위반 0건으로 100점 달성.
+
+**색상 대비**
+
+| 변수/위치 | 수정 전 | 수정 후 |
+|-----------|:-------:|:-------:|
+| `--color-keycolor` | 4.11:1 ❌ | 5.41:1 ✅ |
+| `BoxLayoutTag` 텍스트 | 3.28:1 ❌ | 4.67:1 ✅ |
+| Navbar 비활성 탭 | 1.58:1 ❌ | 5.24:1 ✅ |
+
+**Performance (변동 없음)**
+
+| 페이지 | Performance | FCP |
+|--------|:-----------:|-----|
+| `/` | 89 | 213ms |
+| `/trip/list` | 76 | 336ms |
+| `/trip/detail/1` | 89 | 213ms |
+
+---
+
+### 트러블슈팅
+
+**1. CSS 변수 변경만으로는 부족했던 경우**
+
+`--color-keycolor`를 `globals.css`에서 변경했는데도 TripListPage의 "총 N건" 텍스트가 계속 위반으로 잡혔다. 원인: `text-[#3e8d00]`은 Tailwind arbitrary value로 컴파일 시 리터럴 hex값이 CSS에 삽입된다 — CSS 변수와 완전히 독립적이다. `text-[var(--color-keycolor)]`로 명시적 교체 필요.
+
+**2. 중첩 버튼 (`ShareIcon`)**
+
+`ShareIcon` 컴포넌트가 `<CopyToClipboard><button>` 구조를 내부적으로 렌더링한다는 사실을 컴포넌트 외부에서 알기 어렵다. TripDetailHeader에서 wrapper `<button>`을 추가하는 순간 invalid HTML이 되고 axe가 다른 위반(button-name, target-size)을 파생시켰다. 재사용 컴포넌트가 자체 인터랙티브 요소를 포함하는 경우 반드시 prop으로 `className`/`ariaLabel`을 노출해야 한다.
+
+**3. `landmark-one-main` 원인 추적**
+
+axe 결과만 봐서는 어느 태그를 `<main>`으로 바꿔야 하는지 알 수 없다. 레이아웃 계층 전체 (`app/layout.tsx` → `Layout.tsx` → `AppShell.tsx`)를 위에서 아래로 추적해야 했다. `<div>` 3단계 중 "실제 페이지 컨텐츠를 담는 래퍼"가 어디인지 확인 후 그 위치만 교체.
+
+---
+
+### 회고 / 배운 점
+
+**Production 빌드로 측정해야 한다.** dev 서버에서의 Lighthouse는 FCP 9s+ 등 실제와 동떨어진 수치를 준다. `yarn build && yarn start` 기반 측정만 신뢰할 수 있다.
+
+**Accessibility 100점은 axe-core의 자동 탐지 한계를 넘는다.** `landmark-one-main`처럼 구조적 문제는 자동 도구보다 직접 레이아웃 계층을 읽어야 발견할 수 있다. 자동 탐지 점수 98 → 100으로 가려면 수동 구조 검토가 필수다.
+
+**CSS 변수와 Tailwind arbitrary value는 별개다.** `text-[#hex]`는 컴파일 타임에 리터럴로 고정된다. 테마 색상은 반드시 CSS 변수를 통해 참조해야 런타임에 값을 바꿀 수 있다.

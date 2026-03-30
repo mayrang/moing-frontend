@@ -53,7 +53,7 @@ const Header = () => {
     >
       {!shouldShowAlarmIcon() && (
         <div className="flex items-center">
-          <button type="button" className="cursor-pointer" onClick={handleBack}>
+          <button type="button" className="cursor-pointer" aria-label="뒤로 가기" onClick={handleBack}>
             <BackIcon />
           </button>
           {(checkRoute.startsWith(ROUTES.TRIP.DETAIL) ||

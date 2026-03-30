@@ -8,6 +8,7 @@ import {
 } from "@/entities/tripDetail";
 import { UpdateTripReqData } from "@/entities/trip";
 import { authStore } from "@/store/client/authStore";
+import { createMutationOptions } from "@/shared/lib/errors";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const useTripDetail = (travelNumber: number) => {
@@ -36,9 +37,10 @@ const useTripDetail = (travelNumber: number) => {
     mutateAsync: updateTripDetailMutation,
     isSuccess: isEditSuccess,
   } = useMutation({
-    mutationFn: (data: UpdateTripReqData) => {
-      return updateTripDetail(travelNumber, data, accessToken);
-    },
+    ...createMutationOptions({
+      mutationFn: (data: UpdateTripReqData) => updateTripDetail(travelNumber, data, accessToken),
+      policy: { network: 'toast', system: 'toast' },
+    }),
     onSuccess: () => {
       queryClient.refetchQueries({
         queryKey: ["tripDetail", travelNumber],
@@ -47,25 +49,15 @@ const useTripDetail = (travelNumber: number) => {
   });
 
   const { mutateAsync: deleteTripDetailMutation } = useMutation({
-    mutationFn: () => {
-      return deleteTripDetail(travelNumber, accessToken);
-    },
+    ...createMutationOptions({
+      mutationFn: () => deleteTripDetail(travelNumber, accessToken),
+      policy: { network: 'toast', system: 'toast' },
+    }),
     onSuccess: () => {
-      // 내가 만든 여행을 내 여행에서 삭제 가능하므로, 삭제시 무효화시킴.
-      // queryClient.invalidateQueries({
-      //   queryKey: ['tripDetail', travelNumber]
-      // }),
-      queryClient.refetchQueries({
-        queryKey: ["tripRecommendation"],
-      });
-      queryClient.refetchQueries({
-        queryKey: ["availableTrips"],
-      });
-
+      queryClient.refetchQueries({ queryKey: ["tripRecommendation"] });
+      queryClient.refetchQueries({ queryKey: ["availableTrips"] });
       setTimeout(() => {
-        queryClient.invalidateQueries({
-          queryKey: ["myTrips"],
-        });
+        queryClient.invalidateQueries({ queryKey: ["myTrips"] });
       }, 1500);
     },
   });

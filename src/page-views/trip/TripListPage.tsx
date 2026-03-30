@@ -94,9 +94,9 @@ const TripList = () => {
           </div>
 
           {!isGuestUser() && (
-            <div className="cursor-pointer w-12 flex items-center justify-center" onClick={handleNotification}>
+            <button type="button" className="w-12 flex items-center justify-center" onClick={handleNotification} aria-label="알림">
               <AlarmIcon />
-            </div>
+            </button>
           )}
         </div>
         <Spacing size={8} />
@@ -110,7 +110,7 @@ const TripList = () => {
             sort={sort}
           >
             <div className="text-sm font-medium leading-[16.71px] tracking-[-0.025em]">
-              총&nbsp;<span className="text-[#3e8d00] font-bold">{data?.pages[0].page.totalElements ?? 0}건</span>
+              총&nbsp;<span className="text-[var(--color-keycolor)] font-bold">{data?.pages[0].page.totalElements ?? 0}건</span>
             </div>
           </SortHeader>
         </div>
