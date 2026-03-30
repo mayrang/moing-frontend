@@ -1,5 +1,9 @@
 import ApplyTrip from "@/page/ApplyTrip";
-import React from "react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "참가 신청 | 모잉",
+};
 
 const ApplyTripPage = () => {
   return <ApplyTrip />;

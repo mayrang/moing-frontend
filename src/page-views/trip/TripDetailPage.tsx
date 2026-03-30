@@ -447,7 +447,6 @@ export default function TripDetail() {
 
             <button
               type="button"
-              aria-label="동행자 목록 보기"
               className="py-[11px] pl-2 w-full flex items-center justify-between"
               onClick={companionsViewHandler}
             >

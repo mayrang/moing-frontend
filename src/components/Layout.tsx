@@ -25,9 +25,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   if (isAuthRoute(pathname)) {
     return (
       <div className="overflow-x-hidden flex justify-center items-center h-svh w-svw">
-        <div className="relative h-full overscroll-none no-scrollbar w-svw min-[440px]:w-[390px] min-[440px]:overflow-x-hidden bg-[var(--color-bg)]">
+        <main className="relative h-full overscroll-none no-scrollbar w-svw min-[440px]:w-[390px] min-[440px]:overflow-x-hidden bg-[var(--color-bg)]">
           {children}
-        </div>
+        </main>
       </div>
     );
   }

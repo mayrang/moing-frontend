@@ -206,7 +206,7 @@ export default function TripDetailHeader() {
       className="flex items-center justify-around"
       style={{
         display: isTripDetailEdit ? "none" : "flex",
-        width: hostUserCheck ? "136px" : "auto",
+        width: "auto",
       }}
     >
       {!isGuestUser() && (
@@ -219,13 +219,7 @@ export default function TripDetailHeader() {
           <AlarmIcon size={23} stroke="var(--color-text-base)" />
         </button>
       )}
-      <button
-        type="button"
-        aria-label="공유"
-        className="w-12 h-12 flex items-center justify-center"
-      >
-        <ShareIcon />
-      </button>
+      <ShareIcon className="w-12 h-12 flex items-center justify-center" />
 
       {!isGuestUser() && (
         <button

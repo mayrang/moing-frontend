@@ -27,7 +27,7 @@ const SIZE_STYLES: Record<'small' | 'medium' | 'large', React.CSSProperties> = {
 const DEFAULT_STYLE: React.CSSProperties = {
   backgroundColor: 'rgba(240, 240, 240, 1)',
   padding: '4px 10px',
-  color: 'rgba(132, 132, 132, 1)',
+  color: 'var(--color-text-muted)',
   borderRadius: '20px',
   fontSize: '12px',
   fontWeight: '400',
