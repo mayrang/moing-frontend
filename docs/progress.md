@@ -213,8 +213,9 @@ _작업 완료 후 기록_
 - [x] Terms 버튼 `aria-label` + `aria-pressed` (이미 완료 확인)
 
 **잔여 TODO**
-- [ ] `color-contrast` 위반 색상 수정 (axe 재측정 후 대상 확정)
-- [ ] `/verifyEmail`, `/registerPassword` axe 측정 → baseline 완성
+- [x] `color-contrast` 위반 색상 수정 — --color-text-muted/muted2 다크닝, InfoText/EmailLoginForm 하드코딩 제거
+- [x] `/verifyEmail`, `/registerPassword` axe 측정 → baseline 완성 (전 페이지 "위반 없음 ✓")
+- [x] ValidationInputField forwardRef 수정 — RHF ref 연결 버그 해소, E2E 테스트 안정화
 - [ ] RegisterDone 자동 로그인 (백엔드 협의 필요)
 
 ### 참조
