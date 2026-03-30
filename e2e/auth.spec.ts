@@ -18,6 +18,9 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
+// MSW 공유 db 상태 충돌 방지 — 파일 내 모든 테스트 직렬 실행
+test.describe.configure({ mode: 'serial' });
+
 // ────────────────────────────────────────────────────────────
 // 공통 헬퍼
 // ────────────────────────────────────────────────────────────
@@ -57,22 +60,58 @@ const fillReactInput = async (page: any, placeholder: string, value: string) => 
 };
 
 /** RegisterEmail → VerifyEmail 진입 */
-const goToVerifyEmail = async (page: any) => {
+const goToVerifyEmail = async (page: any, email = 'new@test.com') => {
   await acceptTerms(page);
-  await fillReactInput(page, '이메일 입력', 'new@test.com');
+  await fillReactInput(page, '이메일 입력', email);
   await expect(page.getByRole('button', { name: '다음' })).toBeEnabled();
   await page.getByRole('button', { name: '다음' }).click();
   await expect(page).toHaveURL('/verifyEmail');
 };
 
 /** RegisterEmail → VerifyEmail → RegisterPassword 진입 */
-const goToRegisterPassword = async (page: any) => {
-  await goToVerifyEmail(page);
+const goToRegisterPassword = async (page: any, email = 'new@test.com') => {
+  await goToVerifyEmail(page, email);
   for (let i = 1; i <= 6; i++) {
     await page.getByLabel(`${i}번째 숫자`).fill('1');
   }
   await page.getByRole('button', { name: '다음' }).click();
   await expect(page).toHaveURL('/registerPassword');
+};
+
+/**
+ * RegisterEmail → ... → RegisterDone 진입 (전체 이메일 회원가입 플로우)
+ * MSW: new@test.com, 인증코드 111111(고정), Password1234! 사용
+ */
+const goToRegisterDone = async (page: any) => {
+  // 고유 이메일 사용 — new@test.com 중복 등록 방지
+  const uniqueEmail = `reg${Date.now()}@test.com`;
+  await goToRegisterPassword(page, uniqueEmail);
+
+  // 비밀번호 입력 → /registerName
+  await page.fill('[placeholder="비밀번호 입력"]', 'Password1234!');
+  await page.fill('[placeholder="비밀번호 재입력"]', 'Password1234!');
+  await page.getByRole('button', { name: '다음' }).click();
+  await expect(page).toHaveURL('/registerName');
+
+  // 이름 입력 → /registerAge
+  await page.fill('[placeholder="이름 입력(최대 10자)"]', '테스트유저');
+  await page.getByRole('button', { name: '다음' }).click();
+  await expect(page).toHaveURL('/registerAge');
+
+  // 나이 선택 → /registerAge/registerGender
+  await page.getByRole('button', { name: '20대' }).click();
+  await page.getByRole('button', { name: '다음' }).click();
+  await expect(page).toHaveURL('/registerAge/registerGender');
+
+  // 성별 선택 → /registerTripStyle (남자/여자는 div 클릭 구조)
+  await page.getByText('남자').click();
+  await page.getByRole('button', { name: '다음' }).click();
+  await expect(page).toHaveURL('/registerTripStyle');
+
+  // 여행 스타일 태그 1개 선택 후 완료 → /registerDone
+  await page.getByRole('button', { name: '🇰🇷 국내' }).click();
+  await page.getByRole('button', { name: '다음' }).click();
+  await expect(page).toHaveURL('/registerDone');
 };
 
 // ────────────────────────────────────────────────────────────
@@ -151,6 +190,11 @@ test.describe('로그아웃', () => {
 // ────────────────────────────────────────────────────────────
 
 test.describe('이메일 회원가입', () => {
+  // 각 테스트 전에 MSW db 리셋 — new@test.com 재사용 가능하게
+  test.beforeEach(async ({ request }) => {
+    await request.post('http://localhost:9090/api/test/reset');
+  });
+
   test.describe('Step 1: 약관 동의 및 이메일 입력 (RegisterEmail)', () => {
     test('약관 동의 화면이 처음에 표시된다', async ({ page }) => {
       await page.goto('/registerEmail');
@@ -245,6 +289,14 @@ test.describe('이메일 회원가입', () => {
     test('email/password 없이 직접 접근 시 이메일 등록 페이지로 리다이렉트된다', async ({ page }) => {
       await page.goto('/registerName');
       await expect(page).toHaveURL('/registerEmail');
+    });
+  });
+
+  test.describe('전체 플로우 — RegisterDone 자동 로그인', () => {
+    test('회원가입 완료 후 로그인 페이지가 아닌 홈(/)으로 이동한다', async ({ page }) => {
+      await goToRegisterDone(page);
+      // RegisterDone: 2초 후 router.replace("/") 동작 확인
+      await expect(page).toHaveURL('/', { timeout: 5000 });
     });
   });
 });
