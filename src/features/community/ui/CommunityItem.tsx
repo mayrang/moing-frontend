@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import SearchFilterTag from '@/shared/ui/tag/SearchFilterTag';
+import BoxLayoutTag from '@/shared/ui/tag/BoxLayoutTag';
 import EmptyHeartIcon from '@/shared/ui/icons/EmptyHeartIcon';
 import CommentIcon from '@/components/icons/CommentIcon';
 import { ICommunityItem } from '@/model/community';
@@ -12,20 +12,7 @@ const CommunityItem = ({ data }: { data: ICommunityItem }) => {
       <div className="flex items-center gap-[26px]">
         <div className="flex-1 flex flex-col overflow-hidden justify-center gap-2">
           <div>
-            <SearchFilterTag
-              text={data.categoryName}
-              idx={0}
-              addStyle={{
-                backgroundColor: 'var(--color-muted4)',
-                color: 'var(--color-text-muted)',
-                border: 'none',
-                borderRadius: '20px',
-                fontSize: '12px',
-                lineHeight: '14px',
-                padding: '4px 10px',
-                fontWeight: '400',
-              }}
-            />
+            <BoxLayoutTag text={data.categoryName} />
           </div>
           <div className="text-base font-semibold pl-1 leading-[19.09px]">{data.title}</div>
           <div className="text-sm font-normal pl-1 leading-[16.71px] whitespace-nowrap overflow-hidden text-ellipsis text-[var(--color-text-muted)]">

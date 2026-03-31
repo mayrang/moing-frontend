@@ -43,7 +43,7 @@ const TripRecommendation = () => {
                 style={
                   (idx + 1) % 3 === 0 || cutTrips.length === idx + 1
                     ? { borderBottom: 0 }
-                    : { borderBottom: "1px solid" }
+                    : { borderBottomWidth: "1px", borderBottomStyle: "solid" }
                 }
               >
                 <div onClick={() => clickTrip(post.travelNumber)}>
@@ -58,7 +58,7 @@ const TripRecommendation = () => {
                     daysAgo={daysAgo(post?.createdAt)}
                     daysLeft={dayjs(post.registerDue, "YYYY-MM-DD").diff(
                       dayjs().startOf("day"),
-                      "day"
+                      "day",
                     )}
                     title={post.title}
                     recruits={post.nowPerson}

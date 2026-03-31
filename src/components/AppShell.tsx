@@ -40,21 +40,23 @@ const AppShell = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (!isLoading && myPageData) {
-      addName(myPageData.name);
-      addAgegroup(myPageData.ageGroup);
-      addEmail(myPageData.email);
-      addPreferredTags(myPageData.preferredTags);
-      addGender(myPageData.gender);
+      // 콜드스타트 후 서버 데이터가 비어있으면 localStorage persist 값 유지
+      if (myPageData.name) addName(myPageData.name);
+      if (myPageData.ageGroup) addAgegroup(myPageData.ageGroup);
+      if (myPageData.email) addEmail(myPageData.email);
+      if (myPageData.gender) addGender(myPageData.gender);
       addUserSocialTF(myPageData.userSocialTF);
       addTravelDistance(myPageData.travelDistance);
       addTravelBadgeCount(myPageData.travelBadgeCount);
       addVisitedCountryCount(myPageData.visitedCountryCount);
-      const tags: string[] = [];
-      for (const tag of myPageData.preferredTags) {
-        const text = tag.split(" ");
-        tags.push(text[text.length - 1]);
+      if (myPageData.preferredTags?.length > 0) {
+        const tags: string[] = [];
+        for (const tag of myPageData.preferredTags) {
+          const text = tag.split(" ");
+          tags.push(text[text.length - 1]);
+        }
+        addPreferredTags(tags);
       }
-      addPreferredTags(tags);
     }
     if (!isLoadingImage && profileImg) {
       addProfileUrl(profileImg.url);
@@ -110,8 +112,8 @@ const AppShell = ({ children }: { children: React.ReactNode }) => {
     <div
       className="overflow-x-hidden flex justify-center items-center"
       style={{
-        height: pathname !== "/" ? "100svh" : "auto",
-        width: pathname !== "/" ? "100svw" : "auto",
+        height: "100svh",
+        width: "100svw",
       }}
     >
       <Splash />

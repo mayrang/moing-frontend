@@ -50,12 +50,12 @@ const RegisterEmail = () => {
     formState: { errors, isValid },
   } = useForm<RegisterEmailFormData>({
     resolver: zodResolver(registerEmailSchema),
-    mode: 'onChange',
+    mode: "onChange",
     // localStorage 임시 저장 이메일 복구 (Zustand store → localStorage 순으로 우선)
-    defaultValues: { email: email || registerDraft.load() || '' },
+    defaultValues: { email: email || registerDraft.load() || "" },
   });
 
-  const emailValue = watch('email');
+  const emailValue = watch("email");
 
   // 이메일 입력 중 localStorage에 임시 저장 (1시간 TTL)
   useEffect(() => {
@@ -66,7 +66,7 @@ const RegisterEmail = () => {
     const sanitized = sanitizeFormData(data);
     const checkingEmail = await checkEmail(sanitized.email);
     if (!checkingEmail) {
-      setError('email', { message: '이미 사용중인 이메일입니다.' });
+      setError("email", { message: "이미 사용중인 이메일입니다." });
       return;
     }
     addEmail(sanitized.email);
@@ -79,14 +79,16 @@ const RegisterEmail = () => {
       <form className="px-6 pt-[30px]" onSubmit={handleSubmit(onSubmit)}>
         <div className="flex w-full flex-col">
           <label
-            className="text-2xl leading-[34px] font-semibold px-[6px] tracking-[-0.04em]"
+            className="text-2xl leading-[34px]  font-semibold px-[6px] tracking-[-0.04em]"
             htmlFor="email"
           >
             이메일 주소를 입력해주세요
           </label>
           <Spacing size={16} />
           <ValidationInputField
-            handleRemoveValue={() => setValue('email', '', { shouldValidate: true })}
+            handleRemoveValue={() =>
+              setValue("email", "", { shouldValidate: true })
+            }
             type="email"
             value={emailValue}
             hasError={!!errors.email}
@@ -94,7 +96,7 @@ const RegisterEmail = () => {
             placeholder="이메일 입력"
             shake={!!errors.email}
             message={errors.email?.message ?? ""}
-            {...register('email')}
+            {...register("email")}
           />
         </div>
 

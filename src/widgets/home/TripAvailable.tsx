@@ -42,11 +42,14 @@ const TripAvailable = () => {
             return (
               <div key={post.travelNumber}>
                 <div
-                  className="border-[var(--color-muted4)] h-[90px] box-content mx-4 py-[10px]"
+                  className=" h-[90px] box-content mx-4 py-[10px] border-amber-50"
                   style={
                     (idx + 1) % 3 === 0 || cutTrips.length === idx + 1
                       ? { borderBottom: 0 }
-                      : { borderBottom: "1px solid" }
+                      : {
+                          borderBottomWidth: "1px",
+                          borderBottomStyle: "solid",
+                        }
                   }
                 >
                   <div onClick={() => clickTrip(post.travelNumber)}>
@@ -61,7 +64,7 @@ const TripAvailable = () => {
                       daysAgo={daysAgo(post?.createdAt)}
                       daysLeft={dayjs(post.registerDue, "YYYY-MM-DD").diff(
                         dayjs().startOf("day"),
-                        "day"
+                        "day",
                       )}
                       title={post.title}
                       recruits={post.nowPerson}

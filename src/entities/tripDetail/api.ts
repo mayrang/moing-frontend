@@ -1,13 +1,19 @@
-import { axiosInstance, handleApiResponse } from '@/shared/api';
-import RequestError from '@/context/ReqeustError';
-import { getJWTHeader } from '@/utils/user';
-import { UpdateTripReqData } from '@/entities/trip';
+import { axiosInstance, handleApiResponse } from "@/shared/api";
+import RequestError from "@/context/ReqeustError";
+import { getJWTHeader } from "@/utils/user";
+import { UpdateTripReqData } from "@/entities/trip";
 
-export async function getTripDetail(travelNumber: number, accessToken: string | null) {
+export async function getTripDetail(
+  travelNumber: number,
+  accessToken: string | null,
+) {
   try {
-    const response = await axiosInstance.get(`/api/travel/detail/${travelNumber}`, {
-      ...(accessToken && { headers: getJWTHeader(accessToken) }),
-    });
+    const response = await axiosInstance.get(
+      `/api/travel/detail/${travelNumber}`,
+      {
+        ...(accessToken && { headers: getJWTHeader(accessToken) }),
+      },
+    );
     return handleApiResponse(response);
   } catch (err: any) {
     throw new RequestError(err);
@@ -15,11 +21,17 @@ export async function getTripDetail(travelNumber: number, accessToken: string | 
 }
 
 // 현재 신청한 사람 수 조회
-export async function getTripEnrollmentCount(travelNumber: number, accessToken: string | null) {
+export async function getTripEnrollmentCount(
+  travelNumber: number,
+  accessToken: string | null,
+) {
   try {
-    const response = await axiosInstance.get(`/api/travel/${travelNumber}/enrollmentCount`, {
-      ...(accessToken && { headers: getJWTHeader(accessToken) }),
-    });
+    const response = await axiosInstance.get(
+      `/api/travel/${travelNumber}/enrollmentCount`,
+      {
+        ...(accessToken && { headers: getJWTHeader(accessToken) }),
+      },
+    );
     return handleApiResponse(response);
   } catch (err: any) {
     throw new RequestError(err);
@@ -27,11 +39,17 @@ export async function getTripEnrollmentCount(travelNumber: number, accessToken: 
 }
 
 // 모집한 인원 목록 조회
-export async function getCompanions(travelNumber: number, accessToken: string | null) {
+export async function getCompanions(
+  travelNumber: number,
+  accessToken: string | null,
+) {
   try {
-    const response = await axiosInstance.get(`/api/travel/${travelNumber}/companions`, {
-      ...(accessToken && { headers: getJWTHeader(accessToken) }),
-    });
+    const response = await axiosInstance.get(
+      `/api/travel/${travelNumber}/companions`,
+      {
+        ...(accessToken && { headers: getJWTHeader(accessToken) }),
+      },
+    );
     return handleApiResponse(response);
   } catch (err: any) {
     throw new RequestError(err);
@@ -41,22 +59,29 @@ export async function getCompanions(travelNumber: number, accessToken: string | 
 export async function updateTripDetail(
   travelNumber: number,
   data: UpdateTripReqData,
-  accessToken: string | null
+  accessToken: string | null,
 ) {
   try {
-    if (!accessToken) throw new Error('로그인을 해주세요.');
-    const response = await axiosInstance.put(`/api/travel/${travelNumber}`, data, {
-      headers: getJWTHeader(accessToken),
-    });
+    if (!accessToken) throw new Error("로그인을 해주세요.");
+    const response = await axiosInstance.put(
+      `/api/travel/${travelNumber}`,
+      data,
+      {
+        headers: getJWTHeader(accessToken),
+      },
+    );
     return handleApiResponse(response);
   } catch (err: any) {
     throw new RequestError(err);
   }
 }
 
-export async function deleteTripDetail(travelNumber: number, accessToken: string | null) {
+export async function deleteTripDetail(
+  travelNumber: number,
+  accessToken: string | null,
+) {
   try {
-    if (!accessToken) throw new Error('로그인을 해주세요.');
+    if (!accessToken) throw new Error("로그인을 해주세요.");
     const response = await axiosInstance.delete(`/api/travel/${travelNumber}`, {
       headers: getJWTHeader(accessToken),
     });

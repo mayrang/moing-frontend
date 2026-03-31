@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 interface TripToastProps {
@@ -26,8 +26,10 @@ export default function TripToast({
   bottom = '120px',
   height = 36,
 }: TripToastProps) {
-  const portalTarget =
-    typeof document !== 'undefined' ? document.getElementById('trip-toast') : null;
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
+  const portalTarget = mounted ? document.getElementById('trip-toast') : null;
   if (!portalTarget) return null;
 
   return createPortal(

@@ -1,15 +1,15 @@
-'use client';
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import Spacing from '@/shared/ui/layout/Spacing';
-import { Button } from '@/shared/ui';
-import { InfoText } from '@/shared/ui';
-import useAuth from '../hooks/useAuth';
-import { StateInputField } from '@/shared/ui';
-import Link from 'next/link';
-import { zodResolver } from '@/shared/lib/zodResolver';
-import { sanitizeFormData } from '@/shared/lib/sanitize';
-import { loginSchema, LoginFormData } from '@/utils/schema';
+"use client";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import Spacing from "@/shared/ui/layout/Spacing";
+import { Button } from "@/shared/ui";
+import { InfoText } from "@/shared/ui";
+import useAuth from "../hooks/useAuth";
+import { StateInputField } from "@/shared/ui";
+import Link from "next/link";
+import { zodResolver } from "@/shared/lib/zodResolver";
+import { sanitizeFormData } from "@/shared/lib/sanitize";
+import { loginSchema, LoginFormData } from "@/utils/schema";
 
 const EmailLoginForm = () => {
   const {
@@ -28,12 +28,12 @@ const EmailLoginForm = () => {
     formState: { errors, isValid },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    mode: 'onChange',
-    defaultValues: { email: '', password: '' },
+    mode: "onChange",
+    defaultValues: { email: "", password: "" },
   });
 
-  const emailValue = watch('email');
-  const passwordValue = watch('password');
+  const emailValue = watch("email");
+  const passwordValue = watch("password");
 
   useEffect(() => {
     if (isSuccess) reset();
@@ -41,12 +41,12 @@ const EmailLoginForm = () => {
 
   useEffect(() => {
     if (!isPending && isError) {
-      setError('root', { message: '로그인 정보를 다시 확인해주세요.' });
+      setError("root", { message: "로그인 정보를 다시 확인해주세요." });
     }
   }, [isError, isPending, setError]);
 
   const onSubmit = (data: LoginFormData) => {
-    clearErrors('root');
+    clearErrors("root");
     loginEmail(sanitizeFormData(data));
   };
 
@@ -56,7 +56,9 @@ const EmailLoginForm = () => {
       onSubmit={handleSubmit(onSubmit)}
     >
       <StateInputField
-        handleRemoveValue={() => setValue('email', '', { shouldValidate: true })}
+        handleRemoveValue={() =>
+          setValue("email", "", { shouldValidate: true })
+        }
         type="email"
         value={emailValue}
         placeholder="이메일 아이디"
@@ -65,22 +67,27 @@ const EmailLoginForm = () => {
         hasError={!!errors.email && (emailValue?.length ?? 0) > 0}
         success={!errors.email && (emailValue?.length ?? 0) > 0}
         showSuccessIcon={false}
-        {...register('email')}
+        {...register("email")}
       />
-      {errors.email && (emailValue?.length ?? 0) > 0 && (
+      <Spacing size={8} />
+      {errors.email && (emailValue?.length ?? 0) > 0 ? (
         <InfoText hasError>{errors.email.message}</InfoText>
+      ) : (
+        <Spacing size={16} />
       )}
-      <Spacing size={16} />
+      <Spacing size={8} />
       <StateInputField
         showSuccessIcon={false}
-        handleRemoveValue={() => setValue('password', '', { shouldValidate: true })}
+        handleRemoveValue={() =>
+          setValue("password", "", { shouldValidate: true })
+        }
         type="password"
         height={54}
         showIcon={true}
         value={passwordValue}
         placeholder="패스워드"
         success={false}
-        {...register('password')}
+        {...register("password")}
       />
       <Spacing size={14} />
       {errors.root ? (
@@ -93,7 +100,7 @@ const EmailLoginForm = () => {
       <Spacing size={24} />
       <div className="flex justify-center gap-[6px] items-center">
         <span className="text-[var(--color-text-muted)]">처음 오셨나요?</span>
-        <Link href="/registerEmail" style={{ textDecoration: 'underline' }}>
+        <Link href="/registerEmail" style={{ textDecoration: "underline" }}>
           회원가입
         </Link>
       </div>
@@ -106,9 +113,9 @@ const EmailLoginForm = () => {
           isValid
             ? undefined
             : {
-                backgroundColor: 'rgba(220, 220, 220, 1)',
-                color: 'rgba(132, 132, 132, 1)',
-                boxShadow: '-2px 4px 5px 0px rgba(170, 170, 170, 0.1)',
+                backgroundColor: "rgba(220, 220, 220, 1)",
+                color: "rgba(132, 132, 132, 1)",
+                boxShadow: "-2px 4px 5px 0px rgba(170, 170, 170, 0.1)",
               }
         }
       />

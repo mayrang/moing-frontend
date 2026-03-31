@@ -1,6 +1,6 @@
-'use client';
-import React from 'react';
-import SearchFilterTag from '@/shared/ui/tag/SearchFilterTag';
+"use client";
+import React from "react";
+import SearchFilterTag from "@/shared/ui/tag/SearchFilterTag";
 
 interface CategoryListProps {
   list: string[];
@@ -13,7 +13,6 @@ const CategoryList = ({ list, type, setType }: CategoryListProps) => {
     <div className="flex items-center gap-2 justify-around">
       {list.map((keyword, idx) => (
         <SearchFilterTag
-          style={{ cursor: 'pointer' }}
           idx={idx}
           active={keyword === type}
           text={keyword}

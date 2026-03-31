@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 interface BaseToastProps {
@@ -34,14 +34,16 @@ export default function BaseToast({
   zIndex = 4000,
   bgColor = 'rgba(62, 141, 0, 1)', // palette.keycolor
 }: BaseToastProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
   useEffect(() => {
     if (!isShow) return;
     const timer = setTimeout(() => setIsShow(false), 1500);
     return () => clearTimeout(timer);
   }, [isShow]);
 
-  const portalTarget =
-    typeof document !== 'undefined' ? document.getElementById(portalId) : null;
+  const portalTarget = mounted ? document.getElementById(portalId) : null;
   if (!portalTarget) return null;
 
   return createPortal(

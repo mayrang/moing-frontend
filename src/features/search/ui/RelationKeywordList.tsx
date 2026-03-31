@@ -23,7 +23,7 @@ const RelationKeywordList = ({
   return (
     <div>
       {data &&
-        data.suggestions.length > 0 &&
+        data?.suggestions?.length > 0 &&
         data?.suggestions?.map((data) => (
           <button
             type="button"
