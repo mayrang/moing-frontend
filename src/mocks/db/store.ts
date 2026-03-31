@@ -80,7 +80,9 @@ export interface CommunityPost {
   categoryName: string;
   viewCount: number;
   likeCount: number;
+  likedBy: number[];   // 좋아요 누른 userNumber 목록
   commentCount: number;
+  deleted: boolean;    // 소프트 딜리트
   createdAt: string;
   images: string[];
 }
@@ -218,77 +220,135 @@ export const db = {
 // ── Seed Data ──────────────────────────────────────────────────────────────
 
 function seedDatabase() {
-  // 기본 유저 (테스트용)
-  const testUser: User = {
-    userNumber: 1,
-    email: 'test@test.com',
+  const now = new Date();
+  const daysAgo = (n: number) => new Date(now.getTime() - n * 86400000).toISOString();
 
-    password: 'Password123!',
-    name: '테스트유저',
-    ageGroup: '20대',
-    gender: 'M',
-    preferredTags: ['국내', '단기', '액티비티'],
-    introduction: '안녕하세요!',
-    profileImageUrl: null,
-    status: 'ABLE',
-    socialLogin: null,
-    socialLoginId: null,
-    createdAt: new Date().toISOString(),
-  };
-  db.users.set(1, testUser);
+  // ── 유저 ──────────────────────────────────────────────────────────────────
 
-  // 중복 이메일 테스트용 유저
-  const duplicateUser: User = {
-    userNumber: 2,
-    email: 'duplicate@test.com',
-    password: 'Password123!',
-    name: '중복유저',
-    ageGroup: '30대',
-    gender: 'F',
-    preferredTags: [],
-    introduction: '',
-    profileImageUrl: null,
-    status: 'ABLE',
-    socialLogin: null,
-    socialLoginId: null,
-    createdAt: new Date().toISOString(),
-  };
-  db.users.set(2, duplicateUser);
+  const users: User[] = [
+    {
+      userNumber: 1, email: 'test@test.com', password: 'Password123!',
+      name: '김여행', ageGroup: '20대', gender: 'M',
+      preferredTags: ['국내', '단기', '액티비티'],
+      introduction: '여행을 사랑하는 20대입니다. 같이 떠나요!',
+      profileImageUrl: 'https://placehold.co/100x100/8B9CF7/ffffff?text=김',
+      status: 'ABLE', socialLogin: null, socialLoginId: null, createdAt: daysAgo(30),
+    },
+    {
+      userNumber: 2, email: 'duplicate@test.com', password: 'Password123!',
+      name: '이탐험', ageGroup: '30대', gender: 'F',
+      preferredTags: ['해외', '장기', '문화'],
+      introduction: '세계 여행이 꿈입니다.',
+      profileImageUrl: 'https://placehold.co/100x100/F7A28B/ffffff?text=이',
+      status: 'ABLE', socialLogin: null, socialLoginId: null, createdAt: daysAgo(20),
+    },
+    {
+      userNumber: 3, email: 'alice@test.com', password: 'Password123!',
+      name: '박모험', ageGroup: '20대', gender: 'F',
+      preferredTags: ['국내', '자연', '힐링'],
+      introduction: '자연 속에서 힐링하는 걸 좋아해요.',
+      profileImageUrl: 'https://placehold.co/100x100/8BF7C0/ffffff?text=박',
+      status: 'ABLE', socialLogin: null, socialLoginId: null, createdAt: daysAgo(15),
+    },
+  ];
+  users.forEach((u) => db.users.set(u.userNumber, u));
 
-  // 샘플 여행
-  const sampleTrip: Trip = {
-    travelNumber: 1,
-    userNumber: 1,
-    title: '제주도 3박4일 같이 가요!',
-    details: '제주도 여행 동행 구합니다. 20대 위주로 모집합니다.',
-    locationName: '제주도',
-    startDate: '2026-04-01',
-    endDate: '2026-04-04',
-    maxPerson: 4,
-    genderType: 'ANY',
-    periodType: 'SHORT',
-    status: 'IN_PROGRESS',
-    tags: ['국내', '단기', '여유'],
-    viewCount: 12,
-    createdAt: new Date().toISOString(),
-  };
-  db.trips.set(1, sampleTrip);
+  // ── 여행 ──────────────────────────────────────────────────────────────────
 
-  // 샘플 커뮤니티 게시글
-  const samplePost: CommunityPost = {
-    communityNumber: 1,
-    userNumber: 1,
-    title: '제주도 맛집 추천해주세요',
-    content: '4월에 제주도 여행 가는데 맛집 추천 부탁드립니다!',
-    categoryNumber: 1,
-    categoryName: '여행 정보',
-    viewCount: 5,
-    likeCount: 2,
-    commentCount: 0,
-    createdAt: new Date().toISOString(),
-    images: [],
-  };
-  db.communityPosts.set(1, samplePost);
+  const trips: Trip[] = [
+    {
+      travelNumber: 1, userNumber: 1,
+      title: '제주도 3박4일 같이 가요!',
+      details: '제주도 여행 동행 구합니다. 한라산 등반 + 해변 투어 계획입니다. 20대 위주로 모집해요.',
+      locationName: '제주도', startDate: '2026-05-01', endDate: '2026-05-04',
+      maxPerson: 4, genderType: 'ANY', periodType: 'SHORT', status: 'IN_PROGRESS',
+      tags: ['국내', '단기', '액티비티', '자연'], viewCount: 42, createdAt: daysAgo(3),
+    },
+    {
+      travelNumber: 2, userNumber: 2,
+      title: '도쿄 일주일 여행 파티원 구해요',
+      details: '도쿄 7박8일 일정입니다. 아키하바라, 시부야, 신주쿠 위주로 돌 예정입니다.',
+      locationName: '도쿄', startDate: '2026-05-10', endDate: '2026-05-17',
+      maxPerson: 3, genderType: 'ANY', periodType: 'LONG', status: 'IN_PROGRESS',
+      tags: ['해외', '일본', '도시', '쇼핑'], viewCount: 87, createdAt: daysAgo(5),
+    },
+    {
+      travelNumber: 3, userNumber: 3,
+      title: '부산 1박2일 당일치기 하실 분',
+      details: '주말 부산 단기 여행입니다. 해운대, 광안리, 국제시장 코스로 갑니다.',
+      locationName: '부산', startDate: '2026-04-26', endDate: '2026-04-27',
+      maxPerson: 4, genderType: 'FEMALE', periodType: 'SHORT', status: 'IN_PROGRESS',
+      tags: ['국내', '단기', '맛집', '바다'], viewCount: 31, createdAt: daysAgo(2),
+    },
+    {
+      travelNumber: 4, userNumber: 1,
+      title: '유럽 배낭여행 2주 같이해요',
+      details: '프랑스, 이탈리아, 스페인 2주 배낭여행. 유럽 여행 경험자 우대합니다.',
+      locationName: '유럽', startDate: '2026-06-01', endDate: '2026-06-15',
+      maxPerson: 2, genderType: 'ANY', periodType: 'LONG', status: 'IN_PROGRESS',
+      tags: ['해외', '유럽', '배낭', '장기'], viewCount: 56, createdAt: daysAgo(7),
+    },
+    {
+      travelNumber: 5, userNumber: 2,
+      title: '강릉 바다 힐링 여행',
+      details: '강릉 카페거리, 정동진 일출, 경포대 해변을 즐기는 힐링 여행입니다.',
+      locationName: '강릉', startDate: '2026-04-28', endDate: '2026-04-30',
+      maxPerson: 3, genderType: 'ANY', periodType: 'SHORT', status: 'IN_PROGRESS',
+      tags: ['국내', '바다', '힐링', '카페'], viewCount: 24, createdAt: daysAgo(1),
+    },
+  ];
+  trips.forEach((t) => db.trips.set(t.travelNumber, t));
+
+  // ── 커뮤니티 ──────────────────────────────────────────────────────────────
+
+  const posts: CommunityPost[] = [
+    {
+      communityNumber: 1, userNumber: 1,
+      title: '제주도 맛집 추천해주세요',
+      content: '5월에 제주도 여행 가는데 꼭 가봐야 할 맛집 추천 부탁드립니다! 흑돼지 외에도 다양하게 알려주세요.',
+      categoryNumber: 1, categoryName: '여행 정보',
+      viewCount: 28, likeCount: 5, likedBy: [2, 3], commentCount: 2,
+      deleted: false, createdAt: daysAgo(2), images: [],
+    },
+    {
+      communityNumber: 2, userNumber: 2,
+      title: '도쿄 교통패스 스이카 vs 파스모 뭐가 나을까요?',
+      content: '첫 도쿄 여행인데 교통카드 어떤 걸 써야 할지 모르겠어요. 사용해보신 분들 조언 부탁드려요!',
+      categoryNumber: 1, categoryName: '여행 정보',
+      viewCount: 45, likeCount: 8, likedBy: [1, 3], commentCount: 3,
+      deleted: false, createdAt: daysAgo(4), images: [],
+    },
+    {
+      communityNumber: 3, userNumber: 3,
+      title: '혼자 여행 vs 동행 여행 어떤게 더 좋으세요?',
+      content: '여행 스타일에 대해 이야기 나눠봐요. 저는 혼자 여행도 좋지만 같이 가면 더 즐거운 것 같아요.',
+      categoryNumber: 2, categoryName: '자유게시판',
+      viewCount: 62, likeCount: 12, likedBy: [1, 2], commentCount: 5,
+      deleted: false, createdAt: daysAgo(6), images: [],
+    },
+  ];
+  posts.forEach((p) => db.communityPosts.set(p.communityNumber, p));
+
+  // ── 댓글 ──────────────────────────────────────────────────────────────────
+
+  const comments: Comment[] = [
+    {
+      commentNumber: 1, relatedType: 'COMMUNITY', relatedNumber: 1,
+      userNumber: 2, content: '흑돼지거리 꼭 가보세요! 이호테우해변 근처 고기집도 맛있어요.',
+      parentNumber: null, likeCount: 2, createdAt: daysAgo(1),
+    },
+    {
+      commentNumber: 2, relatedType: 'COMMUNITY', relatedNumber: 1,
+      userNumber: 3, content: '성산일출봉 근처 해녀촌 전복죽도 꼭 드셔보세요!',
+      parentNumber: null, likeCount: 1, createdAt: daysAgo(1),
+    },
+    {
+      commentNumber: 3, relatedType: 'COMMUNITY', relatedNumber: 2,
+      userNumber: 1, content: '스이카 추천합니다! JR 포함해서 어디든 쓸 수 있어요.',
+      parentNumber: null, likeCount: 3, createdAt: daysAgo(3),
+    },
+  ];
+  comments.forEach((c) => db.comments.set(c.commentNumber, c));
 }
 
 seedDatabase();
