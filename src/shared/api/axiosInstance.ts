@@ -26,28 +26,34 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // 로그인 엔드포인트의 401은 "잘못된 자격증명" — 토큰 갱신 불필요
+    // 로그인 / 토큰 갱신 엔드포인트의 401은 재시도 불필요
     const isLoginEndpoint = originalRequest?.url?.includes('/api/login');
+    const isRefreshEndpoint = originalRequest?.url?.includes('/api/token/refresh');
     // HTML 응답(Vercel Deployment Protection 등)은 리프레시 루프 진입 금지
     const isHtmlResponse = typeof error.response?.data === 'string' && error.response.data.includes('<!doctype html');
-    if ((error.response?.status === 401 || error.response?.status === 403) && !isLoginEndpoint && !isHtmlResponse) {
+    if (
+      (error.response?.status === 401 || error.response?.status === 403) &&
+      !isLoginEndpoint &&
+      !isRefreshEndpoint &&
+      !isHtmlResponse
+    ) {
       retryCount += 1;
 
       if (retryCount > MAX_RETRY_COUNT) {
-        console.error('Max retry attempts reached. Throwing error.');
+        retryCount = 0;
         throw new Error('Authentication failed after multiple attempts.');
       }
 
       try {
         const refreshResponse = await axiosInstance.post('/api/token/refresh', {});
         const newAccessToken = refreshResponse.data.success.accessToken;
-
+        retryCount = 0;
         return axiosInstance({
           ...originalRequest,
           headers: getJWTHeader(newAccessToken),
         });
       } catch (refreshError) {
-        console.error('Token refresh failed:', refreshError);
+        retryCount = 0;
         throw refreshError;
       }
     }
