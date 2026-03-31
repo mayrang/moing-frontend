@@ -1,5 +1,6 @@
 "use client";
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface IAuthStore {
   userId: number | null;
@@ -14,15 +15,15 @@ interface IAuthStore {
 }
 
 // userId와 accessToken을 전역 상태로 관리하는 역할
-export const authStore = create<IAuthStore>((set) => ({
+export const authStore = create<IAuthStore>()(persist((set) => ({
   userId: null,
   isGuestUser: false,
   accessToken: null,
   setLoginData: ({ userId, accessToken }) => {
-    set((state) => ({ userId, accessToken, isGuestUser: false }));
+    set(() => ({ userId, accessToken, isGuestUser: false }));
   },
   clearLoginData: () => {
-    set((state) => ({ userId: null, accessToken: null, isGuestUser: true }));
+    set(() => ({ userId: null, accessToken: null, isGuestUser: true }));
   },
   setIsGuestUser: (isGuestUser) => {
     set({ isGuestUser });
@@ -34,4 +35,11 @@ export const authStore = create<IAuthStore>((set) => ({
   resetData: () => {
     set({ userId: null, accessToken: null, isGuestUser: true });
   },
+}), {
+  name: 'moing-auth',
+  partialize: (state) => ({
+    userId: state.userId,
+    accessToken: state.accessToken,
+    isGuestUser: state.isGuestUser,
+  }),
 }));
