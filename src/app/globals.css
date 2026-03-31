@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap");
 
 /* Tailwind v4 테마 - palette.ts 기반 */
 @theme {
@@ -29,9 +31,6 @@
   --color-error-variant: #FFF7F7;
   --color-error-border: #ED1E1E;
 }
-
-@import url("https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap");
 
 html {
   overscroll-behavior: none;
@@ -367,4 +366,38 @@ body {
   ::view-transition-new(back) {
     animation: none;
   }
+}
+
+/* ThreeRowCarousel — react-slick 커스텀 dots */
+.dots-custom {
+  position: relative;
+  margin-top: 24px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+}
+
+.dots-custom li button {
+  font-size: 0;
+  line-height: 0;
+  display: block;
+  padding: 5px;
+  cursor: pointer;
+  color: transparent;
+  border: 0;
+  outline: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #e3e3e3;
+}
+
+.dots-custom li.slick-active button {
+  width: 24px;
+  border-radius: 30px;
+  background-color: var(--color-keycolor);
+  transition: width 0.3s ease;
 }

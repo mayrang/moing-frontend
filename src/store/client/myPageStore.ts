@@ -1,5 +1,6 @@
 "use client";
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface myPageStoreState {
   email: string;
@@ -35,7 +36,7 @@ interface myPageStoreState {
   addTravelBadgeCount: (travelBadgeCount: number) => void;
 }
 
-export const myPageStore = create<myPageStoreState>((set) => ({
+export const myPageStore = create<myPageStoreState>()(persist((set) => ({
   name: "",
   addName: (name) => {
     set((state) => ({ name: name }));
@@ -96,4 +97,16 @@ export const myPageStore = create<myPageStoreState>((set) => ({
   addTravelBadgeCount: (travelBadgeCount) => {
     set((state) => ({ travelBadgeCount }));
   },
+}), {
+  name: 'moing-mypage',
+  // 핵심 프로필 필드만 persist (UI 업데이트 플래그 제외)
+  partialize: (state) => ({
+    name: state.name,
+    email: state.email,
+    profileUrl: state.profileUrl,
+    gender: state.gender,
+    agegroup: state.agegroup,
+    proIntroduce: state.proIntroduce,
+    preferredTags: state.preferredTags,
+  }),
 }));

@@ -8,12 +8,11 @@ import dynamic from "next/dynamic";
 const AppShell = dynamic(() => import("./AppShell"), { ssr: false });
 
 // auth 플로우 전용 경로: AppShell(useMyPage, Navbar 등) 마운트 없이 children만 렌더링
+// /login 만 해당 — register/verifyEmail 등은 AppShell의 Header(뒤로가기) 필요
 const isAuthRoute = (pathname: string | null): boolean => {
   if (!pathname) return false;
   return (
     pathname.startsWith("/login") ||
-    pathname.startsWith("/register") ||
-    pathname === "/verifyEmail" ||
     pathname === "/onBoarding" ||
     pathname === "/explanation"
   );

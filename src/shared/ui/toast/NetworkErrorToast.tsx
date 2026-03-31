@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { errorToastStore } from '@/shared/lib/errors/errorToastStore';
 
@@ -14,10 +14,12 @@ import { errorToastStore } from '@/shared/lib/errors/errorToastStore';
  */
 export default function NetworkErrorToast() {
   const { message, onRetry, dismiss } = errorToastStore();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   const isShow = !!message;
-  const portalTarget =
-    typeof document !== 'undefined' ? document.getElementById('result-toast') : null;
+  const portalTarget = mounted ? document.getElementById('result-toast') : null;
   if (!portalTarget) return null;
 
   return createPortal(

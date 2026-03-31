@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import ModalDimmed from './ModalDimmed';
 
@@ -41,6 +41,8 @@ export default function BaseModal({
 }: BaseModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   // Escape 닫기 + focus trap
   useEffect(() => {
@@ -84,8 +86,7 @@ export default function BaseModal({
     };
   }, [isOpen, onClose]);
 
-  const portalTarget =
-    typeof document !== 'undefined' ? document.getElementById(portalId) : null;
+  const portalTarget = mounted ? document.getElementById(portalId) : null;
   if (!portalTarget || !isOpen) return null;
 
   return createPortal(
