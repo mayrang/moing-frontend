@@ -154,12 +154,54 @@ export const db = {
 
   getUserByToken: (accessToken: string): User | undefined => {
     const session = db.sessions.get(accessToken);
-    if (!session) return undefined;
-    if (Date.now() > session.expiresAt) {
-      db.sessions.delete(accessToken);
-      return undefined;
+    if (session) {
+      if (Date.now() > session.expiresAt) {
+        db.sessions.delete(accessToken);
+        // 만료됐어도 데모 모드에서는 아래 토큰 파싱으로 fallback
+      } else {
+        return db.users.get(session.userNumber);
+      }
     }
-    return db.users.get(session.userNumber);
+
+    // 데모 모드: 콜드스타트로 세션이 날아간 경우 토큰에서 userNumber 복원
+    // 토큰 형식: access-{userNumber}-{timestamp}
+    const match = accessToken.match(/^access-(\d+)-\d+$/);
+    if (match) {
+      const userNumber = parseInt(match[1]);
+      let user = db.users.get(userNumber);
+
+      // 콜드스타트로 유저가 날아간 경우 데모 유저 복원
+      if (!user) {
+        user = {
+          userNumber,
+          email: `user${userNumber}@demo.com`,
+          password: '',
+          name: `데모유저${userNumber}`,
+          ageGroup: '20대',
+          gender: '',
+          preferredTags: [],
+          introduction: '',
+          profileImageUrl: null,
+          status: 'ABLE',
+          socialLogin: null,
+          socialLoginId: null,
+          createdAt: db.now(),
+        };
+        db.users.set(userNumber, user);
+      }
+
+      // 세션 재생성
+      const newSession: Session = {
+        userNumber,
+        accessToken,
+        refreshToken: `refresh-${userNumber}-${Date.now()}`,
+        expiresAt: Date.now() + 60 * 60 * 1000, // 1시간
+      };
+      db.sessions.set(accessToken, newSession);
+      return user;
+    }
+
+    return undefined;
   },
 
   createSession: (userNumber: number) => {

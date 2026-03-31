@@ -14,7 +14,8 @@ const nextConfig = {
   },
   async rewrites() {
     const apiBaseUrl = process.env.API_BASE_URL;
-    if (!apiBaseUrl) return [];
+    // 유효한 http(s) URL일 때만 프록시. 빈 문자열/공백/undefined는 Route Handler 사용
+    if (!apiBaseUrl || !apiBaseUrl.startsWith('http')) return [];
     return [
       {
         source: '/api/:path*',
