@@ -1,11 +1,15 @@
 import { getJWTHeader } from '@/utils/user';
 import axios from 'axios';
 
+function getBaseURL(): string {
+  if (typeof window !== 'undefined') return ''; // 클라이언트: 상대경로 사용
+  if (process.env.API_BASE_URL) return process.env.API_BASE_URL; // 명시적 백엔드 URL
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // Vercel 배포
+  return `http://localhost:${process.env.PORT ?? 3000}`; // 로컬 개발
+}
+
 export const axiosInstance = axios.create({
-  baseURL:
-    typeof window === 'undefined'
-      ? (process.env.API_BASE_URL ?? '') // 서버 사이드: 백엔드 직접 호출
-      : '', // 클라이언트 사이드: Next.js 프록시(/api/*)로 중계
+  baseURL: getBaseURL(),
   timeout: 5000,
   headers: {
     'Content-Type': 'application/json',
