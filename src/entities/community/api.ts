@@ -37,7 +37,7 @@ export async function getMyCommunities(
 
 export async function getCommunity(communityNumber: number, accessToken: string | null) {
   try {
-    const response = await axiosInstance.get(`api/community/posts/${communityNumber}`, {
+    const response = await axiosInstance.get(`/api/community/posts/${communityNumber}`, {
       ...(accessToken && { headers: getJWTHeader(accessToken) }),
     });
     return handleApiResponse(response) as Community;
@@ -116,7 +116,7 @@ export async function unlikeCommunity(communityNumber: number, accessToken: stri
 
 export async function getImages(communityNumber: number, accessToken: string | null) {
   try {
-    const response = await axiosInstance.get(`api/community/${communityNumber}/images`, {
+    const response = await axiosInstance.get(`/api/community/${communityNumber}/images`, {
       ...(accessToken && { headers: getJWTHeader(accessToken) }),
     });
     return handleApiResponse(response) as Image[];
@@ -130,7 +130,7 @@ export const uploadImage = async (file: File, accessToken: string) => {
   formData.append('file', file);
 
   try {
-    const response = await axiosInstance.post('api/community/images/temp', formData, {
+    const response = await axiosInstance.post('/api/community/images/temp', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${accessToken}`,
