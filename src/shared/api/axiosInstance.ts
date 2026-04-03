@@ -1,4 +1,5 @@
 import { getJWTHeader } from '@/utils/user';
+import { logger } from '@/shared/lib/logger';
 import axios from 'axios';
 
 function getBaseURL(): string {
@@ -41,10 +42,13 @@ axiosInstance.interceptors.response.use(
 
       if (retryCount > MAX_RETRY_COUNT) {
         retryCount = 0;
-        throw new Error('Authentication failed after multiple attempts.');
+        const authError = new Error('Authentication failed after multiple attempts.');
+        logger.error('Auth retry exhausted', authError, { url: originalRequest?.url });
+        throw authError;
       }
 
       try {
+        logger.breadcrumb('token refresh attempt', { url: originalRequest?.url, retryCount });
         const refreshResponse = await axiosInstance.post('/api/token/refresh', {});
         const newAccessToken = refreshResponse.data.success.accessToken;
         retryCount = 0;
@@ -54,6 +58,7 @@ axiosInstance.interceptors.response.use(
         });
       } catch (refreshError) {
         retryCount = 0;
+        logger.error('Token refresh failed', refreshError instanceof Error ? refreshError : new Error(String(refreshError)));
         throw refreshError;
       }
     }

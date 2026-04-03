@@ -1,5 +1,6 @@
 import { classifyError, extractErrorMessage } from './classify';
 import { errorToastStore } from './errorToastStore';
+import { logger } from '@/shared/lib/logger';
 import type { MutationPolicyOptions, PolicyMutationOptions } from './types';
 
 const RETRY_DELAYS = [1000, 2000, 4000]; // 1s → 2s → 4s
@@ -39,9 +40,17 @@ export function createMutationOptions<TData, TError = unknown, TVariables = void
 
       // business 에러 → 항상 콜백 위임 (폼 인라인 or Toast 등 caller가 결정)
       if (errorClass === 'business') {
+        logger.breadcrumb('business error', { message: extractErrorMessage(error) });
         onBusinessError?.(error as TError, variables);
         return;
       }
+
+      // system/network 에러 → Sentry에 전송
+      logger.error(
+        `[mutation] ${errorClass} error`,
+        error instanceof Error ? error : new Error(String(error)),
+        { errorClass, message: extractErrorMessage(error) },
+      );
 
       const behavior = errorClass === 'network' ? policy.network : policy.system;
 
