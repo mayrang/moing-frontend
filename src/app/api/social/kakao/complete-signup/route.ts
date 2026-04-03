@@ -20,6 +20,10 @@ export async function PUT(request: Request) {
       socialLogin: 'kakao',
       socialLoginId: 'kakao-social-id',
       createdAt: db.now(),
+      travelDistance: 0,
+      travelBadgeCount: 0,
+      visitedCountryCount: 0,
+      userSocialTF: true,
     };
     db.users.set(userNumber, newUser);
   } else {

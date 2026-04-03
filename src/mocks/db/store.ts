@@ -24,6 +24,10 @@ export interface User {
   socialLogin: null | 'google' | 'kakao' | 'naver';
   socialLoginId: string | null;
   createdAt: string;
+  travelDistance: number;
+  travelBadgeCount: number;
+  visitedCountryCount: number;
+  userSocialTF: boolean;
 }
 
 export interface Session {
@@ -186,6 +190,10 @@ export const db = {
           socialLogin: null,
           socialLoginId: null,
           createdAt: db.now(),
+          travelDistance: 0,
+          travelBadgeCount: 0,
+          visitedCountryCount: 0,
+          userSocialTF: false,
         };
         db.users.set(userNumber, user);
       }
@@ -275,6 +283,7 @@ function seedDatabase() {
       introduction: '여행을 사랑하는 20대입니다. 같이 떠나요!',
       profileImageUrl: 'https://placehold.co/100x100/8B9CF7/ffffff?text=김',
       status: 'ABLE', socialLogin: null, socialLoginId: null, createdAt: daysAgo(30),
+      travelDistance: 1240, travelBadgeCount: 3, visitedCountryCount: 5, userSocialTF: false,
     },
     {
       userNumber: 2, email: 'duplicate@test.com', password: 'Password123!',
@@ -283,6 +292,7 @@ function seedDatabase() {
       introduction: '세계 여행이 꿈입니다.',
       profileImageUrl: 'https://placehold.co/100x100/F7A28B/ffffff?text=이',
       status: 'ABLE', socialLogin: null, socialLoginId: null, createdAt: daysAgo(20),
+      travelDistance: 8500, travelBadgeCount: 7, visitedCountryCount: 12, userSocialTF: false,
     },
     {
       userNumber: 3, email: 'alice@test.com', password: 'Password123!',
@@ -291,6 +301,7 @@ function seedDatabase() {
       introduction: '자연 속에서 힐링하는 걸 좋아해요.',
       profileImageUrl: 'https://placehold.co/100x100/8BF7C0/ffffff?text=박',
       status: 'ABLE', socialLogin: null, socialLoginId: null, createdAt: daysAgo(15),
+      travelDistance: 320, travelBadgeCount: 1, visitedCountryCount: 2, userSocialTF: false,
     },
   ];
   users.forEach((u) => db.users.set(u.userNumber, u));
