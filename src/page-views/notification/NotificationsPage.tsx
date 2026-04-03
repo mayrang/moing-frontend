@@ -7,7 +7,8 @@ import { useInView } from "react-intersection-observer";
 
 const Notifications = () => {
   const [ref, inView] = useInView();
-  const { data, isLoading, refetch, fetchNextPage, hasNextPage, isFetching } = useNotification();
+  const { data, isLoading, refetch, fetchNextPage, hasNextPage, isFetching } =
+    useNotification();
   useInfiniteScroll(() => {
     if (inView) {
       !isFetching && hasNextPage && fetchNextPage();
@@ -18,7 +19,7 @@ const Notifications = () => {
     <>
       {!isLoading && data && (
         <>
-          <NotificationList data={data} />
+          {/* <NotificationList data={data} /> */}
           <div ref={ref} style={{ height: 80, backgroundColor: "#f5f5f5" }} />
         </>
       )}

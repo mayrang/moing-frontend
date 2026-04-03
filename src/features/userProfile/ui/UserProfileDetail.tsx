@@ -1,36 +1,37 @@
-'use client';
-import { myPageStore } from '@/store/client/myPageStore';
-import React from 'react';
-import useViewTransition from '@/shared/hooks/useViewTransition';
-import CloverIcon from '@/components/icons/CloverIcon';
-import RoundedImage from '@/shared/ui/profile/RoundedImage';
-import Badge from '@/shared/ui/badge/Badge';
-import { formatNumberWithComma } from '@/utils/formatNumberWithComma';
-import WarningIcon from '@/components/icons/WarningIcon';
-import { userProfileOverlayStore } from '@/store/client/userProfileOverlayStore';
-import useUserProfile from '@/features/userProfile/hooks/useUserProfile';
-import ProfileRightVectorIcon from '@/components/icons/ProfileRightVectorIcon';
-import { authStore } from '@/store/client/authStore';
-import { usePathname } from 'next/navigation';
+"use client";
+import { myPageStore } from "@/store/client/myPageStore";
+import React from "react";
+import useViewTransition from "@/shared/hooks/useViewTransition";
+import CloverIcon from "@/components/icons/CloverIcon";
+import RoundedImage from "@/shared/ui/profile/RoundedImage";
+import Badge from "@/shared/ui/badge/Badge";
+import { formatNumberWithComma } from "@/utils/formatNumberWithComma";
+import WarningIcon from "@/components/icons/WarningIcon";
+import { userProfileOverlayStore } from "@/store/client/userProfileOverlayStore";
+import useUserProfile from "@/features/userProfile/hooks/useUserProfile";
+import ProfileRightVectorIcon from "@/components/icons/ProfileRightVectorIcon";
+import { authStore } from "@/store/client/authStore";
+import { usePathname } from "next/navigation";
 
 interface UserProfileDetailProps {
   isMyPage?: boolean;
 }
 
-export default function UserProfileDetail({ isMyPage = false }: UserProfileDetailProps) {
+export default function UserProfileDetail({
+  isMyPage = false,
+}: UserProfileDetailProps) {
   const { setProfileShow, userProfileUserId } = userProfileOverlayStore();
   const { userProfileInfo } = useUserProfile();
   const navigateWithTransition = useViewTransition();
   const pathname = usePathname();
 
   if (!isMyPage && !userProfileInfo) return null;
-
   const profileData = isMyPage
     ? {
         ageGroup: myPageStore().agegroup,
         name: myPageStore().name,
         recentReportCount: 0,
-        userRegDate: '',
+        userRegDate: "",
         preferredTags: myPageStore().preferredTags,
         travelDistance: myPageStore().travelDistance,
         travelBadgeCount: myPageStore().travelBadgeCount,
@@ -64,22 +65,23 @@ export default function UserProfileDetail({ isMyPage = false }: UserProfileDetai
   const TravelMenuList = [
     {
       Icon: CloverIcon,
-      label: '방문한 국가',
+      label: "방문한 국가",
       count: visitedCountryCount,
       nextLink: `/userProfile/${isMyPage ? authStore().userId : userProfileUserId}/log`,
     },
     {
       Icon: CloverIcon,
-      label: '여행 배지',
+      label: "여행 배지",
       count: travelBadgeCount,
       nextLink: `/userProfileBadge/${isMyPage ? authStore().userId : userProfileUserId}`,
     },
   ];
 
-  const cutTags = preferredTags.length > 2 ? preferredTags.slice(0, 2) : preferredTags;
+  const cutTags =
+    preferredTags.length > 2 ? preferredTags.slice(0, 2) : preferredTags;
 
   const moveToNextLink = (link: string) => {
-    localStorage.setItem('profilePath', pathname);
+    localStorage.setItem("profilePath", pathname);
     navigateWithTransition(link);
     setTimeout(() => {
       setProfileShow(false);
@@ -89,8 +91,8 @@ export default function UserProfileDetail({ isMyPage = false }: UserProfileDetai
   const IS_REPORTED = recentReportCount > 0;
 
   const editMyProfileInfo = () => {
-    document.documentElement.style.viewTransitionName = 'forward';
-    navigateWithTransition('/editMyInfo');
+    document.documentElement.style.viewTransitionName = "forward";
+    navigateWithTransition("/editMyInfo");
   };
 
   return (
@@ -109,7 +111,7 @@ export default function UserProfileDetail({ isMyPage = false }: UserProfileDetai
               {isMyPage && <ProfileRightVectorIcon />}
             </div>
             <div className="font-normal text-xs leading-[16px] tracking-[-0.25px] text-center text-[var(--color-text-muted2)]">
-              {isMyPage ? myPageStore().email : userRegDate + '가입'}
+              {isMyPage ? myPageStore().email : userRegDate + "가입"}
             </div>
           </div>
           <div className="flex flex-wrap gap-2 mt-3">

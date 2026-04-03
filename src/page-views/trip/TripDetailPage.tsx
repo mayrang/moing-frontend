@@ -67,7 +67,9 @@ export default function TripDetail() {
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [modalTextForLogin, setModalTextForLogin] = useState(LOGIN_ASKING_FOR_WATCHING_COMMENT);
+  const [modalTextForLogin, setModalTextForLogin] = useState(
+    LOGIN_ASKING_FOR_WATCHING_COMMENT,
+  );
   const detailRef = useRef<HTMLDivElement | null>(null);
   const [isApplyToast, setIsApplyToast] = useState(false);
   const [isCancelToast, setIsCancelToast] = useState(false);
@@ -126,13 +128,23 @@ export default function TripDetail() {
   // const isClosed = !Boolean(daysLeft(`${dueDate.year}-${dueDate.month}-${dueDate.day}`) > 0) || maxPerson === nowPerson;
   const isClosed = false;
   const { cancel, cancelMutation } = useEnrollment(parseInt(travelNumber));
-  const { tripEnrollmentCount, companions } = useTripDetail(parseInt(travelNumber));
+  const { tripEnrollmentCount, companions } = useTripDetail(
+    parseInt(travelNumber),
+  );
   const nowEnrollmentCount = tripEnrollmentCount.data as any;
   const { editToastShow, setEditToastShow } = editStore();
   const allCompanions = (companions as any)?.data?.companions;
   const alreadyApplied = !!enrollmentNumber;
   const [ref, inView] = useInView();
-  const { data, isLoading, error, fetchNextPage, refetch, isFetching, hasNextPage } = useInfiniteQuery({
+  const {
+    data,
+    isLoading,
+    error,
+    fetchNextPage,
+    refetch,
+    isFetching,
+    hasNextPage,
+  } = useInfiniteQuery({
     queryKey: ["plans", travelNumber],
     queryFn: ({ pageParam }) => {
       return getPlans(Number(travelNumber), pageParam) as any;
@@ -148,7 +160,10 @@ export default function TripDetail() {
       }
     },
   });
-  const combinedPlans = data?.pages.reduce((acc, page) => acc.concat(page.plans), []);
+  const combinedPlans = data?.pages.reduce(
+    (acc, page) => acc.concat(page.plans),
+    [],
+  );
   useInfiniteScroll(() => {
     if (inView) {
       !isFetching && hasNextPage && fetchNextPage();
@@ -159,7 +174,7 @@ export default function TripDetail() {
   const { postBookmarkMutation, deleteBookmarkMutation } = useUpdateBookmark(
     accessToken!,
     userId!,
-    parseInt(travelNumber)
+    parseInt(travelNumber),
   );
   const bookmarkClickHandler = () => {
     if (isGuestUser()) {
@@ -314,15 +329,30 @@ export default function TripDetail() {
 
   return (
     <>
-      <ResultToast height={120} isShow={editToastShow} setIsShow={setEditToastShow} text="게시글이 수정되었어요." />
+      <ResultToast
+        height={120}
+        isShow={editToastShow}
+        setIsShow={setEditToastShow}
+        text="게시글이 수정되었어요."
+      />
       <NoticeModal
         isModalOpen={noticeModal}
         modalMsg={`여행에 참가가 확정된\n 멤버만 볼 수 있어요.`}
         modalTitle="참가 신청 대기중"
         setModalOpen={setNoticeModal}
       />
-      <ResultToast height={80} isShow={isCancelToast} setIsShow={setIsCancelToast} text="여행 신청이 취소 되었어요." />
-      <ResultToast height={80} isShow={isApplyToast} setIsShow={setIsApplyToast} text="여행 신청이 완료 되었어요." />
+      <ResultToast
+        height={80}
+        isShow={isCancelToast}
+        setIsShow={setIsCancelToast}
+        text="여행 신청이 취소 되었어요."
+      />
+      <ResultToast
+        height={80}
+        isShow={isApplyToast}
+        setIsShow={setIsApplyToast}
+        text="여행 신청이 완료 되었어요."
+      />
 
       <CheckingModal
         isModalOpen={showLoginModal}
@@ -374,20 +404,34 @@ export default function TripDetail() {
         >
           <div className="px-6">
             <div>
-              <div className="mt-2 flex items-center cursor-pointer" onClick={() => moveToUserProfilePage(userNumber)}>
+              <div
+                className="mt-2 flex items-center cursor-pointer"
+                onClick={() => moveToUserProfilePage(userNumber)}
+              >
                 {/* 프로필 */}
                 <RoundedImage src={profileUrl} size={40} />
                 <div style={{ marginLeft: "8px" }}>
-                  <div className="text-base font-semibold leading-[19.09px] text-left text-[var(--color-text-base)] mb-1">{userName}</div>
+                  <div className="text-base font-semibold leading-[19.09px] text-left text-[var(--color-text-base)] mb-1">
+                    {userName}
+                  </div>
                   <div className="font-normal text-sm leading-[16.71px] text-[var(--color-text-muted)]">
                     {daysAgo(createdAt)}
                   </div>
                 </div>
               </div>
               {/* 제목  */}
-              <div className="mt-8 text-xl font-semibold text-left">{title}</div>
+              <div className="mt-8 text-xl font-semibold text-left">
+                {title}
+              </div>
               {/* 내용 */}
-              <div ref={detailRef} tabIndex={0} aria-label="여행 상세 설명" className="mt-4 text-base max-h-[100px] overflow-y-auto whitespace-pre-line font-normal leading-[22.4px] text-left text-[var(--color-text-base)]">{details}</div>
+              <div
+                ref={detailRef}
+                tabIndex={0}
+                aria-label="여행 상세 설명"
+                className="mt-4 text-base max-h-[100px] overflow-y-auto whitespace-pre-line font-normal leading-[22.4px] text-left text-[var(--color-text-base)]"
+              >
+                {details}
+              </div>
               {/*태그   */}
               <div className="mt-8 flex flex-wrap gap-2">
                 {tags.map((tag, idx) => (
@@ -417,7 +461,9 @@ export default function TripDetail() {
                 <div className="flex items-center w-[100px] gap-2 mr-3">
                   <PlaceIcon width={21} height={24} />
 
-                  <div className="text-sm leading-5 text-[var(--color-text-muted)] font-semibold">장소</div>
+                  <div className="text-sm leading-5 text-[var(--color-text-muted)] font-semibold">
+                    장소
+                  </div>
                 </div>
                 <div className="text-sm leading-5 text-[var(--color-text-base)] font-medium">
                   <RegionWrapper
@@ -436,10 +482,14 @@ export default function TripDetail() {
               <div className="flex items-center">
                 <div className="flex items-center w-[100px] gap-2 mr-3">
                   <Calendar />
-                  <div className="text-sm leading-5 text-[var(--color-text-muted)] font-semibold">여행 날짜</div>
+                  <div className="text-sm leading-5 text-[var(--color-text-muted)] font-semibold">
+                    여행 날짜
+                  </div>
                 </div>
                 <div className="text-sm leading-5 text-[var(--color-text-base)] font-medium">
-                  {startDate && endDate ? formatDateRange(startDate, endDate) : "날짜를 선택하세요."}
+                  {startDate && endDate
+                    ? formatDateRange(startDate, endDate)
+                    : "날짜를 선택하세요."}
                 </div>
               </div>
             </div>
@@ -459,7 +509,9 @@ export default function TripDetail() {
                   ) : (
                     <OnlyFemaleIcon selected size={24} />
                   )}
-                  <div className="text-sm leading-5 text-[var(--color-text-muted)] font-semibold">{genderType}</div>
+                  <div className="text-sm leading-5 text-[var(--color-text-muted)] font-semibold">
+                    {genderType}
+                  </div>
                 </div>
                 <div className="text-sm leading-5 text-[var(--color-text-base)] font-medium">
                   {nowPerson} / {maxPerson}
@@ -473,7 +525,9 @@ export default function TripDetail() {
         </TopModal>
         <div
           className="min-h-svh transition-[padding-top] duration-300 ease-out overscroll-none"
-          style={{ paddingTop: isMapFull ? "32px" : `${topModalHeight + 32}px` }}
+          style={{
+            paddingTop: isMapFull ? "0px" : `0px`,
+          }}
         >
           <MapContainer
             plans={combinedPlans ?? []}
@@ -485,7 +539,9 @@ export default function TripDetail() {
             zoom={9}
           />
           <div className="mt-6">
-            <div className="text-lg font-medium text-black leading-[21px]">여행 일정</div>
+            <div className="text-lg font-medium text-black leading-[21px]">
+              여행 일정
+            </div>
             {combinedPlans?.length > 0 ? (
               <>
                 <Spacing size={16} />
@@ -495,7 +551,9 @@ export default function TripDetail() {
                       startDate={startDate}
                       setOpenItemIndex={setOpenItemIndex}
                       openItemIndex={openItemIndex}
-                      inView={<div ref={ref} style={{ width: 5, height: "100%" }} />}
+                      inView={
+                        <div ref={ref} style={{ width: 5, height: "100%" }} />
+                      }
                       slides={combinedPlans} // 모든 데이터를 하나의 슬라이드 컴포넌트에 전달
                     />
                   )}
@@ -504,9 +562,16 @@ export default function TripDetail() {
             ) : (
               <>
                 <div className="flex pt-[52px] flex-col items-center justify-center h-full">
-                  <img alt="댓글이 없습니다" width={80} height={80} src={"/images/noData.png"} />
+                  <img
+                    alt="댓글이 없습니다"
+                    width={80}
+                    height={80}
+                    src={"/images/noData.png"}
+                  />
                   <Spacing size={16} />
-                  <div className="text-sm font-normal leading-5 tracking-[-0.025em] text-center">등록된 일정이 없어요</div>
+                  <div className="text-sm font-normal leading-5 tracking-[-0.025em] text-center">
+                    등록된 일정이 없어요
+                  </div>
                 </div>
               </>
             )}
@@ -567,7 +632,10 @@ export default function TripDetail() {
           />
         )}
       </ButtonContainer>
-      <CompanionsView isOpen={personViewClicked} setIsOpen={setPersonViewClicked} />
+      <CompanionsView
+        isOpen={personViewClicked}
+        setIsOpen={setPersonViewClicked}
+      />
 
       <div className="h-svh w-full pointer-events-none fixed top-0 min-[440px]:w-[390px] min-[440px]:left-1/2 min-[440px]:-translate-x-1/2 z-[1000]">
         <button
@@ -577,7 +645,13 @@ export default function TripDetail() {
           onClick={commentClickHandler}
         >
           {isCommentUpdated ? (
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 28 28"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <g clipPath="url(#clip0_5570_2993)">
                 <path
                   d="M25 18.6667C25 19.315 24.7425 19.9367 24.284 20.3952C23.8256 20.8536 23.2039 21.1111 22.5556 21.1111H7.88889L3 26V6.44444C3 5.79614 3.25754 5.17438 3.71596 4.71596C4.17438 4.25754 4.79614 4 5.44444 4H22.5556C23.2039 4 23.8256 4.25754 24.284 4.71596C24.7425 5.17438 25 5.79614 25 6.44444V18.6667Z"
@@ -604,7 +678,14 @@ export default function TripDetail() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
-                <circle cx="25" cy="4" r="4" fill="#FF2E2E" stroke="#1A1A1A" strokeWidth="2" />
+                <circle
+                  cx="25"
+                  cy="4"
+                  r="4"
+                  fill="#FF2E2E"
+                  stroke="#1A1A1A"
+                  strokeWidth="2"
+                />
               </g>
               <defs>
                 <clipPath id="clip0_5570_2993">
@@ -613,7 +694,13 @@ export default function TripDetail() {
               </defs>
             </svg>
           ) : (
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 28 28"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <path
                 d="M25 18.6667C25 19.315 24.7425 19.9367 24.284 20.3952C23.8256 20.8536 23.2039 21.1111 22.5556 21.1111H7.88889L3 26V6.44444C3 5.79614 3.25754 5.17438 3.71596 4.71596C4.17438 4.25754 4.79614 4 5.44444 4H22.5556C23.2039 4 23.8256 4.25754 24.284 4.71596C24.7425 5.17438 25 5.79614 25 6.44444V18.6667Z"
                 fill="#FEFEFE"
@@ -646,4 +733,3 @@ export default function TripDetail() {
     </>
   );
 }
-
