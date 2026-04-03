@@ -5,4 +5,5 @@ export class NoopLogger implements ILogger {
   warn(): void {}
   info(): void {}
   breadcrumb(): void {}
+  setUser(): void {}
 }
