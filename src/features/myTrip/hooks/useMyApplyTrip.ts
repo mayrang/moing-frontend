@@ -1,5 +1,6 @@
 "use client";
 import { deleteMyApplyTrips, getApplyTrips, IMyTripList } from "@/entities/myTrip";
+import { createMutationOptions } from "@/shared/lib/errors";
 import { authStore } from "@/store/client/authStore";
 import { useMutation, useQueryClient, useInfiniteQuery, InfiniteData } from "@tanstack/react-query";
 
@@ -33,13 +34,12 @@ export const useMyApplyTrip = () => {
   const queryClient = useQueryClient();
 
   const { mutateAsync: deleteMyApplyTripsMutation } = useMutation({
-    mutationFn: (travelNumber: number) => {
-      return deleteMyApplyTrips(accessToken!, travelNumber);
-    },
+    ...createMutationOptions({
+      mutationFn: (travelNumber: number) => deleteMyApplyTrips(accessToken!, travelNumber),
+      policy: { network: 'toast', system: 'toast' },
+    }),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["myApplyTrips"],
-      });
+      queryClient.invalidateQueries({ queryKey: ["myApplyTrips"] });
     },
   });
   return {

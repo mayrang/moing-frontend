@@ -15,6 +15,7 @@ import {
   putRealMyProfileImage,
   NewPasswordProps,
 } from "@/entities/myPage";
+import { createMutationOptions } from "@/shared/lib/errors";
 import { authStore } from "@/store/client/authStore";
 import { myPageStore } from "@/store/client/myPageStore";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -33,13 +34,12 @@ const useMyPage = () => {
   });
 
   const { mutateAsync: updateMyPageMutation, isSuccess: isUpdatedSuccess } = useMutation({
-    mutationFn: () => {
-      return putMyPage(accessToken!, name, "", preferredTags, agegroup);
-    },
+    ...createMutationOptions({
+      mutationFn: () => putMyPage(accessToken!, name, "", preferredTags, agegroup),
+      policy: { network: 'toast', system: 'toast' },
+    }),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["myPage"],
-      });
+      queryClient.invalidateQueries({ queryKey: ["myPage"] });
     },
   });
   // 비밀번호 변경시 현재 비밀번호 확인
@@ -48,13 +48,12 @@ const useMyPage = () => {
     isSuccess: isVerified,
     isError: isVerifiedError,
   } = useMutation({
-    mutationFn: (password: string) => {
-      return postVerifyPassword(accessToken!, password);
-    },
+    ...createMutationOptions({
+      mutationFn: (password: string) => postVerifyPassword(accessToken!, password),
+      policy: { network: 'toast', system: 'toast' },
+    }),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["myPage"],
-      });
+      queryClient.invalidateQueries({ queryKey: ["myPage"] });
     },
   });
   const {
@@ -62,13 +61,12 @@ const useMyPage = () => {
     isSuccess: isUpatedPassword,
     isError: isUpdatedPasswordError,
   } = useMutation({
-    mutationFn: (formData: NewPasswordProps) => {
-      return putPassword(accessToken!, formData.newPassword, formData.newPassword);
-    },
+    ...createMutationOptions({
+      mutationFn: (formData: NewPasswordProps) => putPassword(accessToken!, formData.newPassword, formData.newPassword),
+      policy: { network: 'toast', system: 'toast' },
+    }),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["myPage"],
-      });
+      queryClient.invalidateQueries({ queryKey: ["myPage"] });
     },
   });
 
@@ -78,25 +76,23 @@ const useMyPage = () => {
   // 첫 프로필 기본으로 post 요청
 
   const { mutateAsync: firstProfileImageMutation, isSuccess: isFirstProfileImagePostSuccess } = useMutation({
-    mutationFn: (accessToken: string) => {
-      return intialPostMyProfileImage(accessToken!) as any;
-    },
+    ...createMutationOptions({
+      mutationFn: (token: string) => intialPostMyProfileImage(token!) as any,
+      policy: { network: 'toast', system: 'toast' },
+    }),
     mutationKey: ["firstProfileImage"],
     onSuccess: (data: any) => {
-      queryClient.refetchQueries({
-        queryKey: ["profileImg"],
-      });
-      if (data?.url) {
-        addProfileUrl(data.url);
-      }
+      queryClient.refetchQueries({ queryKey: ["profileImg"] });
+      if (data?.url) addProfileUrl(data.url);
     },
   });
   // 임시 저장 post 요청
-  const { mutateAsync: tempProfileImageMutation, isSuccess: isTempProfileImagePostSuccess } = useMutation({
-    mutationFn: (formData: FormData) => {
-      return postTempMyProfileImage(accessToken!, formData);
-    },
-  });
+  const { mutateAsync: tempProfileImageMutation, isSuccess: isTempProfileImagePostSuccess } = useMutation(
+    createMutationOptions({
+      mutationFn: (formData: FormData) => postTempMyProfileImage(accessToken!, formData),
+      policy: { network: 'toast', system: 'toast' },
+    }),
+  );
   // 현재 프로필 조회.
   const { data: profileImage, isLoading: isLoadingImage } = useQuery({
     queryKey: ["profileImg"],
@@ -105,61 +101,53 @@ const useMyPage = () => {
   });
   // 커스텀 이미지로 update
   const { mutateAsync: updateProfileImgMutation, isSuccess: isUpdateProfileImgSuccess } = useMutation({
-    mutationFn: (formData: FormData) => {
-      return putMyProfileImage(accessToken!, formData);
-    },
-    onSuccess: () => {
-      queryClient.refetchQueries({
-        queryKey: ["profileImg"],
-      });
-    },
+    ...createMutationOptions({
+      mutationFn: (formData: FormData) => putMyProfileImage(accessToken!, formData),
+      policy: { network: 'toast', system: 'toast' },
+    }),
+    onSuccess: () => { queryClient.refetchQueries({ queryKey: ["profileImg"] }); },
   });
 
-  // 정식 수정 등록.
-  // 임시저장 로직 추가 되면 아래 코드로.
+  // 정식 수정 등록
   const { mutateAsync: updateRealProfileImgMutation, isSuccess: isUpdateRealProfileImgSuccess } = useMutation({
-    mutationFn: (imageUrl: string) => {
-      return putRealMyProfileImage(accessToken!, imageUrl);
-    },
-    onSuccess: () => {
-      queryClient.refetchQueries({
-        queryKey: ["profileImg"],
-      });
-    },
+    ...createMutationOptions({
+      mutationFn: (imageUrl: string) => putRealMyProfileImage(accessToken!, imageUrl),
+      policy: { network: 'toast', system: 'toast' },
+    }),
+    onSuccess: () => { queryClient.refetchQueries({ queryKey: ["profileImg"] }); },
   });
-  //default 이미지로 update
+  // default 이미지로 update
   const { mutateAsync: updateDefaultProfileImgMutation, isSuccess: isUpdateDefaultProfileImgSuccess } = useMutation({
-    mutationFn: (defaultNumber: number) => {
-      return putMyProfileDefaultImage(accessToken!, defaultNumber);
-    },
-    onSuccess: () => {
-      queryClient.refetchQueries({
-        queryKey: ["profileImg"],
-      });
-    },
+    ...createMutationOptions({
+      mutationFn: (defaultNumber: number) => putMyProfileDefaultImage(accessToken!, defaultNumber),
+      policy: { network: 'toast', system: 'toast' },
+    }),
+    onSuccess: () => { queryClient.refetchQueries({ queryKey: ["profileImg"] }); },
   });
-  // 프로필 이미지 db에서 삭제.
-  const { mutateAsync: deleteMyProfileImgMutation, isSuccess: isDeleteSuccessProfileImg } = useMutation({
-    mutationFn: () => {
-      return deleteMyProfileImage(accessToken!);
-    },
-  });
+  // 프로필 이미지 db에서 삭제
+  const { mutateAsync: deleteMyProfileImgMutation, isSuccess: isDeleteSuccessProfileImg } = useMutation(
+    createMutationOptions({
+      mutationFn: () => deleteMyProfileImage(accessToken!),
+      policy: { network: 'toast', system: 'toast' },
+    }),
+  );
   // 임시 저장된 미리보기 프로필 삭제
-
-  const { mutateAsync: deleteTempProfileImgMutation, isSuccess: isDeleteSuccessTempProfileImg } = useMutation({
-    mutationFn: (deletedTempUrl: string) => {
-      return deleteTempProfileImage(accessToken!, deletedTempUrl);
-    },
-  });
+  const { mutateAsync: deleteTempProfileImgMutation, isSuccess: isDeleteSuccessTempProfileImg } = useMutation(
+    createMutationOptions({
+      mutationFn: (deletedTempUrl: string) => deleteTempProfileImage(accessToken!, deletedTempUrl),
+      policy: { network: 'toast', system: 'toast' },
+    }),
+  );
   const {
     mutateAsync: withdrawMutation,
     isSuccess: isWithDrawSuccess,
     isError: isWithDrawError,
-  } = useMutation({
-    mutationFn: () => {
-      return deleteMyAccount(accessToken!);
-    },
-  });
+  } = useMutation(
+    createMutationOptions({
+      mutationFn: () => deleteMyAccount(accessToken!),
+      policy: { network: 'toast', system: 'fallback' },
+    }),
+  );
 
   return {
     withdrawMutation,
