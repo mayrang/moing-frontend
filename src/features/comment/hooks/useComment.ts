@@ -1,6 +1,6 @@
 "use client";
 import { deleteComment, getComments, likeComment, postComment, unlikeComment, updateComment, ICommentList, ICommentPost } from "@/entities/comment";
-
+import { createMutationOptions } from "@/shared/lib/errors";
 import { authStore } from "@/store/client/authStore";
 import { InfiniteData, useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -34,9 +34,12 @@ const useComment = (relatedType: "travel" | "community", relatedNumber: number) 
 
   const queryClient = useQueryClient();
 
-  const postMutation = useMutation({
-    mutationFn: (data: ICommentPost) => postComment(data, relatedType, relatedNumber, accessToken),
-  });
+  const postMutation = useMutation(
+    createMutationOptions({
+      mutationFn: (data: ICommentPost) => postComment(data, relatedType, relatedNumber, accessToken),
+      policy: { network: 'toast', system: 'toast' },
+    }),
+  );
 
   const post = (data: ICommentPost) => {
     return postMutation.mutateAsync(data, {
@@ -57,10 +60,13 @@ const useComment = (relatedType: "travel" | "community", relatedNumber: number) 
     });
   };
 
-  const updateMutation = useMutation({
-    mutationFn: (data: { content: string; commentNumber: number }) =>
-      updateComment(data, data.commentNumber, accessToken),
-  });
+  const updateMutation = useMutation(
+    createMutationOptions({
+      mutationFn: (data: { content: string; commentNumber: number }) =>
+        updateComment(data, data.commentNumber, accessToken),
+      policy: { network: 'toast', system: 'toast' },
+    }),
+  );
 
   const update = (data: { content: string; commentNumber: number }) => {
     return updateMutation.mutateAsync(data, {
@@ -80,9 +86,12 @@ const useComment = (relatedType: "travel" | "community", relatedNumber: number) 
     });
   };
 
-  const removeMutation = useMutation({
-    mutationFn: (data: { commentNumber: number }) => deleteComment(data.commentNumber, accessToken),
-  });
+  const removeMutation = useMutation(
+    createMutationOptions({
+      mutationFn: (data: { commentNumber: number }) => deleteComment(data.commentNumber, accessToken),
+      policy: { network: 'toast', system: 'toast' },
+    }),
+  );
 
   const remove = (data: { commentNumber: number }) => {
     return removeMutation.mutateAsync(data, {
@@ -102,9 +111,12 @@ const useComment = (relatedType: "travel" | "community", relatedNumber: number) 
     });
   };
 
-  const likeMutation = useMutation({
-    mutationFn: (data: { commentNumber: number }) => likeComment(data.commentNumber, accessToken),
-  });
+  const likeMutation = useMutation(
+    createMutationOptions({
+      mutationFn: (data: { commentNumber: number }) => likeComment(data.commentNumber, accessToken),
+      policy: { network: 'toast', system: 'toast' },
+    }),
+  );
 
   const like = (data: { commentNumber: number }) => {
     return likeMutation.mutateAsync(data, {
@@ -118,9 +130,12 @@ const useComment = (relatedType: "travel" | "community", relatedNumber: number) 
     });
   };
 
-  const unlikeMutation = useMutation({
-    mutationFn: (data: { commentNumber: number }) => unlikeComment(data.commentNumber, accessToken),
-  });
+  const unlikeMutation = useMutation(
+    createMutationOptions({
+      mutationFn: (data: { commentNumber: number }) => unlikeComment(data.commentNumber, accessToken),
+      policy: { network: 'toast', system: 'toast' },
+    }),
+  );
 
   const unlike = (data: { commentNumber: number }) => {
     return unlikeMutation.mutateAsync(data, {

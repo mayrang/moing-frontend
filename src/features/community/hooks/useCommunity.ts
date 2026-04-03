@@ -15,6 +15,7 @@ import {
   ICommunityList,
   PostCommunity,
 } from "@/entities/community";
+import { createMutationOptions } from "@/shared/lib/errors";
 import { authStore } from "@/store/client/authStore";
 import { EditFinalImages, FinalImages } from "@/store/client/imageStore";
 import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -76,34 +77,39 @@ const useCommunity = (
   });
 
   const postImageMutation = useMutation({
-    mutationFn: (data: { uploadImages: FinalImages; communityNumber: number }) =>
-      postImage(data.uploadImages, data.communityNumber, accessToken),
+    ...createMutationOptions({
+      mutationFn: (data: { uploadImages: FinalImages; communityNumber: number }) =>
+        postImage(data.uploadImages, data.communityNumber, accessToken),
+      policy: { network: 'toast', system: 'toast' },
+    }),
     onSuccess: () => {
       if (images.data) {
-        queryClient.invalidateQueries({
-          queryKey: ["community", "images", communityNumber],
-        });
+        queryClient.invalidateQueries({ queryKey: ["community", "images", communityNumber] });
       }
     },
   });
 
   const updateImageMutation = useMutation({
-    mutationFn: (data: { editImages: EditFinalImages; communityNumber: number }) =>
-      updateImage(data.editImages, data.communityNumber, accessToken),
+    ...createMutationOptions({
+      mutationFn: (data: { editImages: EditFinalImages; communityNumber: number }) =>
+        updateImage(data.editImages, data.communityNumber, accessToken),
+      policy: { network: 'toast', system: 'toast' },
+    }),
     onSuccess: () => {
       if (images.data) {
-        queryClient.invalidateQueries({
-          queryKey: ["community", "images", communityNumber],
-        });
+        queryClient.invalidateQueries({ queryKey: ["community", "images", communityNumber] });
       }
     },
   });
 
   const queryClient = useQueryClient();
 
-  const postMutation = useMutation({
-    mutationFn: (data: PostCommunity) => postCommunity(data, accessToken),
-  });
+  const postMutation = useMutation(
+    createMutationOptions({
+      mutationFn: (data: PostCommunity) => postCommunity(data, accessToken),
+      policy: { network: 'toast', system: 'toast' },
+    }),
+  );
 
   const post = (data: PostCommunity) => {
     return postMutation.mutateAsync(data, {
@@ -117,10 +123,13 @@ const useCommunity = (
     });
   };
 
-  const updateMutation = useMutation({
-    mutationFn: (data: PostCommunity & { communityNumber: number }) =>
-      updateCommunity(data, data.communityNumber, accessToken),
-  });
+  const updateMutation = useMutation(
+    createMutationOptions({
+      mutationFn: (data: PostCommunity & { communityNumber: number }) =>
+        updateCommunity(data, data.communityNumber, accessToken),
+      policy: { network: 'toast', system: 'toast' },
+    }),
+  );
 
   const update = (data: PostCommunity & { communityNumber: number }) => {
     return updateMutation.mutateAsync(data, {
@@ -134,9 +143,12 @@ const useCommunity = (
     });
   };
 
-  const removeMutation = useMutation({
-    mutationFn: (data: { communityNumber: number }) => deleteCommunity(data.communityNumber, accessToken),
-  });
+  const removeMutation = useMutation(
+    createMutationOptions({
+      mutationFn: (data: { communityNumber: number }) => deleteCommunity(data.communityNumber, accessToken),
+      policy: { network: 'toast', system: 'toast' },
+    }),
+  );
 
   const remove = (data: { communityNumber: number }) => {
     return removeMutation.mutateAsync(data, {
@@ -151,9 +163,12 @@ const useCommunity = (
     });
   };
 
-  const likeMutation = useMutation({
-    mutationFn: (data: { communityNumber: number }) => likeCommunity(data.communityNumber, accessToken),
-  });
+  const likeMutation = useMutation(
+    createMutationOptions({
+      mutationFn: (data: { communityNumber: number }) => likeCommunity(data.communityNumber, accessToken),
+      policy: { network: 'toast', system: 'toast' },
+    }),
+  );
 
   const like = (data: { communityNumber: number }) => {
     return likeMutation.mutateAsync(data, {
@@ -167,9 +182,12 @@ const useCommunity = (
     });
   };
 
-  const unlikeMutation = useMutation({
-    mutationFn: (data: { communityNumber: number }) => unlikeCommunity(data.communityNumber, accessToken),
-  });
+  const unlikeMutation = useMutation(
+    createMutationOptions({
+      mutationFn: (data: { communityNumber: number }) => unlikeCommunity(data.communityNumber, accessToken),
+      policy: { network: 'toast', system: 'toast' },
+    }),
+  );
 
   const unlike = (data: { communityNumber: number }) => {
     return unlikeMutation.mutateAsync(data, {

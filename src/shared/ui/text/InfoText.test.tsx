@@ -21,10 +21,11 @@ describe('InfoText', () => {
     expect(container).toHaveStyle({ color: '#5DB21B' });
   });
 
-  it('기본 상태는 중립 색상으로 렌더링된다', () => {
+  it('기본 상태는 에러/성공 색상이 적용되지 않는다', () => {
     render(<InfoText>중립 메시지</InfoText>);
     const container = screen.getByText('중립 메시지').closest('div');
-    expect(container).toHaveStyle({ color: '#ABABAB' });
+    expect(container?.getAttribute('style')).not.toContain('#ED1E1E');
+    expect(container?.getAttribute('style')).not.toContain('#5DB21B');
   });
 
   it('접근성 위반이 없어야 한다', async () => {

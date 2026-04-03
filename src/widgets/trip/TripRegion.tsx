@@ -98,7 +98,12 @@ const TripRegion = ({
   const handleRemoveValue = () => setKeyword('');
 
   const handleNext = () => {
-    if (!isLoad) return;
+    if (!isLoad) {
+      // Kakao Maps SDK 미로드 시 Google Maps로 직접 진행
+      addLocationName({ locationName: keyword, mapType: 'google', countryName: '' });
+      nextFunc();
+      return;
+    }
     setSubmit(true);
   };
 

@@ -1,20 +1,31 @@
 "use client";
-import { getUserProfile, getUserAppliedTravels, getUserCreatedTravels, IUserProfileInfo, IUserRelatedTravelList } from "@/entities/userProfile";
+import {
+  getUserProfile,
+  getUserAppliedTravels,
+  getUserCreatedTravels,
+  IUserProfileInfo,
+  IUserRelatedTravelList,
+} from "@/entities/userProfile";
 import { authStore } from "@/store/client/authStore";
 import { userProfileOverlayStore } from "@/store/client/userProfileOverlayStore";
-import { useQuery, useInfiniteQuery, InfiniteData } from "@tanstack/react-query";
+import {
+  useQuery,
+  useInfiniteQuery,
+  InfiniteData,
+} from "@tanstack/react-query";
 
 const useUserProfile = () => {
   const { accessToken } = authStore();
   const { userProfileUserId } = userProfileOverlayStore();
-
-  const { data: userProfileInfo, isLoading: isLoadingUserProfileInfo } = useQuery<IUserProfileInfo | null>({
-    queryKey: ["userProfile", userProfileUserId],
-    queryFn: () => getUserProfile(accessToken!, userProfileUserId!),
-    enabled: !!accessToken && userProfileUserId !== -1,
-    retry: !!accessToken,
-    staleTime: 0,
-  });
+  console.log(userProfileUserId, "user");
+  const { data: userProfileInfo, isLoading: isLoadingUserProfileInfo } =
+    useQuery<IUserProfileInfo | null>({
+      queryKey: ["userProfile", userProfileUserId],
+      queryFn: () => getUserProfile(accessToken!, userProfileUserId!),
+      enabled: !!accessToken && !!userProfileUserId && userProfileUserId > 0,
+      retry: !!accessToken,
+      staleTime: 0,
+    });
 
   const {
     data: userProfileCreatedTravelsData,
@@ -24,17 +35,29 @@ const useUserProfile = () => {
     refetch: refetchUserProfileCreatedTravels,
     isFetching: isUserProfileCreatedTravelsFetching,
     hasNextPage: hasNextUserProfileCreatedTravelsPage,
-  } = useInfiniteQuery<IUserRelatedTravelList, Error, InfiniteData<IUserRelatedTravelList>, [string, number]>({
+  } = useInfiniteQuery<
+    IUserRelatedTravelList,
+    Error,
+    InfiniteData<IUserRelatedTravelList>,
+    [string, number]
+  >({
     queryKey: ["userProfileCreatedTravels", userProfileUserId],
     queryFn: ({ pageParam }) => {
-      return getUserCreatedTravels(pageParam as number, accessToken!, userProfileUserId) as any;
+      return getUserCreatedTravels(
+        pageParam as number,
+        accessToken!,
+        userProfileUserId,
+      ) as any;
     },
-    enabled: !!accessToken && userProfileUserId !== -1,
+    enabled: !!accessToken && !!userProfileUserId && userProfileUserId > 0,
     retry: Boolean(accessToken),
     staleTime: 0,
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
-      if (lastPage?.page?.number + 1 === lastPage?.page?.totalPages || lastPage.page?.totalPages === 0) {
+      if (
+        lastPage?.page?.number + 1 === lastPage?.page?.totalPages ||
+        lastPage.page?.totalPages === 0
+      ) {
         return undefined;
       } else {
         if (lastPage?.page?.number + 1 === 3) return undefined; //30개까지만 요청
@@ -51,17 +74,29 @@ const useUserProfile = () => {
     refetch: refetchUserProfileAppliedTravels,
     isFetching: isUserProfileAppliedTravelsFetching,
     hasNextPage: hasNextUserProfileAppliedTravelsPage,
-  } = useInfiniteQuery<IUserRelatedTravelList, Error, InfiniteData<IUserRelatedTravelList>, [string, number]>({
+  } = useInfiniteQuery<
+    IUserRelatedTravelList,
+    Error,
+    InfiniteData<IUserRelatedTravelList>,
+    [string, number]
+  >({
     queryKey: ["userProfileAppliedTravels", userProfileUserId],
     queryFn: ({ pageParam }) => {
-      return getUserAppliedTravels(pageParam as number, accessToken!, userProfileUserId) as any;
+      return getUserAppliedTravels(
+        pageParam as number,
+        accessToken!,
+        userProfileUserId,
+      ) as any;
     },
-    enabled: !!accessToken && userProfileUserId !== -1,
+    enabled: !!accessToken && !!userProfileUserId && userProfileUserId > 0,
     retry: Boolean(accessToken),
     staleTime: 0,
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
-      if (lastPage?.page?.number + 1 === lastPage?.page?.totalPages || lastPage.page?.totalPages === 0) {
+      if (
+        lastPage?.page?.number + 1 === lastPage?.page?.totalPages ||
+        lastPage.page?.totalPages === 0
+      ) {
         return undefined;
       } else {
         if (lastPage?.page?.number + 1 === 3) return undefined; // 30개까지만 요청

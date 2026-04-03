@@ -1,12 +1,12 @@
-import type { ReactNode } from 'react';
-import { describe, it, expect, vi } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { createElement } from 'react';
-import { useTripList } from './useTripList';
+import type { ReactNode } from "react";
+import { describe, it, expect, vi } from "vitest";
+import { renderHook, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createElement } from "react";
+import { useTripList } from "./useTripList";
 
-vi.mock('@/store/client/authStore', () => ({
-  authStore: () => ({ accessToken: 'test-token', isGuestUser: false }),
+vi.mock("@/store/client/authStore", () => ({
+  authStore: () => ({ accessToken: "test-token", isGuestUser: false }),
 }));
 
 const createWrapper = () => {
@@ -17,19 +17,21 @@ const createWrapper = () => {
     createElement(QueryClientProvider, { client: queryClient }, children);
 };
 
-describe('useTripList', () => {
-  it('sort=recent이면 최근 여행 목록을 가져온다', async () => {
-    const { result } = renderHook(() => useTripList('recent'), {
+describe("useTripList", () => {
+  it("sort=recent이면 최근 여행 목록을 가져온다", async () => {
+    const { result } = renderHook(() => useTripList("recent"), {
       wrapper: createWrapper(),
     });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.data).toBeDefined();
-    expect(result.current.data?.pages[0].content[0].title).toBe('유럽 배낭여행');
+    expect(result.current.data?.pages[0]?.content[0].title).toBe(
+      "유럽 배낭여행",
+    );
   });
 
-  it('sort=recommend이면 추천 여행 목록을 가져온다', async () => {
-    const { result } = renderHook(() => useTripList('recommend'), {
+  it("sort=recommend이면 추천 여행 목록을 가져온다", async () => {
+    const { result } = renderHook(() => useTripList("recommend"), {
       wrapper: createWrapper(),
     });
 
@@ -38,8 +40,8 @@ describe('useTripList', () => {
     expect(result.current.data?.pages[0].content).toHaveLength(1);
   });
 
-  it('초기 상태에서는 isLoading이 true다', () => {
-    const { result } = renderHook(() => useTripList('recent'), {
+  it("초기 상태에서는 isLoading이 true다", () => {
+    const { result } = renderHook(() => useTripList("recent"), {
       wrapper: createWrapper(),
     });
 

@@ -7,6 +7,7 @@ import { userStore } from "@/store/client/userStore";
 import { getJWTHeader } from "@/utils/user";
 import { usePathname, useRouter } from "next/navigation";
 import { createMutationOptions, extractErrorMessage } from "@/shared/lib/errors";
+import { logger } from "@/shared/lib/logger";
 import { AUTH_ERROR_POLICY } from "../lib/authErrorPolicy";
 
 const useAuth = () => {
@@ -32,7 +33,9 @@ const useAuth = () => {
     }),
     mutationKey: ["emailLogin"],
     onSuccess: (data) => {
-      setLoginData({ userId: Number(data.userId), accessToken: data.accessToken });
+      const userId = Number(data.userId);
+      setLoginData({ userId, accessToken: data.accessToken });
+      logger.setUser({ id: userId });
       const redirectPath = localStorage.getItem("loginPath") || "/";
       localStorage.removeItem("loginPath");
       router.push(redirectPath);
@@ -54,7 +57,9 @@ const useAuth = () => {
       },
     }),
     onSuccess: (data) => {
-      setLoginData({ userId: Number(data.userId), accessToken: data.accessToken });
+      const userId = Number(data.userId);
+      setLoginData({ userId, accessToken: data.accessToken });
+      logger.setUser({ id: userId });
       const redirectPath = localStorage.getItem("loginPath") || "/";
       localStorage.removeItem("loginPath");
       router.push(redirectPath);
@@ -70,7 +75,9 @@ const useAuth = () => {
       policy: AUTH_ERROR_POLICY,
     }),
     onSuccess: (data) => {
-      setLoginData({ userId: Number(data.userNumber), accessToken: data.accessToken });
+      const userId = Number(data.userNumber);
+      setLoginData({ userId, accessToken: data.accessToken });
+      logger.setUser({ id: userId });
     },
   });
 
@@ -89,7 +96,9 @@ const useAuth = () => {
       policy: AUTH_ERROR_POLICY,
     }),
     onSuccess: (data) => {
-      setLoginData({ userId: Number(data.userNumber), accessToken: data.accessToken });
+      const userId = Number(data.userNumber);
+      setLoginData({ userId, accessToken: data.accessToken });
+      logger.setUser({ id: userId });
     },
   });
 
@@ -101,6 +110,7 @@ const useAuth = () => {
       policy: { network: 'ignore', system: 'ignore' }, // 로그아웃은 에러 무시, 항상 로컬 상태 초기화
     }),
     onSuccess: () => {
+      logger.setUser(null);
       clearLoginData();
       resetData();
       setSocialLogin(null, null);
@@ -109,6 +119,7 @@ const useAuth = () => {
     },
     onError: () => {
       // 로그아웃 실패해도 로컬 상태는 초기화
+      logger.setUser(null);
       clearLoginData();
       resetData();
       setSocialLogin(null, null);
