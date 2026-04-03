@@ -23,8 +23,8 @@ export default function MyPage() {
   const { userId } = authStore();
   const { setUserProfileUserId } = userProfileOverlayStore();
   useEffect(() => {
-    setUserProfileUserId(userId!);
-  }, []);
+    if (userId) setUserProfileUserId(userId);
+  }, [userId]);
   return (
     <div className="px-6 mt-2">
       {!isGuestUser() ? (
