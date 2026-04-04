@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useBookmark } from "@/hooks/bookmark/useBookmark";
 import TitleContainer from "@/widgets/home/ContentTitleContainer";
@@ -37,11 +38,12 @@ const BookmarkContainer = () => {
         {bookmarks === undefined && (
           <div className="flex w-full p-4 bg-white rounded-[20px]">
             <div className="flex items-center">
-              <img
-                // 클릭시,여행 찾기 페이지로 이동 예정
+              <Image
                 onClick={handleClickEmpty}
-                className="h-[62px] w-[62px]"
+                className="h-[62px] w-[62px] cursor-pointer"
                 src="/images/bookmarkPlus.png"
+                width={62}
+                height={62}
                 alt="여행 찾기 페이지 이동 이미지"
               />
               {isGuestUser() ? (
@@ -64,11 +66,12 @@ const BookmarkContainer = () => {
           (bookmarks.length === 0 ? (
             <div className="flex w-full p-4 bg-white rounded-[20px]">
               <div className="flex items-center">
-                <img
-                  // 클릭시,여행 찾기 페이지로 이동 예정
+                <Image
                   onClick={() => router.push("/search/travel")}
-                  className="h-[62px] w-[62px]"
+                  className="h-[62px] w-[62px] cursor-pointer"
                   src="/images/bookmarkPlus.png"
+                  width={62}
+                  height={62}
                   alt=""
                 />
                 <span className="ml-4 font-normal leading-[22.4px]">

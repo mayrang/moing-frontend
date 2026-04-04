@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import InputField from "@/components/designSystem/input/InputField";
 import AlarmIcon from "@/components/icons/AlarmIcon";
@@ -52,11 +53,12 @@ const Home = () => {
       {/* HomeHeader */}
       <div className="bg-[var(--color-search-bg)] transition-colors duration-300 h-[116px] fixed top-0 left-0 w-full max-[440px]:w-full min-[440px]:w-[390px] min-[440px]:left-1/2 min-[440px]:-translate-x-1/2 min-[440px]:overflow-x-hidden z-[1000] overflow-hidden pt-[52px] px-6 pb-4">
         <div className="flex justify-between items-center h-12">
-          <img
-            src={"/images/homeLogo.png"}
+          <Image
+            src="/images/homeLogo.png"
             width={96}
             height={24}
             alt="홈 모잉의 로고입니다"
+            priority
           />
           {isGuestUser() ? (
             <div className="w-12 h-12 flex cursor-pointer items-center justify-center" />

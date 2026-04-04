@@ -31,6 +31,7 @@ import OnlyMaleIcon from "@/components/icons/OnlyMaleIcon";
 import OnlyFemaleIcon from "@/components/icons/OnlyFemaleIcon";
 import RegionWrapper from "@/page-views/trip/create/CreateTripDetail/RegionWrapper";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getPlans } from "@/api/trip";
 import { useInView } from "react-intersection-observer";
@@ -569,11 +570,11 @@ export default function TripDetail() {
             ) : (
               <>
                 <div className="flex pt-[52px] flex-col items-center justify-center h-full">
-                  <img
+                  <Image
                     alt="댓글이 없습니다"
                     width={80}
                     height={80}
-                    src={"/images/noData.png"}
+                    src="/images/noData.png"
                   />
                   <Spacing size={16} />
                   <div className="text-sm font-normal leading-5 tracking-[-0.025em] text-center">
