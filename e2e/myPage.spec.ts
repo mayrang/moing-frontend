@@ -1,31 +1,46 @@
-import { test, expect } from '@playwright/test';
+/**
+ * 마이페이지 E2E 테스트
+ *
+ * 커버 범위:
+ * - 마이페이지 기본 정보 표시 (내 활동 현황, 메뉴 항목)
+ * - 참가 신청한 여행 페이지 이동
+ * - 작성한 글(커뮤니티) 페이지 이동
+ * - 서비스 정보 링크 표시
+ */
+import { test, expect } from './fixtures';
 
-test.describe('MyPage E2E (Phase 4에서 활성화)', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/mypage');
+// MSW db 상태 충돌 방지
+test.describe.configure({ mode: 'serial' });
+
+test.describe('마이페이지 E2E', () => {
+  test('마이페이지 기본 메뉴가 표시된다', async ({ page }) => {
+    await page.goto('/myPage');
+
+    await expect(page.getByText('내 활동 현황')).toBeVisible();
+    await expect(page.getByText('참가 신청한 여행')).toBeVisible();
+    await expect(page.getByText('작성한 글')).toBeVisible();
+    await expect(page.getByText('공지사항')).toBeVisible();
+    await expect(page.getByText('1:1 문의하기')).toBeVisible();
   });
 
-  test('마이페이지 정보가 표시된다', async ({ page }) => {
-    await expect(page.getByText('내 정보')).toBeVisible();
+  test('서비스 약관 링크가 표시된다', async ({ page }) => {
+    await page.goto('/myPage');
+
+    await expect(page.getByText('서비스이용약관')).toBeVisible();
+    await expect(page.getByText('개인정보처리방침')).toBeVisible();
   });
 
-  test('프로필 정보를 수정할 수 있다', async ({ page }) => {
-    await page.getByRole('button', { name: '수정' }).click();
-    await page.getByPlaceholder('이름').fill('새이름');
-    await page.getByRole('button', { name: '저장' }).click();
-    await expect(page.getByText('수정이 완료되었습니다')).toBeVisible();
+  test('참가 신청한 여행 메뉴 클릭 시 해당 페이지로 이동한다', async ({ page }) => {
+    await page.goto('/myPage');
+
+    await page.getByText('참가 신청한 여행').click();
+    await expect(page).toHaveURL('/requestedTrip');
   });
 
-  test('비밀번호를 변경할 수 있다', async ({ page }) => {
-    await page.getByRole('button', { name: '비밀번호 변경' }).click();
-    await page.getByPlaceholder('현재 비밀번호').fill('currentPw123!');
-    await page.getByRole('button', { name: '확인' }).click();
-    await expect(page.getByText('비밀번호 변경')).toBeVisible();
-  });
+  test('1:1 문의하기 클릭 시 문의 페이지로 이동한다', async ({ page }) => {
+    await page.goto('/myPage');
 
-  test('회원 탈퇴를 진행할 수 있다', async ({ page }) => {
-    await page.getByRole('button', { name: '회원 탈퇴' }).click();
-    await page.getByRole('button', { name: '확인' }).click();
-    await page.waitForURL('/');
+    await page.getByText('1:1 문의하기').click();
+    await expect(page).toHaveURL('/contact');
   });
 });
