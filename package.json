@@ -60,6 +60,7 @@
     "@chromatic-com/storybook": "^3.2.3",
     "@eslint/eslintrc": "^3.2.0",
     "@mswjs/http-middleware": "^0.10.3",
+    "@next/bundle-analyzer": "^16.2.2",
     "@playwright/test": "^1.58.2",
     "@storybook/addon-essentials": "^8.4.7",
     "@storybook/addon-interactions": "^8.4.7",

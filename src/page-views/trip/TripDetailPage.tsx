@@ -25,19 +25,26 @@ import useViewTransition from "@/hooks/useViewTransition";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { myPageStore } from "@/store/client/myPageStore";
 import TopModal from "@/components/TopModal";
-import MapContainer from "@/page-views/trip/create/CreateTripDetail/MapContainer";
 import { formatDateRange } from "@/page-views/trip/create/CalendarClient";
 import EveryBodyIcon from "@/components/icons/EveryBodyIcon";
 import OnlyMaleIcon from "@/components/icons/OnlyMaleIcon";
 import OnlyFemaleIcon from "@/components/icons/OnlyFemaleIcon";
 import RegionWrapper from "@/page-views/trip/create/CreateTripDetail/RegionWrapper";
-
+import dynamic from "next/dynamic";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getPlans } from "@/api/trip";
 import { useInView } from "react-intersection-observer";
 import useInfiniteScroll from "@/hooks/useInfiniteScroll";
-import EmblaCarousel from "@/components/TripCarousel";
 import useComment from "@/hooks/comment/useComment";
+
+const MapContainer = dynamic(
+  () => import("@/page-views/trip/create/CreateTripDetail/MapContainer"),
+  { ssr: false, loading: () => <div className="w-full h-[300px] bg-gray-200 animate-pulse" /> }
+);
+const EmblaCarousel = dynamic(() => import("@/components/TripCarousel"), {
+  ssr: false,
+  loading: () => <div className="w-full h-[200px] bg-gray-200 animate-pulse rounded-xl" />,
+});
 import { userProfileOverlayStore } from "@/store/client/userProfileOverlayStore";
 
 const WEEKDAY = ["일", "월", "화", "수", "목", "금", "토"];

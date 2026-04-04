@@ -14,12 +14,11 @@ const Notifications = () => {
       !isFetching && hasNextPage && fetchNextPage();
     }
   }, [inView, !isFetching, fetchNextPage, hasNextPage]);
-  console.log(data);
   return (
     <>
       {!isLoading && data && (
         <>
-          {/* <NotificationList data={data} /> */}
+          <NotificationList data={data} />
           <div ref={ref} style={{ height: 80, backgroundColor: "#f5f5f5" }} />
         </>
       )}

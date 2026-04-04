@@ -24,7 +24,11 @@ export async function GET(request: Request) {
       socialLogin: 'naver',
       socialLoginId: 'naver-social-id',
       createdAt: db.now(),
-    } as User;
+      travelDistance: 0,
+      travelBadgeCount: 0,
+      visitedCountryCount: 0,
+      userSocialTF: true,
+    };
     db.users.set(userNumber, user);
   }
   return ok({ userStatus: 'ABLE', socialLoginId: 'naver-social-id', userEmail: 'naver@test.com' });

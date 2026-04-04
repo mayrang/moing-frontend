@@ -17,7 +17,7 @@ function makeQueryClient(updateError: (error: Error) => void, setIsMutationError
       onError: (error: Error, query: Query<unknown, unknown, unknown, readonly unknown[]>) => {
         const queryKey = query?.queryKey;
         if (queryKey?.[0] === "profileImg" || queryKey?.[0] === "relation") {
-          console.log("error handling", query);
+          // 프로필/자동완성 에러는 무시
         } else {
           updateError(error);
         }
@@ -42,14 +42,13 @@ function makeQueryClient(updateError: (error: Error) => void, setIsMutationError
         mutation?: Mutation<unknown, unknown, unknown, unknown>
       ) => {
         const mutationKey = mutation?.options?.mutationKey;
-        console.log("error handling", mutation);
         if (
           mutationKey?.[0] === "refresh" ||
           mutationKey?.[0] === "verifyEmailCode" ||
           mutationKey?.[0] === "firstProfileImage" ||
           mutationKey?.[0] === "emailLogin"
         ) {
-          console.log("error handling", error);
+          // 인증 관련 mutation 에러는 각 폼에서 처리
         } else {
           updateError(error);
           setIsMutationError(true);

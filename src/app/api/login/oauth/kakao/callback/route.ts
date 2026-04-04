@@ -30,7 +30,11 @@ export async function GET(request: Request) {
       socialLogin: 'kakao',
       socialLoginId: 'kakao-social-id',
       createdAt: db.now(),
-    } as User;
+      travelDistance: 0,
+      travelBadgeCount: 0,
+      visitedCountryCount: 0,
+      userSocialTF: true,
+    };
     db.users.set(userNumber, user);
   }
   return ok({ userStatus: 'ABLE', socialLoginId: 'kakao-social-id', userEmail: 'kakao@test.com' });

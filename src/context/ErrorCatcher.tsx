@@ -8,7 +8,6 @@ import { useEffect } from 'react'
 const ErrorCatcher = () => {
   const { error, isMutationError } = errorStore()
   const { setErrorToastShow } = errorToastUI()
-  console.log(error, isMutationError, '에러 catcher')
   useEffect(() => {
     if (!error) return
     sendLogToSentry(error)
