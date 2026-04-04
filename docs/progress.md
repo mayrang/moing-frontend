@@ -13,6 +13,7 @@
 | Phase 5 | Tailwind CSS 전환 — Emotion 완전 제거 | ✅ 완료 | 2026-03-22 | 2026-03-22 |
 | Phase 6 | 유저 플로우 개선 — Auth + Trip UX/접근성 | ✅ 완료 | 2026-03-28 | 2026-03-30 |
 | Phase 7 | 프로덕션 안정화 — Route Handler 데모 환경 + 에러 핸들링 완성 | ✅ 완료 | 2026-03-31 | 2026-04-04 |
+| Phase 8 | 성능 최적화 — 번들 분석 + Dynamic import + next/image + Web Vitals + SEO | ✅ 완료 | 2026-04-04 | 2026-04-05 |
 
 ---
 
@@ -227,3 +228,39 @@ _작업 완료 후 기록_
 ### 참조
 - [Auth 베이스라인 문서](../baseline/auth-baseline.md)
 - [Phase 6 상세 문서](refactoring/phase-6.md)
+
+---
+
+## Phase 7: 프로덕션 안정화 — Route Handler 데모 환경 + 에러 핸들링 완성
+
+> 상세: [Phase 7 문서](refactoring/phase-7.md)
+
+### 완료 항목
+- [x] Route Handler 66개 — Vercel에서 백엔드 없이 완전 동작
+- [x] Logger adapter (Sentry/console 전환) + `createMutationOptions` ErrorPolicy 확장
+- [x] NaN·알림 공백 등 프로덕션 데드존 수정
+
+---
+
+## Phase 8: 성능 최적화 — 번들 분석 + Dynamic import + next/image + Web Vitals + SEO
+
+> 상세: [Phase 8 문서](refactoring/phase-8.md)
+
+### 완료 항목
+- [x] `@next/bundle-analyzer` 도입 — `/userProfile/log` 1.79MB → 164kB (-91%)
+- [x] `next/dynamic({ ssr: false })` — TravelLogMap, MapContainer, EmblaCarousel
+- [x] `loading.tsx` 스켈레톤 4개 (Streaming SSR)
+- [x] `<img>` → `next/image` 전환 8개 파일 (LCP 후보 `priority` 적용)
+- [x] Web Vitals → Sentry/Logger 연동 (`WebVitals.tsx`)
+- [x] SEO Metadata — 전역 OG 태그 + title template + `generateMetadata` (여행 상세 동적)
+- [x] 데모 버그 수정 — 여행한 거리 NaN, 알림 빈화면, console.log 10개 제거
+
+### 최종 수치
+
+| 항목 | Before | After |
+|------|--------|-------|
+| `/userProfile/log` 번들 | 1.79 MB | **164 kB** (-91%) |
+| `/trip/detail` 번들 | ~450 kB | **~262 kB** (-42%) |
+| `<img>` → `<Image>` 전환 | 0개 | 8개 |
+| console.log 잔존 | 10개+ | 0개 |
+| Vitest | 273개 | 273개 (회귀 없음) |
