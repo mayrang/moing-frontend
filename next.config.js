@@ -19,13 +19,17 @@ const nextConfig = {
   async rewrites() {
     const apiBaseUrl = process.env.API_BASE_URL;
     // 유효한 http(s) URL일 때만 프록시. 빈 문자열/공백/undefined는 Route Handler 사용
+    // fallback: Route Handler가 없는 경로만 MSW Express(9090)로 프록시
+    // (beforeFiles/afterFiles 는 동적 Route Handler보다 우선되어 401/404 발생)
     if (!apiBaseUrl || !apiBaseUrl.startsWith('http')) return [];
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${apiBaseUrl}/api/:path*`,
-      },
-    ];
+    return {
+      fallback: [
+        {
+          source: '/api/:path*',
+          destination: `${apiBaseUrl}/api/:path*`,
+        },
+      ],
+    };
   },
 };
 

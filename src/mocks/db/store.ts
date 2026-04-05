@@ -404,6 +404,18 @@ function seedDatabase() {
   comments.forEach((c) => db.comments.set(c.commentNumber, c));
 }
 
-seedDatabase();
+// ── Dev 싱글톤 (Next.js Route Handler 모듈 격리 우회) ──────────────────────
+// Next.js dev 모드에서 동적 Route Handler([param])는 별도 모듈 컨텍스트로
+// 컴파일되어, 같은 파일을 import해도 Map 인스턴스가 분리된다.
+// globalThis를 통해 프로세스 전체에서 단일 db 인스턴스를 공유한다.
+declare global {
+  // eslint-disable-next-line no-var
+  var __moingDb: typeof db | undefined;
+}
 
-export default db;
+if (!globalThis.__moingDb) {
+  globalThis.__moingDb = db;
+  seedDatabase();
+}
+
+export default globalThis.__moingDb;

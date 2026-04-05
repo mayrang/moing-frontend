@@ -15,6 +15,10 @@ import { test as base, expect } from '@playwright/test';
  */
 export const test = base.extend<{ page: typeof base.info extends () => infer R ? R : never }>({
   page: async ({ page }, use) => {
+    // 이전 실행의 stale 토큰을 제거해 항상 fresh 로그인 보장
+    await page.goto('/');
+    await page.evaluate(() => localStorage.clear());
+
     await page.goto('/login');
     await page.fill('[placeholder="이메일 아이디"]', 'test@test.com');
     await page.fill('[placeholder="패스워드"]', 'Password123!');

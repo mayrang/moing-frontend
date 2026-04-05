@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   }
 
   const { accessToken, refreshToken } = db.createSession(user.userNumber);
-  const response = ok({ userNumber: user.userNumber, accessToken });
+  const response = ok({ userId: user.userNumber, accessToken });
   response.cookies.set('refreshToken', refreshToken, {
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60,
