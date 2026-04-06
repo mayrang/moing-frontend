@@ -418,4 +418,5 @@ if (!globalThis.__moingDb) {
   seedDatabase();
 }
 
-export default globalThis.__moingDb;
+// if 블록에서 반드시 초기화되므로 undefined가 될 수 없음
+export default globalThis.__moingDb!;
