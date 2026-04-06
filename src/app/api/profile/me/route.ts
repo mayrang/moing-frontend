@@ -15,6 +15,10 @@ export async function GET(request: Request) {
     introduction: user.introduction,
     profileImageUrl: user.profileImageUrl,
     preferredTags: user.preferredTags,
+    travelDistance: user.travelDistance ?? 0,
+    travelBadgeCount: user.travelBadgeCount ?? 0,
+    visitedCountryCount: user.visitedCountryCount ?? 0,
+    userSocialTF: user.userSocialTF ?? false,
   });
 }
 

@@ -89,7 +89,6 @@ export function getDateByPlanOrder(startDate, planOrder) {
 export function formatTimeOnContact(date: string) {
   const now = dayjs().utcOffset(9);
   const inputDate = dayjs.utc(date).utcOffset(9);
-  console.log("inputDate", inputDate.format(), now.format());
   const diffInMinutes = now.diff(inputDate, "minute");
   const diffInHours = now.diff(inputDate, "hour");
   const diffInDays = now.diff(inputDate, "day");
@@ -138,10 +137,8 @@ export function daysAgo(date: string) {
 }
 
 export function daysAgoFormatted(date: string) {
-  console.log(date, "date");
   const format = "YYYY년 MM월 DD일 HH시 mm분";
   const parsedDate = dayjs(date, format);
-  console.log("parse", parsedDate);
   return daysAgo(parsedDate.format("YYYY-MM-DD HH:mm"));
 }
 // 현재 시간을 2000-10-10 11:11 문자열로 반환.

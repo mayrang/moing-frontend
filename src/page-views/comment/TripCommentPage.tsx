@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Comment from "@/components/comment/Comment";
 import CommentForm from "@/components/comment/CommentForm";
 import Spacing from "@/components/Spacing";
@@ -55,11 +56,11 @@ const TripComment = () => {
       ) : (
         <>
           <div className="flex flex-col items-center justify-center h-full">
-            <img
+            <Image
               alt="댓글이 없습니다"
               width={80}
               height={80}
-              src={"/images/noData.png"}
+              src="/images/noData.png"
             />
             <Spacing size={16} />
             <div className="text-sm font-normal leading-5 tracking-[-0.025em] text-center">

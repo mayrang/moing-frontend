@@ -30,7 +30,7 @@ export async function GET(request: Request) {
 
   let posts = [...db.communityPosts.values()].filter((p) => !p.deleted);
   if (keyword) posts = posts.filter((p) => p.title.includes(keyword) || p.content.includes(keyword));
-  if (categoryName) posts = posts.filter((p) => p.categoryName === categoryName);
+  if (categoryName && categoryName !== '전체') posts = posts.filter((p) => p.categoryName === categoryName);
   posts = posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   const paginated = posts.slice(page * size, (page + 1) * size);
@@ -68,5 +68,5 @@ export async function POST(request: Request) {
     createdAt: db.now(),
   };
   db.communityPosts.set(communityNumber, post);
-  return ok({ communityNumber });
+  return ok({ postNumber: communityNumber });
 }

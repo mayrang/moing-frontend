@@ -17,7 +17,6 @@ import {
 const useUserProfile = () => {
   const { accessToken } = authStore();
   const { userProfileUserId } = userProfileOverlayStore();
-  console.log(userProfileUserId, "user");
   const { data: userProfileInfo, isLoading: isLoadingUserProfileInfo } =
     useQuery<IUserProfileInfo | null>({
       queryKey: ["userProfile", userProfileUserId],

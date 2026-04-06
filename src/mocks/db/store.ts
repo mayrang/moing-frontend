@@ -24,6 +24,10 @@ export interface User {
   socialLogin: null | 'google' | 'kakao' | 'naver';
   socialLoginId: string | null;
   createdAt: string;
+  travelDistance: number;
+  travelBadgeCount: number;
+  visitedCountryCount: number;
+  userSocialTF: boolean;
 }
 
 export interface Session {
@@ -186,6 +190,10 @@ export const db = {
           socialLogin: null,
           socialLoginId: null,
           createdAt: db.now(),
+          travelDistance: 0,
+          travelBadgeCount: 0,
+          visitedCountryCount: 0,
+          userSocialTF: false,
         };
         db.users.set(userNumber, user);
       }
@@ -275,6 +283,7 @@ function seedDatabase() {
       introduction: '여행을 사랑하는 20대입니다. 같이 떠나요!',
       profileImageUrl: 'https://placehold.co/100x100/8B9CF7/ffffff?text=김',
       status: 'ABLE', socialLogin: null, socialLoginId: null, createdAt: daysAgo(30),
+      travelDistance: 1240, travelBadgeCount: 3, visitedCountryCount: 5, userSocialTF: false,
     },
     {
       userNumber: 2, email: 'duplicate@test.com', password: 'Password123!',
@@ -283,6 +292,7 @@ function seedDatabase() {
       introduction: '세계 여행이 꿈입니다.',
       profileImageUrl: 'https://placehold.co/100x100/F7A28B/ffffff?text=이',
       status: 'ABLE', socialLogin: null, socialLoginId: null, createdAt: daysAgo(20),
+      travelDistance: 8500, travelBadgeCount: 7, visitedCountryCount: 12, userSocialTF: false,
     },
     {
       userNumber: 3, email: 'alice@test.com', password: 'Password123!',
@@ -291,6 +301,7 @@ function seedDatabase() {
       introduction: '자연 속에서 힐링하는 걸 좋아해요.',
       profileImageUrl: 'https://placehold.co/100x100/8BF7C0/ffffff?text=박',
       status: 'ABLE', socialLogin: null, socialLoginId: null, createdAt: daysAgo(15),
+      travelDistance: 320, travelBadgeCount: 1, visitedCountryCount: 2, userSocialTF: false,
     },
   ];
   users.forEach((u) => db.users.set(u.userNumber, u));
@@ -393,6 +404,19 @@ function seedDatabase() {
   comments.forEach((c) => db.comments.set(c.commentNumber, c));
 }
 
-seedDatabase();
+// ── Dev 싱글톤 (Next.js Route Handler 모듈 격리 우회) ──────────────────────
+// Next.js dev 모드에서 동적 Route Handler([param])는 별도 모듈 컨텍스트로
+// 컴파일되어, 같은 파일을 import해도 Map 인스턴스가 분리된다.
+// globalThis를 통해 프로세스 전체에서 단일 db 인스턴스를 공유한다.
+declare global {
+  // eslint-disable-next-line no-var
+  var __moingDb: typeof db | undefined;
+}
 
-export default db;
+if (!globalThis.__moingDb) {
+  globalThis.__moingDb = db;
+  seedDatabase();
+}
+
+// if 블록에서 반드시 초기화되므로 undefined가 될 수 없음
+export default globalThis.__moingDb!;

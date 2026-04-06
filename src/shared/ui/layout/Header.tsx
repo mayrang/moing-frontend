@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import BackIcon from '@/components/icons/BackIcon';
 import TripDetailHeader from '@/page/TripDetail/TripDetailHeader';
 import AlarmIcon from '../icons/AlarmIcon';
@@ -60,7 +61,7 @@ const Header = () => {
             checkRoute.startsWith(ROUTES.COMMUNITY.DETAIL)) &&
             searchParams?.get('share') === 'true' && (
               <Link href="/" style={{ marginLeft: 14 }}>
-                <img src={'/images/homeLogo.png'} width={96} height={24} alt="홈 모잉의 로고입니다" />
+                <Image src="/images/homeLogo.png" width={96} height={24} alt="홈 모잉의 로고입니다" />
               </Link>
             )}
         </div>

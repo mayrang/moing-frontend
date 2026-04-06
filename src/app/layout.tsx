@@ -4,7 +4,31 @@ import "./globals.css";
 import { MSWComponent } from "@/context/MSWComponent";
 import UserProfileOverlay from "@/components/userProfile/UserProfileOverlay";
 import NetworkErrorToast from "@/shared/ui/toast/NetworkErrorToast";
+import WebVitals from "@/components/WebVitals";
 import localFont from "next/font/local";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: {
+    default: "모잉 | 여행 동행 매칭 플랫폼",
+    template: "%s | 모잉",
+  },
+  description: "함께 떠나는 여행, 모잉에서 동행을 찾아보세요. 국내외 여행 동행 매칭 서비스입니다.",
+  keywords: ["여행", "동행", "여행 동행", "여행 매칭", "모잉", "해외여행", "국내여행"],
+  openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    siteName: "모잉",
+    title: "모잉 | 여행 동행 매칭 플랫폼",
+    description: "함께 떠나는 여행, 모잉에서 동행을 찾아보세요.",
+    images: [{ url: "/images/homeLogo.png", width: 96, height: 24, alt: "모잉 로고" }],
+  },
+  twitter: {
+    card: "summary",
+    title: "모잉 | 여행 동행 매칭 플랫폼",
+    description: "함께 떠나는 여행, 모잉에서 동행을 찾아보세요.",
+  },
+};
 
 const pretendard = localFont({
   src: [
@@ -27,6 +51,7 @@ export default function RootLayout({
     <html lang="ko" className={pretendard.variable}>
       <body className={pretendard.className}>
         <Providers>
+          <WebVitals />
           <MSWComponent />
           <UserProfileOverlay />
           <NetworkErrorToast />

@@ -22,6 +22,10 @@ export async function POST(request: Request) {
       socialLogin: null,
       socialLoginId: null,
       createdAt: db.now(),
+      travelDistance: 0,
+      travelBadgeCount: 0,
+      visitedCountryCount: 0,
+      userSocialTF: false,
     };
     db.users.set(userNumber, user);
   }
@@ -30,7 +34,7 @@ export async function POST(request: Request) {
   }
 
   const { accessToken, refreshToken } = db.createSession(user.userNumber);
-  const response = ok({ userNumber: user.userNumber, accessToken });
+  const response = ok({ userId: user.userNumber, accessToken });
   response.cookies.set('refreshToken', refreshToken, {
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60,

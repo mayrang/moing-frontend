@@ -25,6 +25,10 @@ export async function POST(request: Request) {
     socialLogin: null,
     socialLoginId: null,
     createdAt: db.now(),
+    travelDistance: 0,
+    travelBadgeCount: 0,
+    visitedCountryCount: 0,
+    userSocialTF: false,
   };
   db.users.set(userNumber, user);
   db.emailVerifications.delete(sessionToken);

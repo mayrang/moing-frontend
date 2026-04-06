@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import FilterList from "@/components/FilterList";
 import RecommendKeyword from "@/components/RecommendKeyword";
 import SearchFilterTag from "@/components/designSystem/tag/SearchFilterTag";
@@ -124,11 +125,11 @@ const SearchTravel = () => {
             <>
               <div className="flex flex-col items-center">
                 <Spacing size={"12.3svh"} />
-                <img
+                <Image
                   alt="검색 결과가 없습니다"
                   width={80}
                   height={80}
-                  src={"/images/noData.png"}
+                  src="/images/noData.png"
                 />
                 <Spacing size={16} />
                 <div className="text-base font-medium leading-[22.4px] tracking-[-0.025em] text-center">

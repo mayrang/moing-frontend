@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import RightVector from '@/shared/ui/icons/RightVector';
 
 interface TextButtonProps {
@@ -38,8 +39,10 @@ const TextButton = ({
     >
       <div className="flex items-center gap-2">
         {isLeftVector && (
-          <img
+          <Image
             src={leftIconSrc === '' ? '/images/createTripBtn.png' : leftIconSrc}
+            width={20}
+            height={20}
             alt="icon"
           />
         )}

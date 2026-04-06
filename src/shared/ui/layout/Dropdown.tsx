@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import { useState } from 'react';
 
 interface DropdownProps {
@@ -28,9 +29,9 @@ const Dropdown = ({ list, value, setValue }: DropdownProps) => {
         >
           {value}
           {active ? (
-            <img src="/images/dropDownUp.png" alt="" />
+            <Image src="/images/dropDownUp.png" width={16} height={16} alt="" />
           ) : (
-            <img src="/images/dropDown.png" alt="" />
+            <Image src="/images/dropDown.png" width={16} height={16} alt="" />
           )}
         </button>
         <ul
