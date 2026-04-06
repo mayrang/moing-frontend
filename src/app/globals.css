@@ -34,6 +34,7 @@
 
 html {
   overscroll-behavior: none;
+  color-scheme: light;
 }
 
 body {

@@ -1,26 +1,27 @@
 "use client";
-import { googleLogin, kakaoLogin, naverLogin } from "@/api/user";
-import GoogleIcon from "@/components/icons/GoogleIcon";
-import KakaoIcon from "@/components/icons/KakaoIcon";
-import NaverIcon from "@/components/icons/NaverIcon";
+// 소셜 로그인 — 데모 환경에서 비활성화
+// import { googleLogin, kakaoLogin, naverLogin } from "@/api/user";
+// import GoogleIcon from "@/components/icons/GoogleIcon";
+// import KakaoIcon from "@/components/icons/KakaoIcon";
+// import NaverIcon from "@/components/icons/NaverIcon";
 import Spacing from "@/components/Spacing";
 import { useRouter } from "next/navigation";
 
 export default function LoginActions() {
   const router = useRouter();
 
-  const handleSimpleLogin = async (domain: "naver" | "kakao" | "google") => {
-    switch (domain) {
-      case "naver":
-        await naverLogin();
-        return;
-      case "kakao":
-        await kakaoLogin();
-        return;
-      case "google":
-        await googleLogin();
-    }
-  };
+  // const handleSimpleLogin = async (domain: "naver" | "kakao" | "google") => {
+  //   switch (domain) {
+  //     case "naver":
+  //       await naverLogin();
+  //       return;
+  //     case "kakao":
+  //       await kakaoLogin();
+  //       return;
+  //     case "google":
+  //       await googleLogin();
+  //   }
+  // };
 
   return (
     <>
@@ -32,7 +33,8 @@ export default function LoginActions() {
       </div>
       <div className="px-6 pt-[6.3svh] flex items-end w-full flex-col text-[var(--color-text-muted)] text-sm leading-[16.71px]">
         <Spacing size="2.3svh" />
-        <div className="flex items-center justify-center w-full gap-6">
+        {/* 소셜 로그인 — 데모 환경에서 비활성화 */}
+        {/* <div className="flex items-center justify-center w-full gap-6">
           <button
             type="button"
             className="cursor-pointer"
@@ -57,7 +59,7 @@ export default function LoginActions() {
           >
             <GoogleIcon />
           </button>
-        </div>
+        </div> */}
       </div>
     </>
   );

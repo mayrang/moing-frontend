@@ -9,6 +9,7 @@ import localFont from "next/font/local";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  colorScheme: "light",
   title: {
     default: "모잉 | 여행 동행 매칭 플랫폼",
     template: "%s | 모잉",
@@ -48,7 +49,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko" className={pretendard.variable}>
+    <html lang="ko" className={pretendard.variable} style={{ colorScheme: "light" }}>
       <body className={pretendard.className}>
         <Providers>
           <WebVitals />
