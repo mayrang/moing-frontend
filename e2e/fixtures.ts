@@ -7,13 +7,13 @@
  * 사용법:
  *   import { test, expect } from './fixtures';
  */
-import { test as base, expect } from '@playwright/test';
+import { test as base, expect, Page } from '@playwright/test';
 
 /**
  * 로그인된 page를 제공하는 픽스처.
  * 시드 유저(test@test.com / Password123!)로 로그인 후 홈(/)을 대기한다.
  */
-export const test = base.extend<{ page: typeof base.info extends () => infer R ? R : never }>({
+export const test = base.extend<{ page: Page }>({
   page: async ({ page }, use) => {
     // 이전 실행의 stale 토큰을 제거해 항상 fresh 로그인 보장
     await page.goto('/');
