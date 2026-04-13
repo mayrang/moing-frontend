@@ -63,26 +63,18 @@ export default function RecruitingWrapper() {
           className="flex items-center justify-between mt-2 cursor-pointer h-12 px-4 py-3 rounded-[30px] border border-[var(--color-muted3)] w-full"
           onClick={() => setShowModal(true)}
         >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div>
-              <PersonIcon stroke="var(--color-keycolor)" width={24} height={20} />
-            </div>
+          <div className="flex items-center gap-2">
+            <PersonIcon stroke="var(--color-keycolor)" width={24} height={20} />
             <div
-              className="text-base font-medium leading-5 text-center ml-1 mr-2"
+              className="text-base font-medium leading-5"
               style={{
                 color: isCountSeleted ? "var(--color-text-base)" : "var(--color-text-muted2)",
               }}
             >
               {maxPersonForCreateTrip}
             </div>
-            <Vector />
           </div>
+          <Vector />
         </button>
       </div>
       {showModal && (

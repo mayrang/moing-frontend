@@ -4,18 +4,20 @@ import { ok, fail, getToken } from '../../_lib/helpers';
 const formatPost = (post: CommunityPost, userNumber?: number) => {
   const author = db.users.get(post.userNumber);
   return {
-    communityNumber: post.communityNumber,
+    postNumber: post.communityNumber,
     userNumber: post.userNumber,
-    userName: author?.name || '',
-    profileUrl: author?.profileImageUrl || null,
+    postWriter: author?.name || '',
+    profileImageUrl: author?.profileImageUrl || null,
+    categoryNumber: post.categoryNumber,
+    categoryName: post.categoryName,
     title: post.title,
     content: post.content,
-    categoryName: post.categoryName,
+    regDate: post.createdAt,
+    viewCount: post.viewCount,
     likeCount: post.likeCount,
     commentCount: db.getCommentsByRelated('COMMUNITY', post.communityNumber).length,
     liked: userNumber ? post.likedBy.includes(userNumber) : false,
-    createdAt: post.createdAt,
-    images: post.images,
+    thumbnailUrl: post.images[0] || '',
   };
 };
 

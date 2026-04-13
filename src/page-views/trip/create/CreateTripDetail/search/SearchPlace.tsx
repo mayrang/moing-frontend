@@ -41,7 +41,7 @@ const SearchPlace = () => {
 
   const placesLib = useMapsLibrary("places");
   useEffect(() => {
-    if (!placesLib || debouncedKeyword === "") return;
+    if (debouncedKeyword === "") return;
 
     let script: HTMLScriptElement | null = null;
     let isMounted = true;
@@ -105,6 +105,7 @@ const SearchPlace = () => {
     }
 
     if (locationName.mapType === "google") {
+      if (!placesLib) return;
       fetchPlacePredictions();
     } else {
       script = document.createElement("script");

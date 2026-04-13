@@ -40,7 +40,7 @@ const CommentInput = forwardRef<HTMLTextAreaElement, CommentInputProps>(
       >
         <textarea
           ref={ref}
-          aria-label={ariaLabel}
+          aria-label={ariaLabel ?? '댓글 입력'}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           placeholder={placeholder}
@@ -51,7 +51,7 @@ const CommentInput = forwardRef<HTMLTextAreaElement, CommentInputProps>(
         <button
           type="submit"
           aria-label="댓글 등록"
-          className="w-8 h-8 flex items-center justify-center rounded-full cursor-pointer"
+          className="w-8 h-8 flex items-center justify-center rounded-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-keycolor)] focus-visible:ring-offset-2"
           style={{
             backgroundColor: canSubmit ? 'rgba(62, 141, 0, 1)' : 'rgba(205, 205, 205, 1)',
           }}

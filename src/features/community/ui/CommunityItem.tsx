@@ -11,7 +11,7 @@ const CommunityItem = ({ data }: { data: ICommunityItem }) => {
     <div className="flex flex-col gap-2 h-[133px] justify-center border-b border-[var(--color-muted4)] py-[11px] pb-4">
       <div className="flex items-center gap-[26px]">
         <div className="flex-1 flex flex-col overflow-hidden justify-center gap-2">
-          <div>
+          <div className="w-fit">
             <BoxLayoutTag text={data.categoryName} />
           </div>
           <div className="text-base font-semibold pl-1 leading-[19.09px]">{data.title}</div>

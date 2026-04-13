@@ -11,6 +11,7 @@ import { postReport } from "@/api/report";
 import { authStore } from "@/store/client/authStore";
 import { reportStore } from "@/store/client/reportStore";
 import { useMutation } from "@tanstack/react-query";
+import { createMutationOptions } from "@/shared/lib/errors";
 import { errorStore } from "@/store/client/errorStore";
 import { userProfileOverlayStore } from "@/store/client/userProfileOverlayStore";
 
@@ -25,9 +26,10 @@ const ReportDetail = () => {
 
   const type = REPORT_LIST.find((item) => item.query === reportType);
   const { mutate, isSuccess, isError } = useMutation({
-    mutationFn: (data: any) => {
-      return postReport(data, accessToken as string);
-    },
+    ...createMutationOptions({
+      mutationFn: (data: any) => postReport(data, accessToken as string),
+      policy: { network: 'toast', system: 'toast' },
+    }),
     onSuccess: (data: any) => {
       if (data.success === "이미 신고한 이력이 있습니다.") {
         updateError(data.success);

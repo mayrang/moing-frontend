@@ -30,6 +30,7 @@ const EditAndDeleteButton = ({
     >
       {!isMyApplyTrip && (
         <button
+          type="button"
           onClick={editClickHandler}
           className={[
             'flex h-1/2 w-full cursor-pointer items-center justify-center',
@@ -37,12 +38,14 @@ const EditAndDeleteButton = ({
             'rounded-t-[20px] border-none border-b border-[#e2e2e2]',
             'text-base font-semibold text-[var(--color-text-base)]',
             'active:rounded-t-[20px] active:bg-[var(--color-muted3)]',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-keycolor)] focus-visible:ring-inset',
           ].join(' ')}
         >
           수정하기
         </button>
       )}
       <button
+        type="button"
         onClick={deleteClickHandler}
         className={[
           'flex cursor-pointer items-center justify-center',
@@ -52,6 +55,7 @@ const EditAndDeleteButton = ({
           isMyApplyTrip
             ? 'active:rounded-[20px] active:bg-[var(--color-muted3)]'
             : 'active:rounded-b-[20px] active:bg-[var(--color-muted3)]',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-keycolor)] focus-visible:ring-inset',
         ].join(' ')}
       >
         {deleteText}

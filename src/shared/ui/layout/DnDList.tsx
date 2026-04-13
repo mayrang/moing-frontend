@@ -50,21 +50,31 @@ const DndItem = (
         </div>
       </div>
       <div className="flex">
-        <div className="flex items-center w-[42px] h-[42px] justify-center cursor-move touch-none" data-drag-handle>
-          <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div
+          className="flex items-center w-[42px] h-[42px] justify-center cursor-move touch-none"
+          data-drag-handle
+          role="img"
+          aria-label="드래그하여 순서 변경"
+        >
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M1 6H15" stroke="#ABABAB" strokeLinecap="round" strokeLinejoin="round" />
             <path d="M1 1H15" stroke="#ABABAB" strokeLinecap="round" strokeLinejoin="round" />
             <path d="M1 11H15" stroke="#ABABAB" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
-        <div className="flex items-center w-[42px] h-[42px] justify-center cursor-move touch-none" onClick={handleDelete}>
-          <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <button
+          type="button"
+          aria-label="항목 삭제"
+          className="flex items-center w-[42px] h-[42px] justify-center cursor-pointer touch-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-keycolor)] focus-visible:ring-offset-2 rounded"
+          onClick={handleDelete}
+        >
+          <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M1 4H2.55556H15" stroke="#ABABAB" strokeLinecap="round" strokeLinejoin="round" />
             <path d="M13.4436 4V14.5C13.4436 14.8978 13.2797 15.2794 12.988 15.5607C12.6962 15.842 12.3006 16 11.888 16H4.11024C3.69768 16 3.30202 15.842 3.0103 15.5607C2.71858 15.2794 2.55469 14.8978 2.55469 14.5V4M4.88802 4V2.5C4.88802 2.10218 5.05191 1.72064 5.34363 1.43934C5.63536 1.15804 6.03102 1 6.44358 1H9.55469C9.96725 1 10.3629 1.15804 10.6546 1.43934C10.9464 1.72064 11.1102 2.10218 11.1102 2.5V4" stroke="#ABABAB" strokeLinecap="round" strokeLinejoin="round" />
             <path d="M6.44531 7.75V12.25" stroke="#ABABAB" strokeLinecap="round" strokeLinejoin="round" />
             <path d="M9.55469 7.75V12.25" stroke="#ABABAB" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-        </div>
+        </button>
       </div>
     </li>
   );

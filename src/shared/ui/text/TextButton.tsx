@@ -4,7 +4,7 @@ import Image from 'next/image';
 import RightVector from '@/shared/ui/icons/RightVector';
 
 interface TextButtonProps {
-  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
   text: React.ReactNode;
   isRightVector: boolean;
   rightText?: string;
@@ -28,13 +28,15 @@ const TextButton = ({
   titleWeight = 'regular',
 }: TextButtonProps) => {
   return (
-    <div
+    <button
+      type="button"
       onClick={onClick}
       className={[
         'box-border flex h-[52px] w-full cursor-pointer items-center justify-between',
         'px-2 py-[14px]',
         'transition-[background-color] duration-200 ease-in-out',
         'hover:bg-[var(--color-button-hover)] active:bg-[var(--color-button-active)]',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-keycolor)] focus-visible:ring-offset-2',
       ].join(' ')}
     >
       <div className="flex items-center gap-2">
@@ -67,7 +69,7 @@ const TextButton = ({
           </div>
         )}
       </div>
-    </div>
+    </button>
   );
 };
 

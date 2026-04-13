@@ -70,8 +70,9 @@ const Header = () => {
       <h2 className="text-xl font-bold">{getPageTitle()}</h2>
 
       {shouldShowSkip() && (
-        <div
-          className="font-normal text-sm text-[rgba(155,155,155,1)] underline cursor-pointer"
+        <button
+          type="button"
+          className="font-normal text-sm text-[rgba(155,155,155,1)] underline cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-keycolor)] focus-visible:ring-offset-2"
           onClick={() => {
             if (checkRoute.exact(ROUTES.CREATE_TRIP.TAG)) {
               addTags([]);
@@ -82,7 +83,7 @@ const Header = () => {
           }}
         >
           건너뛰기
-        </div>
+        </button>
       )}
 
       {!checkRoute.exact(ROUTES.REGISTER_PROCESS.TRIP_STYLE) &&
@@ -98,12 +99,14 @@ const Header = () => {
         (isGuestUser() ? (
           <div className="w-12 h-12" />
         ) : (
-          <div
-            className="w-12 h-12 flex cursor-pointer items-center justify-center"
+          <button
+            type="button"
+            aria-label="알림"
+            className="w-12 h-12 flex cursor-pointer items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-keycolor)] focus-visible:ring-offset-2 rounded-full"
             onClick={handleNotification}
           >
             <AlarmIcon size={23} stroke="var(--color-text-base)" />
-          </div>
+          </button>
         ))}
     </header>
   );

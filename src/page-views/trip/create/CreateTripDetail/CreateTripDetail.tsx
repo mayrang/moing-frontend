@@ -126,7 +126,6 @@ const CreateTripDetail = () => {
     if (
       title === "" ||
       details === "" ||
-      details === "" ||
       maxPerson === 0 ||
       genderType === "" ||
       !date?.startDate ||
@@ -136,6 +135,7 @@ const CreateTripDetail = () => {
       locationName.locationName === ""
     ) {
       addCompletionStatus(false);
+      return;
     }
 
     createTripMutate(undefined, {
@@ -231,8 +231,8 @@ const CreateTripDetail = () => {
               lng={initGeometry?.lng || 126.9816417}
               zoom={locationName.mapType === "google" ? 11 : 9}
             />
-            <div className="mt-6">
-              <div className="text-lg font-medium text-black leading-[21px]">여행 일정</div>
+            <div className="mt-6 -mx-6">
+              <div className="px-6 text-lg font-medium text-black leading-[21px]">여행 일정</div>
               <div className="flex flex-col gap-4 mt-4">
                 {date &&
                   getDatesArray(date?.startDate ?? "", date?.endDate ?? "").map(
