@@ -3,7 +3,7 @@ import MoingFullLogo from '@/components/icons/MoingFullLogo'
 import { authStore } from '@/store/client/authStore'
 import { splashOnStore } from '@/store/client/splashOnOffStore'
 import { useRouter } from 'next/navigation'
-import React, { useEffect } from 'react'
+import React, { useEffect, useLayoutEffect } from 'react'
 
 export default function Splash() {
   const { splashOn, addSplashOn } = splashOnStore()
@@ -11,29 +11,27 @@ export default function Splash() {
   const { accessToken } = authStore()
   const router = useRouter()
 
-  useEffect(() => {
-    const revisit =
-      typeof window !== 'undefined' ? sessionStorage.getItem('revisit') : null
+  // useLayoutEffect: 브라우저 첫 페인트 전에 동기적으로 실행
+  // splashOn 초기값이 false(SSR 호환)이므로, 첫 방문 시 여기서 true로 설정
+  // → 유저는 SSR HTML을 보지 못하고 바로 Splash를 봄 (깜빡임 없음)
+  useLayoutEffect(() => {
+    const revisit = sessionStorage.getItem('revisit')
 
     if (revisit === undefined || revisit === null) {
+      addSplashOn(true)
+      sessionStorage.setItem('revisit', 'true')
       setTimeout(() => {
-        let themeColorMetaTag = document.querySelector(
-          'meta[name="theme-color"]'
-        )
+        const themeColorMetaTag = document.querySelector('meta[name="theme-color"]')
         if (themeColorMetaTag) {
           themeColorMetaTag.setAttribute('content', '#F5F5F5')
         }
-
         addSplashOn(false)
       }, 2000)
-      sessionStorage.setItem('revisit', 'true')
-    } else if (revisit === 'true') {
-      addSplashOn(false)
     }
   }, [])
+
   useEffect(() => {
-    const revisit =
-      typeof window !== 'undefined' ? sessionStorage.getItem('revisit') : null
+    const revisit = sessionStorage.getItem('revisit')
     if (splashOn === false && revisit !== 'true') {
       // 스플래쉬 닫혔고, 방문한 적이 없다면, 온보딩으로.
       if (!accessToken) {
