@@ -17,7 +17,7 @@ const formatPost = (post: CommunityPost, userNumber?: number) => {
     likeCount: post.likeCount,
     commentCount: db.getCommentsByRelated('COMMUNITY', post.communityNumber).length,
     liked: userNumber ? post.likedBy.includes(userNumber) : false,
-    thumbnailUrl: post.images[0]?.url || '',
+    thumbnailUrl: post.images[0] || '',
   };
 };
 
