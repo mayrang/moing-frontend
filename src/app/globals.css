@@ -369,6 +369,12 @@ body {
   }
 }
 
+/* react-slick 아이콘 폰트 font-display 오버라이드 (Lighthouse font-display-insight 대응) */
+@font-face {
+  font-family: 'slick';
+  font-display: swap;
+}
+
 /* ThreeRowCarousel — react-slick 커스텀 dots */
 .dots-custom {
   position: relative;
