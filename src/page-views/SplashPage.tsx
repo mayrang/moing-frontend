@@ -26,7 +26,7 @@ export default function Splash() {
           themeColorMetaTag.setAttribute('content', '#F5F5F5')
         }
         addSplashOn(false)
-      }, 2000)
+      }, 1500)
     }
   }, [])
 

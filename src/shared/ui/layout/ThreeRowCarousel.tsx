@@ -56,9 +56,16 @@ const ThreeRowCarousel = ({
     if (!container) return;
     container.querySelectorAll<HTMLElement>('.slick-slide[aria-hidden="true"]').forEach((slide) => {
       slide.setAttribute('inert', '');
+      // axe-core aria-hidden-focus 규칙 대응: inert 외 tabindex=-1 직접 설정
+      slide.querySelectorAll<HTMLElement>('a, button, input, select, textarea, [tabindex]').forEach((el) => {
+        el.setAttribute('tabindex', '-1');
+      });
     });
     container.querySelectorAll<HTMLElement>('.slick-slide:not([aria-hidden="true"])').forEach((slide) => {
       slide.removeAttribute('inert');
+      slide.querySelectorAll<HTMLElement>('a, button, input, select, textarea').forEach((el) => {
+        el.removeAttribute('tabindex');
+      });
     });
   }, []);
 
@@ -67,6 +74,7 @@ const ThreeRowCarousel = ({
     if (!container) return;
 
     // 초기 실행: slick이 onInit보다 늦게 aria-hidden을 세팅하는 경우 대비
+    updateInert();
     const timer = setTimeout(updateInert, 50);
     const observer = new MutationObserver(updateInert);
     observer.observe(container, { attributes: true, subtree: true, attributeFilter: ['aria-hidden'] });
