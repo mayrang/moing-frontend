@@ -20,6 +20,7 @@ const ReportButton = ({
       ].join(' ')}
     >
       <button
+        type="button"
         onClick={reportClickHandler}
         className={[
           'flex h-full w-full cursor-pointer items-center justify-center',
@@ -27,6 +28,7 @@ const ReportButton = ({
           'rounded-b-[20px] border-none',
           'text-base font-semibold text-[var(--color-like)]',
           'active:rounded-b-[20px] active:bg-[var(--color-muted3)]',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-keycolor)] focus-visible:ring-inset',
         ].join(' ')}
       >
         {reportText}

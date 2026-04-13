@@ -185,6 +185,19 @@ const TopModal = ({
     return () => { document.body.style.overflow = ''; };
   }, []);
 
+  // Escape 키로 패널 접기
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && modalHeight > 0) {
+        setModalHeight(0);
+        setIsMapFull(true);
+        onHeightChange(0);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [modalHeight, setIsMapFull, onHeightChange]);
+
   const handleContentClick = (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation();
 
   const handleDragStart = (e: React.TouchEvent | React.MouseEvent) => {
@@ -240,6 +253,9 @@ const TopModal = ({
       <div
         id="top-scroll"
         ref={contentRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="여행 계획 패널"
         onClick={handleContentClick}
         className={[
           'w-full overflow-hidden flex flex-col relative',

@@ -43,7 +43,7 @@ const ApplyListButton = ({
           type="button"
           aria-label={bookmarked ? '즐겨찾기 해제' : '즐겨찾기 추가'}
           onClick={bookmarkOnClick}
-          className="border-none bg-transparent"
+          className="border-none bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-keycolor)] focus-visible:ring-offset-2 rounded-full"
         >
           {bookmarked ? (
             <FullHeartIcon width={24} />

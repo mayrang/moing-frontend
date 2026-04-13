@@ -38,6 +38,7 @@ const Button = ({
         'h-12 rounded-[40px]',
         'cursor-pointer px-5 py-[10px] text-lg',
         'border-none',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-keycolor)] focus-visible:ring-offset-2',
         disabled
           ? 'cursor-not-allowed bg-[rgba(220,220,220,1)] text-[var(--color-text-muted)]'
           : 'bg-[var(--color-keycolor)] text-white',
