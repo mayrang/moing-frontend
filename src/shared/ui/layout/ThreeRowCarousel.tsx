@@ -1,5 +1,5 @@
 'use client';
-import { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
 import Slider from 'react-slick';
 import ButtonContainer from './ButtonContainer';
@@ -41,6 +41,41 @@ const ThreeRowCarousel = ({
   rowsProp = 3,
   needNextBtn = false,
 }: ThreeRowCarouselProps) => {
+  const { accessToken } = authStore();
+  const slickRef = useRef<Slider>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+  const [currentSlideNumber, setCurrentSlideNumber] = useState(0);
+  const sliderContainerRef = useRef<HTMLDivElement>(null);
+
+  // aria-hidden="true" 슬라이드 안의 포커스 가능 요소를 inert로 차단 (접근성)
+  // slick은 초기화 시 aria-hidden을 DOM 생성과 동시에 부여하므로
+  // onInit 콜백 + MutationObserver 조합으로 초기 및 슬라이드 변경 시 모두 처리
+  const updateInert = useCallback(() => {
+    const container = sliderContainerRef.current;
+    if (!container) return;
+    container.querySelectorAll<HTMLElement>('.slick-slide[aria-hidden="true"]').forEach((slide) => {
+      slide.setAttribute('inert', '');
+    });
+    container.querySelectorAll<HTMLElement>('.slick-slide:not([aria-hidden="true"])').forEach((slide) => {
+      slide.removeAttribute('inert');
+    });
+  }, []);
+
+  useEffect(() => {
+    const container = sliderContainerRef.current;
+    if (!container) return;
+
+    // 초기 실행: slick이 onInit보다 늦게 aria-hidden을 세팅하는 경우 대비
+    const timer = setTimeout(updateInert, 50);
+    const observer = new MutationObserver(updateInert);
+    observer.observe(container, { attributes: true, subtree: true, attributeFilter: ['aria-hidden'] });
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, [updateInert]);
+
   const settings = useMemo(() => {
     const itemCount = React.Children.count(children);
     return {
@@ -50,14 +85,10 @@ const ThreeRowCarousel = ({
       slidesToShow: 1,
       slidesToScroll: 1,
       dotsClass: 'dots-custom',
+      onInit: updateInert,
+      afterChange: updateInert,
     };
-  }, [children]);
-
-  const { accessToken } = authStore();
-  const slickRef = useRef<Slider>(null);
-  const router = useRouter();
-  const pathname = usePathname();
-  const [currentSlideNumber, setCurrentSlideNumber] = useState(0);
+  }, [children, itemCountProp, rowsProp, updateInert]);
 
   const handleNext = useCallback(
     throttle(() => {
@@ -83,6 +114,7 @@ const ThreeRowCarousel = ({
       style={{ marginTop: pathname === '/onBoardingOne' ? '0px' : '12px' }}
     >
       <div
+        ref={sliderContainerRef}
         className="w-full"
         style={{
           marginBottom: pathname === '/onBoardingOne' ? '32px' : '0',

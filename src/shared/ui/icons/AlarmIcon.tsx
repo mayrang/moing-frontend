@@ -17,7 +17,7 @@ const AlarmIcon = ({
   );
   return (
     <div className="relative w-5 h-[23px]">
-      <Image alt="alarm icon" height={23} width={20} src="/images/alarm.svg" />
+      <Image alt="alarm icon" height={23} width={20} src="/images/alarm.svg" priority />
       {hasUnread && (
         <div className="bg-[#ea2a2a] absolute top-[-1px] right-[-1px] h-2 w-2 rounded-full" />
       )}

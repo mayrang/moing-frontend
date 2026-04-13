@@ -5,7 +5,12 @@ import HorizonBoxLayout from "@/components/HorizonBoxLayout";
 import dayjs from "dayjs";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import ThreeRowCarousel from "@/components/ThreeRowCarousel";
+import dynamic from "next/dynamic";
+
+const ThreeRowCarousel = dynamic(() => import("@/components/ThreeRowCarousel"), {
+  ssr: false,
+  loading: () => <div className="h-[270px]" />,
+});
 import { IMyTripList } from "@/model/myTrip";
 import { daysAgo } from "@/utils/time";
 import { useRouter } from "next/navigation";
