@@ -13,6 +13,7 @@ import { IContactCreate } from "@/model/contact";
 import { authStore } from "@/store/client/authStore";
 import { myPageStore } from "@/store/client/myPageStore";
 import { useMutation } from "@tanstack/react-query";
+import { createMutationOptions } from "@/shared/lib/errors";
 import { useSearchParams } from "next/navigation";
 import React, { FormEvent, useEffect, useState } from "react";
 
@@ -43,25 +44,24 @@ const CreateContact = () => {
     }
   }, [initEmail, paramsEmail]);
   const createContact = useMutation({
-    mutationFn: async (data: IContactCreate) => {
-      const result = await postContact(data, accessToken);
-      return result as any;
-    },
+    ...createMutationOptions({
+      mutationFn: async (data: IContactCreate) => {
+        const result = await postContact(data, accessToken);
+        return result as any;
+      },
+      policy: { network: 'toast', system: 'toast' },
+    }),
     mutationKey: ["createContact"],
-    onSuccess: (data) => {
+    onSuccess: () => {
       setIsResultModalOpen(true);
       setTitle("");
       setContent("");
-    },
-    onError: (error: any) => {
-      console.error(error);
-      // throw new RequestError(error);
     },
   });
 
   const submitContact = (e: FormEvent) => {
     e.preventDefault();
-    createContact.mutateAsync({ inquiryType, email, title, content });
+    createContact.mutate({ inquiryType, email, title, content });
   };
   return (
     <>

@@ -23,11 +23,10 @@ const TagList = ({ taggedArray, clickTag }: TagListProps) => {
             addStyle={{
               backgroundColor: isActive(idx)
                 ? "rgba(227, 239, 217, 1)"
-                : " rgba(240, 240, 240, 1)",
+                : "rgba(240, 240, 240, 1)",
               color: isActive(idx)
                 ? "var(--color-keycolor)"
                 : "rgba(52, 52, 52, 1)",
-
               border: isActive(idx)
                 ? "1px solid var(--color-keycolor)"
                 : "1px solid var(--color-search-bg)",
@@ -35,8 +34,8 @@ const TagList = ({ taggedArray, clickTag }: TagListProps) => {
               padding: "10px 20px",
               fontWeight: isActive(idx) ? "600" : "400",
               lineHeight: "22px",
+              cursor: "pointer",
             }}
-            style={{ cursor: "pointer" }}
             text={tag}
             onClick={() => clickTag(idx)}
           />

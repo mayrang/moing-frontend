@@ -9,6 +9,7 @@ import { IContactCreate } from "@/model/contact";
 import { authStore } from "@/store/client/authStore";
 import { myPageStore } from "@/store/client/myPageStore";
 import { useMutation } from "@tanstack/react-query";
+import { createMutationOptions } from "@/shared/lib/errors";
 import { useRouter } from "next/navigation";
 import React, { FormEvent, useState } from "react";
 
@@ -19,25 +20,23 @@ const Explanation = () => {
   const { accessToken } = authStore();
 
   const createContact = useMutation({
-    mutationFn: async (data: IContactCreate) => {
-      const result = await postContact(data, accessToken);
-      return result as any;
-    },
-
+    ...createMutationOptions({
+      mutationFn: async (data: IContactCreate) => {
+        const result = await postContact(data, accessToken);
+        return result as any;
+      },
+      policy: { network: 'toast', system: 'toast' },
+    }),
     mutationKey: ["createContact"],
-    onSuccess: (data) => {
+    onSuccess: () => {
       setText("");
       router.push("/notification");
-    },
-    onError: (error: any) => {
-      console.error(error);
-      // throw new RequestError(error);
     },
   });
   const submitReport = (e: FormEvent) => {
     e.preventDefault();
     if (text === "" || email === "") return;
-    createContact.mutateAsync({
+    createContact.mutate({
       inquiryType: "계정 신고 및 차단 문의",
       email,
       title: "신고 5회 소명 사유",

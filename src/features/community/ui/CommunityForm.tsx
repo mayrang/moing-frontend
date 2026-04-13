@@ -146,8 +146,8 @@ const CommunityForm = ({ isEdit = false }: CommunityFormProps) => {
           onChange={(e) => setContent(e.target.value)}
           placeholder="내용을 입력해주세요. (최대 2,000자)"
         />
-        <Spacing size="3.8svh" />
-        <AddImage isEdit={isEdit} />
+        {/* <Spacing size="3.8svh" /> */}
+        {/* <AddImage isEdit={isEdit} /> */}
         <ButtonContainer>
           <Button
             onClick={submitCommunity}
