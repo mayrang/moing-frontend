@@ -1,11 +1,7 @@
 "use client";
 import React from "react";
 import { usePathname } from "next/navigation";
-import dynamic from "next/dynamic";
-
-// dynamic import → AppShell과 모든 의존성(useMyPage, Navbar, Splash 등)이
-// auth 페이지에서는 JS 번들에 포함되지 않음
-const AppShell = dynamic(() => import("./AppShell"), { ssr: false });
+import AppShell from "./AppShell";
 
 // auth 플로우 전용 경로: AppShell(useMyPage, Navbar 등) 마운트 없이 children만 렌더링
 // /login 만 해당 — register/verifyEmail 등은 AppShell의 Header(뒤로가기) 필요
