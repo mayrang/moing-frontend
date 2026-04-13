@@ -7,7 +7,7 @@ const Footer = () => {
         <div className="text-xs font-semibold leading-[16.8px] text-[var(--color-text-base)] mb-[14px]">
           TEAM 모잉
         </div>
-        <div className="text-xs font-normal leading-[16.8px] text-[var(--color-text-muted2)] flex justify-between">
+        <div className="text-xs font-normal leading-[16.8px] text-[#606060] flex justify-between">
           <a href={"/pdf/service_terms(241115).pdf"} target="_blank">
             서비스이용약관
           </a>

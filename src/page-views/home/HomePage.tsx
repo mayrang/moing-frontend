@@ -3,7 +3,13 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import InputField from "@/components/designSystem/input/InputField";
 import AlarmIcon from "@/components/icons/AlarmIcon";
-import { BookmarkContainer, TripAvailable, TripRecommendation } from "@/widgets/home";
+import dynamic from "next/dynamic";
+import { BookmarkContainer, TripAvailable } from "@/widgets/home";
+
+const TripRecommendation = dynamic(
+  () => import("@/widgets/home").then((m) => m.TripRecommendation),
+  { ssr: false, loading: () => <div className="h-[300px]" /> }
+);
 import Spacing from "@/components/Spacing";
 import Footer from "@/page-views/home/Footer";
 import CreateTripButton from "@/page-views/home/CreateTripButton";
